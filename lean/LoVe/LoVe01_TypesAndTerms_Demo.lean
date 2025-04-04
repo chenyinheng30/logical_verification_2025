@@ -1,86 +1,79 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。详见 `LICENSE.txt`。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Preface
+/- # LoVe 前言
 
-## Proof Assistants
+## 证明助手
 
-Proof assistants (also called interactive theorem provers)
+证明助手（也称为交互式定理证明器）
 
-* check and help develop formal proofs;
-* can be used to prove big theorems, not only logic puzzles;
-* can be tedious to use;
-* are highly addictive (think video games).
+* 检查并协助开发形式化证明；
+* 可用于证明重大定理，而不仅限于逻辑谜题；
+* 使用过程可能较为繁琐；
+* 具有高度成瘾性（类似电子游戏）。
 
-A selection of proof assistants, classified by logical foundations:
+按逻辑基础分类的部分证明助手：
 
-* set theory: Isabelle/ZF, Metamath, Mizar;
-* simple type theory: HOL4, HOL Light, Isabelle/HOL;
-* **dependent type theory**: Agda, Coq, **Lean**, Matita, PVS.
+* 集合论：Isabelle/ZF, Metamath, Mizar；
+* 简单类型论：HOL4, HOL Light, Isabelle/HOL；
+* **依赖类型论**：Agda, Coq, **Lean**, Matita, PVS。
 
 
-## Success Stories
+## 成功案例
 
-Mathematics:
+数学领域：
 
-* the four-color theorem (in Coq);
-* the Kepler conjecture (in HOL Light and Isabelle/HOL);
-* the definition of perfectoid spaces (in Lean).
+* 四色定理（使用 Coq 证明）；
+* 开普勒猜想（使用 HOL Light 和 Isabelle/HOL 证明）；
+* perfectoid 空间的定义（使用 Lean 证明）。
 
-Computer science:
+计算机科学领域：
 
-* hardware;
-* operating systems;
-* programming language theory;
-* compilers;
-* security.
+* 硬件验证；
+* 操作系统验证；
+* 编程语言理论；
+* 编译器验证；
+* 安全验证。
 
 
 ## Lean
 
-Lean is a proof assistant developed primarily by Leonardo de Moura (Amazon Web
-Services) since 2012.
+Lean 是由 Leonardo de Moura（亚马逊云服务）自 2012 年起主导开发的证明助手。
 
-Its mathematical library, `mathlib`, is developed by a large community of
-contributors.
+其数学库 `mathlib` 由庞大的贡献者社区共同开发。
 
-We use the community version of Lean 4. We use its basic libraries, `mathlib4`,
-and `LoVelib`, among others. Lean is a research project.
+我们使用 Lean 4 社区版，主要依赖基础库、`mathlib4` 和 `LoVelib` 等。Lean 是一个持续发展的研究项目。
 
-Strengths:
+优势特性：
 
-* highly expressive logic based on a dependent type theory called the
-  **calculus of inductive constructions**;
-* extended with classical axioms and quotient types;
-* metaprogramming framework;
-* modern user interface;
-* documentation;
-* open source;
-* endless source of puns (Lean Forward, Lean Together, Boolean, …).
+* 基于**归纳构造演算**依赖类型论的高度表达性逻辑系统；
+* 扩展支持经典公理和商类型；
+* 元编程框架；
+* 现代化用户界面；
+* 完善的文档体系；
+* 开源项目；
+* 双关语创作源泉（如 Lean Forward, Lean Together, Boolean 等）。
 
 
-## Our Goal
+## 课程目标
 
-We want you to
+我们希望您能：
 
-* master fundamental theory and techniques in interactive theorem proving;
-* get familiarized with some application areas;
-* develop some practical skills you can apply on a larger project (as a hobby,
-  for an MSc or PhD, or in industry);
-* feel ready to move to another proof assistant and apply what you have learned;
-* understand the domain well enough to start reading scientific papers.
+* 掌握交互式定理证明的核心理论与技术；
+* 熟悉若干应用领域；
+* 培养可应用于大型项目的实践技能（作为业余爱好、硕士/博士研究或工业应用）；
+* 具备迁移至其他证明助手并应用所学知识的能力；
+* 达到可自主阅读学术论文的领域理解水平。
 
-This course is neither a pure logical foundations course nor a Lean tutorial.
-Lean is our means, not an end of itself.
+本课程既非纯粹的逻辑基础课程，也非 Lean 使用教程。Lean 是我们的工具而非终极目标。
 
 
-# LoVe Demo 1: Types and Terms
+# LoVe 演示1：类型与项
 
-We start our journey by studying the basics of Lean, starting with terms
-(expressions) and their types. -/
+我们首先学习 Lean 的基础知识，从类型和项（表达式）开始。 -/
 
 
 set_option autoImplicit false
@@ -89,52 +82,49 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## A View of Lean
+/- ## Lean 概览
 
-In a first approximation:
+初步理解：
 
-    Lean = functional programming + logic
+    Lean = 函数式编程 + 逻辑系统
 
-In today's lecture, we cover the syntax of types and terms, which are similar to
-those of the simply typed λ-calculus or typed functional programming languages
-(ML, OCaml, Haskell).
+本次课程涵盖类型与项的语法，这些内容与简单类型 λ-演算或类型化函数式编程语言（ML, OCaml, Haskell）类似。
 
 
-## Types
+## 类型系统
 
-Types `σ`, `τ`, `υ`:
+类型 `σ`, `τ`, `υ`：
 
-* type variables `α`;
-* basic types `T`;
-* complex types `T σ1 … σN`.
+* 类型变量 `α`；
+* 基础类型 `T`；
+* 复合类型 `T σ1 … σN`。
 
-Some type constructors `T` are written infix, e.g., `→` (function type).
+部分类型构造子 `T` 采用中缀表示法，例如 `→`（函数类型）。
 
-The function arrow is right-associative:
-`σ₁ → σ₂ → σ₃ → τ` = `σ₁ → (σ₂ → (σ₃ → τ))`.
+函数箭头为右结合：
+`σ₁ → σ₂ → σ₃ → τ` = `σ₁ → (σ₂ → (σ₃ → τ))`。
 
-Polymorphic types are also possible. In Lean, the type variables must be bound
-using `∀`, e.g., `∀α, α → α`.
+支持多态类型。在 Lean 中，类型变量必须使用 `∀` 绑定，例如 `∀α, α → α`。
 
 
-## Terms
+## 项系统
 
-Terms `t`, `u`:
+项 `t`, `u`：
 
-* constants `c`;
-* variables `x`;
-* applications `t u`;
-* anonymous functions `fun x ↦ t` (also called λ-expressions).
+* 常量 `c`；
+* 变量 `x`；
+* 应用 `t u`；
+* 匿名函数 `fun x ↦ t`（亦称 λ-表达式）。
 
-__Currying__: functions can be
+__柯里化__：函数可以
 
-* fully applied (e.g., `f x y z` if `f` can take at most 3 arguments);
-* partially applied (e.g., `f x y`, `f x`);
-* left unapplied (e.g., `f`).
+* 完全应用（如 `f x y z` 若 `f` 最多接受3个参数）；
+* 部分应用（如 `f x y`, `f x`）；
+* 保持非应用状态（如 `f`）。
 
-Application is left-associative: `f x y z` = `((f x) y) z`.
+应用操作为左结合：`f x y z` = `((f x) y) z`。
 
-`#check` reports the type of its argument. -/
+`#check` 命令可报告参数的类型。 -/
 
 #check ℕ
 #check ℤ
@@ -154,7 +144,7 @@ Application is left-associative: `f x y z` = `((f x) y) z`.
   fun x : ℕ ↦ h (g (f x))
 #check fun (f g h : ℕ → ℕ) (x : ℕ) ↦ h (g (f x))
 
-/- `opaque` defines an arbitrary constant of the specified type. -/
+/- `opaque` 定义指定类型的任意常量。 -/
 
 opaque a : ℤ
 opaque b : ℤ
@@ -167,19 +157,18 @@ opaque g : ℤ → ℤ → ℤ
 #check fun x ↦ x
 
 
-/- ## Type Checking and Type Inference
+/- ## 类型检查与类型推断
 
-Type checking and type inference are decidable problems (although this property is
-quickly lost if features such as overloading or subtyping are added).
+类型检查和类型推断是可判定问题（但若加入重载或子类型等特性，该性质会迅速丧失）。
 
-Type judgment: `C ⊢ t : σ`, meaning `t` has type `σ` in local context `C`.
+类型判断式：`C ⊢ t : σ`，表示在局部上下文 `C` 中项 `t` 具有类型 `σ`。
 
-Typing rules:
+类型规则：
 
-    —————————— Cst   if c is globally declared with type σ
+    —————————— Cst   若常量 c 全局声明为类型 σ
     C ⊢ c : σ
 
-    —————————— Var   if x : σ is the rightmost occurrence of x in C
+    —————————— Var   若 x : σ 是上下文 C 中最右侧的 x 出现
     C ⊢ x : σ
 
     C ⊢ t : σ → τ    C ⊢ u : σ
@@ -190,22 +179,18 @@ Typing rules:
     ——————————————————————————— Fun
     C ⊢ (fun x : σ ↦ t) : σ → τ
 
-If the same variable `x` occurs multiple times in the context C, the rightmost
-occurrence shadows the other ones.
+若变量 `x` 在上下文 C 中出现多次，最右侧的声明会遮蔽之前的声明。
 
 
-## Type Inhabitation
+## 类型居住性
 
-Given a type `σ`, the __type inhabitation__ problem consists of finding a term
-of that type. Type inhabitation is undecidable.
+给定类型 `σ`，__类型居住性__问题指寻找该类型的项。该问题不可判定。
 
-Recursive procedure:
+递归求解策略：
 
-1. If `σ` is of the form `τ → υ`, a candidate inhabitant is an anonymous
-   function of the form `fun x ↦ _`.
+1. 若 `σ` 形如 `τ → υ`，候选居住项可以是匿名函数 `fun x ↦ _`。
 
-2. Alternatively, you can use any constant or variable `x : τ₁ → ⋯ → τN → σ` to
-   build the term `x _ … _`. -/
+2. 或者，可使用任意常量或变量 `x : τ₁ → ⋯ → τN → σ` 构造项 `x _ … _`。 -/
 
 opaque α : Type
 opaque β : Type

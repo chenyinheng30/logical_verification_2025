@@ -1,14 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Demo 2: Programs and Theorems
+/- # LoVe 演示2：程序与定理
 
-We continue our study of the basics of Lean, focusing on programs and theorems,
-without carrying out any proofs yet. We review how to define new types and
-functions and how to state their intended properties as theorems. -/
+我们继续学习Lean的基础知识，重点放在程序和定理上，暂时不进行任何证明。我们将回顾如何定义新类型和函数，以及如何将它们预期的性质表述为定理。 -/
 
 
 set_option autoImplicit false
@@ -17,19 +15,16 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Type Definitions
+/- ## 类型定义
 
-An __inductive type__ (also called __inductive datatype__,
-__algebraic datatype__, or just __datatype__) is a type that consists all the
-values that can be built using a finite number of applications of its
-__constructors__, and only those.
+__归纳类型__（也称为__归纳数据类型__、__代数数据类型__或简称__数据类型__）是一种类型，它包含所有可以通过有限次应用其__构造子__构建的值，且仅包含这些值。
 
 
-### Natural Numbers -/
+### 自然数 -/
 
 namespace MyNat
 
-/- Definition of type `Nat` (= `ℕ`) of natural numbers, using unary notation: -/
+/- 使用一元表示法定义自然数类型 `Nat`（= `ℕ`）： -/
 
 inductive Nat : Type where
   | zero : Nat
@@ -39,20 +34,19 @@ inductive Nat : Type where
 #check Nat.zero
 #check Nat.succ
 
-/- `#print` outputs the definition of its argument. -/
+/- `#print` 输出其参数的定义。 -/
 
 #print Nat
 
 end MyNat
 
-/- Outside namespace `MyNat`, `Nat` refers to the type defined in the Lean core
-library unless it is qualified by the `MyNat` namespace. -/
+/- 在 `MyNat` 命名空间之外，除非加上 `MyNat` 命名空间限定，否则 `Nat` 指的是Lean核心库中定义的类型。 -/
 
 #print Nat
 #print MyNat.Nat
 
 
-/- ### Arithmetic Expressions -/
+/- ### 算术表达式 -/
 
 inductive AExp : Type where
   | num : ℤ → AExp
@@ -63,7 +57,7 @@ inductive AExp : Type where
   | div : AExp → AExp → AExp
 
 
-/- ### Lists -/
+/- ### 列表 -/
 
 namespace MyList
 
@@ -82,24 +76,22 @@ end MyList
 #print MyList.List
 
 
-/- ## Function Definitions
+/- ## 函数定义
 
-The syntax for defining a function operating on an inductive type is very
-compact: We define a single function and use __pattern matching__ to extract the
-arguments to the constructors. -/
+定义操作于归纳类型的函数语法非常简洁：我们定义一个单一函数，并使用__模式匹配__来提取构造子的参数。 -/
 
 def fib : ℕ → ℕ
   | 0     => 0
   | 1     => 1
   | n + 2 => fib (n + 1) + fib n
 
-/- When there are multiple arguments, separate the patterns by `,`: -/
+/- 当有多个参数时，用 `,` 分隔模式： -/
 
 def add : ℕ → ℕ → ℕ
   | m, Nat.zero   => m
   | m, Nat.succ n => Nat.succ (add m n)
 
-/- `#eval` and `#reduce` evaluate and output the value of a term. -/
+/- `#eval` 和 `#reduce` 计算并输出项的值。 -/
 
 #eval add 2 7
 #reduce add 2 7
@@ -118,11 +110,9 @@ def power : ℕ → ℕ → ℕ
 
 #eval power 2 5
 
-/- `add`, `mul`, and `power` are artificial examples. These operations are
-already available in Lean as `+`, `*`, and `^`.
+/- `add`、`mul` 和 `power` 是人为示例。这些操作在Lean中已经作为 `+`、`*` 和 `^` 提供。
 
-If it is not necessary to pattern-match on an argument, it can be moved to
-the left of the `:` and made a named argument: -/
+如果不需要对某个参数进行模式匹配，可以将其移到 `:` 的左侧并作为命名参数： -/
 
 def powerParam (m : ℕ) : ℕ → ℕ
   | Nat.zero   => 1
@@ -145,16 +135,13 @@ def append (α : Type) : List α → List α → List α
   | List.nil,       ys => ys
   | List.cons x xs, ys => List.cons x (append α xs ys)
 
-/- Because `append` must work for any type of list, the type of its elements is
-provided as an argument. As a result, the type must be provided in every call
-(or use `_` if Lean can infer the type). -/
+/- 因为 `append` 必须适用于任何类型的列表，所以元素的类型作为参数提供。因此，在每次调用时必须提供类型（或者如果Lean能推断类型，可以使用 `_`）。 -/
 
 #check append
 #eval append ℕ [3, 1] [4, 1, 5]
 #eval append _ [3, 1] [4, 1, 5]
 
-/- If the type argument is enclosed in `{ }` rather than `( )`, it is implicit
-and need not be provided in every call (provided Lean can infer it). -/
+/- 如果类型参数用 `{ }` 而不是 `( )` 包围，则它是隐式的，不需要在每次调用时提供（前提是Lean能推断它）。 -/
 
 def appendImplicit {α : Type} : List α → List α → List α
   | List.nil,       ys => ys
@@ -162,16 +149,13 @@ def appendImplicit {α : Type} : List α → List α → List α
 
 #eval appendImplicit [3, 1] [4, 1, 5]
 
-/- Prefixing a definition name with `@` gives the corresponding definition in
-which all implicit arguments have been made explicit. This is useful in
-situations where Lean cannot work out how to instantiate the implicit
-arguments. -/
+/- 在定义名前加上 `@` 可以得到所有隐式参数显式化的对应定义。这在Lean无法确定如何实例化隐式参数的情况下非常有用。 -/
 
 #check @appendImplicit
 #eval @appendImplicit ℕ [3, 1] [4, 1, 5]
 #eval @appendImplicit _ [3, 1] [4, 1, 5]
 
-/- Aliases:
+/- 别名：
 
     `[]`          := `List.nil`
     `x :: xs`     := `List.cons x xs`
@@ -195,15 +179,12 @@ def eval (env : String → ℤ) : AExp → ℤ
 
 #eval eval (fun x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 0))
 
-/- Lean only accepts the function definitions for which it can prove
-termination. In particular, it accepts __structurally recursive__ functions,
-which peel off exactly one constructor at a time.
+/- Lean只接受那些它能证明终止的函数定义。特别是，它接受__结构递归__函数，这些函数每次恰好剥离一个构造子。
 
 
-## Theorem Statements
+## 定理陈述
 
-Notice the similarity with `def` commands. `theorem` is like `def` except that
-the result is a proposition rather than data or a function. -/
+注意与 `def` 命令的相似性。`theorem` 类似于 `def`，只是结果是一个命题而不是数据或函数。 -/
 
 namespace SorryTheorems
 
@@ -231,8 +212,7 @@ theorem reverse_reverse {α : Type} (xs : List α) :
     reverse (reverse xs) = xs :=
   sorry
 
-/- Axioms are like theorems but without proofs. Opaque declarations are like
-definitions but without bodies. -/
+/- 公理类似于定理但没有证明。不透明声明类似于定义但没有主体。 -/
 
 opaque a : ℤ
 opaque b : ℤ
@@ -243,3 +223,4 @@ axiom a_less_b :
 end SorryTheorems
 
 end LoVe
+

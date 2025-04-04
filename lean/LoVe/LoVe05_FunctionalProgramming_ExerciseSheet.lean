@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe04_ForwardProofs_Demo
 
 
-/- # LoVe Exercise 5: Functional Programming
+/- # LoVe 练习5：函数式编程
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,95 +15,73 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Reverse of a List
+/- ## 问题1：列表的反转
 
-We define an accumulator-based variant of `reverse`. The first argument, `as`,
-serves as the accumulator. This definition is __tail-recursive__, meaning that
-compilers and interpreters can easily optimize the recursion away, resulting in
-more efficient code. -/
+我们定义一个基于累加器的`reverse`变体。第一个参数`as`作为累加器。这个定义是__尾递归的__，意味着编译器和解释器可以轻松优化掉递归，从而生成更高效的代码。 -/
 
 def reverseAccu {α : Type} : List α → List α → List α
   | as, []      => as
   | as, x :: xs => reverseAccu (x :: as) xs
 
-/- 1.1. Our intention is that `reverseAccu [] xs` should be equal to
-`reverse xs`. But if we start an induction, we quickly see that the induction
-hypothesis is not strong enough. Start by proving the following generalization
-(using the `induction` tactic or pattern matching): -/
+/- 1.1. 我们的意图是`reverseAccu [] xs`应该等于`reverse xs`。但如果开始归纳，我们很快发现归纳假设不够强。首先证明以下推广（使用`induction`策略或模式匹配）： -/
 
 theorem reverseAccu_Eq_reverse_append {α : Type} :
     ∀as xs : List α, reverseAccu as xs = reverse xs ++ as :=
   sorry
 
-/- 1.2. Derive the desired equation. -/
+/- 1.2. 推导出所需的等式。 -/
 
 theorem reverseAccu_eq_reverse {α : Type} (xs : List α) :
     reverseAccu [] xs = reverse xs :=
   sorry
 
-/- 1.3. Prove the following property.
+/- 1.3. 证明以下性质。
 
-Hint: A one-line inductionless proof is possible. -/
+提示：可以一行无归纳证明。 -/
 
 theorem reverseAccu_reverseAccu {α : Type} (xs : List α) :
     reverseAccu [] (reverseAccu [] xs) = xs :=
   sorry
 
-/- 1.4. Prove the following theorem by structural induction, as a "paper"
-proof. This is a good exercise to develop a deeper understanding of how
-structural induction works (and is good practice for the final exam).
+/- 1.4. 通过结构归纳法证明以下定理，作为"纸面"证明。这是深入理解结构归纳法如何工作的好练习（也是期末考试的好练习）。
 
     theorem reverseAccu_Eq_reverse_append {α : Type} :
       ∀as xs : list α, reverseAccu as xs = reverse xs ++ as
 
-Guidelines for paper proofs:
+纸面证明指南：
 
-We expect detailed, rigorous, mathematical proofs. You are welcome to use
-standard mathematical notation or Lean structured commands (e.g., `assume`,
-`have`, `show`, `calc`). You can also use tactical proofs (e.g., `intro`,
-`apply`), but then please indicate some of the intermediate goals, so that we
-can follow the chain of reasoning.
+我们期望详细、严谨的数学证明。你可以使用标准数学符号或Lean结构化命令（例如`assume`、`have`、`show`、`calc`）。也可以使用策略证明（例如`intro`、`apply`），但请注明中间目标，以便我们理解推理链条。
 
-Major proof steps, including applications of induction and invocation of the
-induction hypothesis, must be stated explicitly. For each case of a proof by
-induction, you must list the induction hypotheses assumed (if any) and the goal
-to be proved. Minor proof steps corresponding to `rfl` or `simp` need not be
-justified if you think they are obvious (to humans), but you should say which
-key theorems they depend on. You should be explicit whenever you use a function
-definition. -/
+主要证明步骤，包括归纳法的应用和归纳假设的调用，必须明确说明。对于归纳证明的每个情况，必须列出假设的归纳假设（如果有）和要证明的目标。对应于`rfl`或`simp`的小步骤如果认为对人是显而易见的，则无需解释，但应说明依赖的关键定理。使用函数定义时应明确说明。 -/
 
--- enter your paper proof here
+-- 在此处输入你的纸面证明
 
 
-/- ## Question 2: Drop and Take
+/- ## 问题2：Drop和Take
 
-The `drop` function removes the first `n` elements from the front of a list. -/
+`drop`函数移除列表前`n`个元素。 -/
 
 def drop {α : Type} : ℕ → List α → List α
   | 0,     xs      => xs
   | _ + 1, []      => []
   | m + 1, _ :: xs => drop m xs
 
-/- 2.1. Define the `take` function, which returns a list consisting of the first
-`n` elements at the front of a list.
+/- 2.1. 定义`take`函数，返回列表前`n`个元素组成的列表。
 
-To avoid unpleasant surprises in the proofs, we recommend that you follow the
-same recursion pattern as for `drop` above. -/
+为了避免证明中的意外情况，建议遵循与上述`drop`相同的递归模式。 -/
 
 def take {α : Type} : ℕ → List α → List α :=
   sorry
 
-#eval take 0 [3, 7, 11]   -- expected: []
-#eval take 1 [3, 7, 11]   -- expected: [3]
-#eval take 2 [3, 7, 11]   -- expected: [3, 7]
-#eval take 3 [3, 7, 11]   -- expected: [3, 7, 11]
-#eval take 4 [3, 7, 11]   -- expected: [3, 7, 11]
+#eval take 0 [3, 7, 11]   -- 期望: []
+#eval take 1 [3, 7, 11]   -- 期望: [3]
+#eval take 2 [3, 7, 11]   -- 期望: [3, 7]
+#eval take 3 [3, 7, 11]   -- 期望: [3, 7, 11]
+#eval take 4 [3, 7, 11]   -- 期望: [3, 7, 11]
 
-#eval take 2 ["a", "b", "c"]   -- expected: ["a", "b"]
+#eval take 2 ["a", "b", "c"]   -- 期望: ["a", "b"]
 
-/- 2.2. Prove the following theorems, using `induction` or pattern matching.
-Notice that they are registered as simplification rules thanks to the `@[simp]`
-attribute. -/
+/- 2.2. 使用`induction`或模式匹配证明以下定理。注意它们通过`@[simp]`属性注册为简化规则。 -/
 
 @[simp] theorem drop_nil {α : Type} :
     ∀n : ℕ, drop n ([] : List α) = [] :=
@@ -113,17 +91,14 @@ attribute. -/
     ∀n : ℕ, take n ([] : List α) = [] :=
   sorry
 
-/- 2.3. Follow the recursion pattern of `drop` and `take` to prove the
-following theorems. In other words, for each theorem, there should be three
-cases, and the third case will need to invoke the induction hypothesis.
+/- 2.3. 遵循`drop`和`take`的递归模式证明以下定理。换句话说，每个定理应有三种情况，第三种情况需要调用归纳假设。
 
-Hint: Note that there are three variables in the `drop_drop` theorem (but only
-two arguments to `drop`). For the third case, `← add_assoc` might be useful. -/
+提示：注意`drop_drop`定理中有三个变量（但`drop`只有两个参数）。对于第三种情况，`← add_assoc`可能有用。 -/
 
 theorem drop_drop {α : Type} :
     ∀(m n : ℕ) (xs : List α), drop n (drop m xs) = drop (n + m) xs
   | 0,     n, xs      => by rfl
-  -- supply the two missing cases here
+  -- 在此补充缺失的两种情况
 
 theorem take_take {α : Type} :
     ∀(m : ℕ) (xs : List α), take m (take m xs) = take m xs :=
@@ -134,31 +109,28 @@ theorem take_drop {α : Type} :
   sorry
 
 
-/- ## Question 3: A Type of Terms
+/- ## 问题3：项的类型的类型
 
-3.1. Define an inductive type corresponding to the terms of the untyped
-λ-calculus, as given by the following grammar:
+3.1. 定义一个归纳类型，对应于无类型λ演算的项，由以下语法给出：
 
-    Term  ::=  `var` String        -- variable (e.g., `x`)
-            |  `lam` String Term   -- λ-expression (e.g., `λx. t`)
-            |  `app` Term Term     -- application (e.g., `t u`) -/
+    Term  ::=  `var` String        -- 变量（例如`x`）
+            |  `lam` String Term   -- λ表达式（例如`λx. t`）
+            |  `app` Term Term     -- 应用（例如`t u`） -/
 
--- enter your definition here
+-- 在此输入你的定义
 
-/- 3.2 (**optional**). Register a textual representation of the type `Term` as
-an instance of the `Repr` type class. Make sure to supply enough parentheses to
-guarantee that the output is unambiguous. -/
+/- 3.2 (**可选**). 将类型`Term`的文本表示注册为`Repr`类型类的实例。确保提供足够的括号以保证输出无歧义。 -/
 
 def Term.repr : Term → String
--- enter your answer here
+-- 在此输入你的答案
 
 instance Term.Repr : Repr Term :=
   { reprPrec := fun t prec ↦ Term.repr t }
 
-/- 3.3 (**optional**). Test your textual representation. The following command
-should print something like `(λx. ((y x) x))`. -/
+/- 3.3 (**可选**). 测试你的文本表示。以下命令应打印类似`(λx. ((y x) x))`的内容。 -/
 
 #eval (Term.lam "x" (Term.app (Term.app (Term.var "y") (Term.var "x"))
     (Term.var "x")))
 
 end LoVe
+

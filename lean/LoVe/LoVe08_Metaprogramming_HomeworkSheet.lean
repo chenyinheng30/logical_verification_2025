@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt` 文件。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Homework 8 (10 points + 2 bonus points): Metaprogramming
+/- # LoVe 家庭作业 8（10 分 + 2 附加分）：元编程
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解决方案。 -/
 
 
 set_option autoImplicit false
@@ -20,19 +20,13 @@ open Lean.TSyntax
 namespace LoVe
 
 
-/- ## Question 1 (10 points): A `safe` Tactic
+/- ## 问题 1（10 分）：`safe` 策略
 
-You will develop a tactic that applies all safe introduction and elimination
-rules for the connectives and quantifiers exhaustively. A rule is said to be
-__safe__ if, given a provable goal, it always gives rise to provable subgoals.
-In addition, we will require that safe rules do not introduce metavariables
-(since these can easily be instantiated accidentally with the wrong terms).
+你将开发一个策略，该策略会穷尽地应用所有连接词和量词的安全引入和消解规则。一个规则被称为__安全的__，如果给定一个可证的目标，它总是产生可证的子目标。此外，我们要求安全规则不引入元变量（因为这些很容易被意外实例化为错误的项）。
 
-You will proceed in three steps.
+你将分三步进行。
 
-1.1 (4 points). Develop a `safe_intros` tactic that repeatedly applies the
-introduction rules for `True`, `∧`, and `↔` and that invokes `intro _` for
-`→`/`∀`. The tactic generalizes `intro_and` from the exercise. -/
+1.1（4 分）。开发一个 `safe_intros` 策略，该策略重复应用 `True`、`∧` 和 `↔` 的引入规则，并为 `→`/`∀` 调用 `intro _`。该策略推广了练习中的 `intro_and`。 -/
 
 macro "safe_intros" : tactic =>
   sorry
@@ -41,7 +35,7 @@ theorem abcd (a b c d : Prop) :
     a → ¬ b ∧ (c ↔ d) :=
   by
     safe_intros
-    /- The proof state should be roughly as follows:
+    /- 证明状态应大致如下：
 
         case left
         a b c d : Prop
@@ -62,19 +56,15 @@ theorem abcd (a b c d : Prop) :
         ⊢ c -/
     repeat' sorry
 
-/- 1.2 (4 points). Develop a `safe_cases` tactic that performs case
-distinctions on `False`, `∧` (`And`), and `∃` (`Exists`). The tactic generalizes
-`cases_and` from the exercise.
+/- 1.2（4 分）。开发一个 `safe_cases` 策略，该策略对 `False`、`∧` (`And`) 和 `∃` (`Exists`) 进行情况分析。该策略推广了练习中的 `cases_and`。
 
-Hints:
+提示：
 
-* The last argument of `Expr.isAppOfArity` is the number of arguments expected
-  by the logical symbol. For example, the arity of `∧` is 2.
+* `Expr.isAppOfArity` 的最后一个参数是逻辑符号期望的参数数量。例如，`∧` 的参数数量是 2。
 
-* The "or" connective on `Bool` is called `||`.
+* `Bool` 上的“或”连接词称为 `||`。
 
-Hint: When iterating over the declarations in the local context, make sure to
-skip any declaration that is an implementation detail. -/
+提示：在遍历局部上下文中的声明时，确保跳过任何实现细节的声明。 -/
 
 #check @False
 #check @And
@@ -92,7 +82,7 @@ theorem abcdef (a b c d e f : Prop) (P : ℕ → Prop)
     False :=
   by
     safe_cases
-  /- The proof state should be roughly as follows:
+  /- 证明状态应大致如下：
 
       case intro.intro.intro
       a b c d e f : Prop
@@ -109,9 +99,7 @@ theorem abcdef (a b c d e f : Prop) (P : ℕ → Prop)
       ⊢ False -/
     sorry
 
-/- 1.3 (2 points). Implement a `safe` tactic that first invokes `safe_intros`
-on all goals, then `safe_cases` on all emerging subgoals, before it tries
-`assumption` on all emerging subsubgoals. -/
+/- 1.3（2 分）。实现一个 `safe` 策略，该策略首先在所有目标上调用 `safe_intros`，然后在所有出现的子目标上调用 `safe_cases`，最后在所有出现的子子目标上尝试 `assumption`。 -/
 
 macro "safe" : tactic =>
   sorry
@@ -122,7 +110,7 @@ theorem abcdef_abcd (a b c d e f : Prop) (P : ℕ → Prop)
     a → ¬ b ∧ (c ↔ d) :=
   by
     safe
-    /- The proof state should be roughly as follows:
+    /- 证明状态应大致如下：
 
         case left.intro.intro.intro
         a b c d e f : Prop
@@ -158,22 +146,17 @@ theorem abcdef_abcd (a b c d e f : Prop) (P : ℕ → Prop)
     repeat' sorry
 
 
-/- ## Question 2 (2 bonus points): An `aesop`-Like Tactic
+/- ## 问题 2（2 附加分）：类似 `aesop` 的策略
 
-2.1 (1 bonus point). Develop a simple `aesop`-like tactic.
+2.1（1 附加分）。开发一个简单的类似 `aesop` 的策略。
 
-This tactic should apply all safe introduction and elimination rules. In
-addition, it should try potentially unsafe rules (such as `Or.inl` and
-`False.elim`) but backtrack at some point (or try several possibilities in
-parallel). Iterative deepening may be a valid approach, or best-first search, or
-breadth-first search. The tactic should also try to apply assumptions whose
-conclusion matches the goal, but backtrack if necessary.
+该策略应应用所有安全的引入和消解规则。此外，它应尝试潜在不安全的规则（如 `Or.inl` 和 `False.elim`），但在某个点回溯（或并行尝试多种可能性）。迭代加深可能是一种有效的方法，或最佳优先搜索，或广度优先搜索。该策略还应尝试应用结论与目标匹配的假设，但必要时回溯。
 
-Hint: The `MonadBacktrack` monad class might be useful.
+提示：`MonadBacktrack` monad 类可能有用。
 
-2.2 (1 bonus point). Test your tactic on some benchmarks.
+2.2（1 附加分）。在一些基准测试上测试你的策略。
 
-You can try your tactic on logic puzzles of the kinds we proved in exercise and
-homework 3. Please include these below. -/
+你可以在我们在练习和家庭作业 3 中证明的逻辑谜题上尝试你的策略。请将这些测试包含在下面。 -/
 
 end LoVe
+

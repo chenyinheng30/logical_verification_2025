@@ -1,20 +1,16 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权声明 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 以及 Jannis Limperg。详见 `LICENSE.txt`。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Demo 7: Effectful Programming
+/- # LoVe 演示7：带效应的编程
 
-Monads are an important functional programming abstraction. They generalize
-computation with side effects, offering effectful programming in a pure
-functional programming language. Haskell has shown that they can be used very
-successfully to write imperative programs. For us, they are interesting in their
-own right and for two more reasons:
+单子（Monad）是函数式编程中重要的抽象概念。它通过副作用泛化了计算过程，使得在纯函数式编程语言中也能进行带效应的编程。Haskell已经证明单子可以非常成功地用于编写命令式程序。对我们而言，单子本身很有趣，还有两个额外原因：
 
-* They provide a nice example of axiomatic reasoning.
+* 它们为公理化推理提供了一个很好的例子。
 
-* They are needed for programming Lean itself (metaprogramming, lecture 8). -/
+* 它们是Lean自身编程（元编程，第8讲）所必需的。 -/
 
 
 set_option autoImplicit false
@@ -23,16 +19,13 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Introductory Example
+/- ## 入门示例
 
-Consider the following programming task:
+考虑以下编程任务：
 
-    Implement a function `sum257 ns` that sums up the second, fifth, and
-    seventh items of a list `ns` of natural numbers. Use `Option ℕ` for the
-    result so that if the list has fewer than seven elements, you can return
-    `Option.none`.
+    实现一个函数 `sum257 ns`，对自然数列表 `ns` 的第二、第五和第七个元素求和。使用 `Option ℕ` 作为返回类型，这样当列表元素少于七个时，可以返回 `Option.none`。
 
-A straightforward solution follows: -/
+一个直接的实现如下： -/
 
 def nth {α : Type} : List α → Nat → Option α
   | [],      _     => Option.none
@@ -50,9 +43,9 @@ def sum257 (ns : List ℕ) : Option ℕ :=
       | Option.none    => Option.none
       | Option.some n₇ => Option.some (n₂ + n₅ + n₇)
 
-/- The code is ugly, because of all the pattern matching on options.
+/- 这段代码很丑陋，因为需要对选项类型进行大量模式匹配。
 
-We can put all the ugliness in one function, which we call `connect`: -/
+我们可以将所有丑陋的部分封装到一个函数中，称之为 `connect`： -/
 
 def connect {α : Type} {β : Type} :
   Option α → (α → Option β) → Option β
@@ -65,8 +58,7 @@ def sum257Connect (ns : List ℕ) : Option ℕ :=
        (fun n₅ ↦ connect (nth ns 6)
           (fun n₇ ↦ Option.some (n₂ + n₅ + n₇))))
 
-/- Instead of defining `connect` ourselves, we can use Lean's predefined
-general `bind` operation. We can also use `pure` instead of `Option.some`: -/
+/- 与其自己定义 `connect`，我们可以使用Lean预定义的通用 `bind` 操作。还可以用 `pure` 替代 `Option.some`： -/
 
 #check bind
 
@@ -76,10 +68,9 @@ def sum257Bind (ns : List ℕ) : Option ℕ :=
        (fun n₅ ↦ bind (nth ns 6)
           (fun n₇ ↦ pure (n₂ + n₅ + n₇))))
 
-/- By using `bind` and `pure`, `sum257Bind` makes no reference to the
-constructors `Option.none` and `Option.some`.
+/- 通过使用 `bind` 和 `pure`，`sum257Bind` 完全不涉及 `Option.none` 和 `Option.some` 的构造函数。
 
-Syntactic sugar:
+语法糖：
 
     `ma >>= f` := `bind ma f` -/
 
@@ -89,7 +80,7 @@ def sum257Op (ns : List ℕ) : Option ℕ :=
       fun n₅ ↦ nth ns 6 >>=
         fun n₇ ↦ pure (n₂ + n₅ + n₇)
 
-/- Syntactic sugar:
+/- 语法糖：
 
     do
       let a ← ma
@@ -112,7 +103,7 @@ def sum257Dos (ns : List ℕ) : Option ℕ :=
         let n₇ ← nth ns 6
         pure (n₂ + n₅ + n₇)
 
-/- The `do`s can be combined: -/
+/- 可以合并多个 `do`： -/
 
 def sum257Do (ns : List ℕ) : Option ℕ :=
   do
@@ -121,73 +112,62 @@ def sum257Do (ns : List ℕ) : Option ℕ :=
     let n₇ ← nth ns 6
     pure (n₂ + n₅ + n₇)
 
-/- Although the notation has an imperative flavor, the function is a pure
-functional program.
+/- 尽管这种语法有命令式的风格，但函数本身仍是纯函数式程序。
 
 
-## Two Operations and Three Laws
+## 两个操作与三条定律
 
-The `Option` type constructor is an example of a monad.
+`Option` 类型构造器是单子的一个例子。
 
-In general, a __monad__ is a type constructor `m` that depends on some type
-parameter `α` (i.e., `m α`) equipped with two distinguished operations:
+一般来说，一个__单子__是一个依赖于某个类型参数 `α` 的类型构造器 `m`（即 `m α`），并配备两个特定的操作：
 
     `pure {α : Type} : α → m α`
     `bind {α β : Type} : m α → (α → m β) → m β`
 
-For `Option`:
+对于 `Option`：
 
     `pure` := `Option.some`
     `bind` := `connect`
 
-Intuitively, we can think of a monad as a "box":
+直观上，可以将单子看作一个“盒子”：
 
-* `pure` puts the data into the box.
+* `pure` 将数据放入盒子中。
 
-* `bind` allows us to access the data in the box and modify it (possibly even
-  changing its type, since the result is an `m β` monad, not a `m α` monad).
+* `bind` 允许我们访问盒子中的数据并修改它（甚至可能改变其类型，因为结果是 `m β` 单子，而非 `m α` 单子）。
 
-There is no general way to extract the data from the monad, i.e., to obtain an
-`α` from an `m α`.
+通常没有办法从单子中提取数据，即从 `m α` 中获取 `α`。
 
-To summarize, `pure a` provides no side effect and simply provides a box
-containing the the value `a`, whereas `bind ma f` (also written `ma >>= f`)
-executes `ma`, then executes `f` with the boxed result `a` of `ma`.
+总结来说，`pure a` 不产生副作用，只是提供一个包含值 `a` 的盒子；而 `bind ma f`（也写作 `ma >>= f`）先执行 `ma`，然后用 `ma` 的结果 `a`（在盒子中）执行 `f`。
 
-The option monad is only one instance among many.
+选项单子只是众多单子实例中的一个。
 
-Type                 | Effect
+类型                 | 效果
 -------------------- | -------------------------------------------------------
-`id`                 | no effects
-`Option`             | simple exceptions
-`fun α ↦ σ → α × σ`  | threading through a state of type `σ`
-`Set`                | nondeterministic computation returning `α` values
-`fun α ↦ t → α`      | reading elements of type `t` (e.g., a configuration)
-`fun α ↦ ℕ × α`      | adjoining running time (e.g., to model time complexity)
-`fun α ↦ String × α` | adjoining text output (e.g., for logging)
-`IO`                 | interaction with the operating system
-`TacticM`            | interaction with the proof assistant
+`id`                 | 无副作用
+`Option`             | 简单异常
+`fun α ↦ σ → α × σ`  | 传递类型为 `σ` 的状态
+`Set`                | 返回 `α` 值的非确定性计算
+`fun α ↦ t → α`      | 读取类型为 `t` 的元素（如配置）
+`fun α ↦ ℕ × α`      | 附加运行时间（如建模时间复杂度）
+`fun α ↦ String × α` | 附加文本输出（如日志记录）
+`IO`                 | 与操作系统交互
+`TacticM`            | 与证明助手交互
 
-All of the above are unary type constructors `m : Type → Type`.
+以上所有都是一元类型构造器 `m : Type → Type`。
 
-Some effects can be combined (e.g., `Option (t → α)`).
+某些效果可以组合（如 `Option (t → α)`）。
 
-Some effects are not executable (e.g., `Set α`). They are nonetheless useful for
-modeling programs abstractly in the logic.
+某些效果不可执行（如 `Set α`）。尽管如此，它们在逻辑中抽象地建模程序时非常有用。
 
-Specific monads may provide a way to extract the boxed value stored in the monad
-without `bind`'s requirement of putting it back in a monad.
+特定的单子可能提供一种无需 `bind` 就能从单子中提取盒中值的方法。
 
-Monads have several benefits, including:
+单子有多个优点，包括：
 
-* They provide the convenient and highly readable `do` notation.
+* 它们提供了方便且高度可读的 `do` 语法。
 
-* They support generic operations, such as
-  `mmap {α β : Type} : (α → m β) → List α → m (List β)`, which work uniformly
-  across all monads.
+* 它们支持通用操作，如 `mmap {α β : Type} : (α → m β) → List α → m (List β)`，这些操作在所有单子中统一工作。
 
-The `bind` and `pure` operations are normally required to obey three laws. Pure
-data as the first program can be simplified away:
+`bind` 和 `pure` 操作通常需要遵守三条定律。作为第一个程序的纯数据可以简化掉：
 
     do
       let a' ← pure a,
@@ -195,7 +175,7 @@ data as the first program can be simplified away:
   =
     f a
 
-Pure data as the second program can be simplified away:
+作为第二个程序的纯数据可以简化掉：
 
     do
       let a ← ma
@@ -203,7 +183,7 @@ Pure data as the second program can be simplified away:
   =
     ma
 
-Nested programs `ma`, `f`, `g` can be flattened using this associativity rule:
+嵌套的程序 `ma`、`f`、`g` 可以通过以下结合律扁平化：
 
     do
       let b ←
@@ -218,11 +198,9 @@ Nested programs `ma`, `f`, `g` can be flattened using this associativity rule:
       g b
 
 
-## A Type Class of Monads
+## 单子的类型类
 
-Monads are a mathematical structure, so we use class to add them as a type
-class. We can think of a type class as a structure that is parameterized by a
-type, or here, by a type constructor `m : Type → Type`. -/
+单子是一种数学结构，因此我们使用类将它们添加为类型类。可以将类型类视为一个参数化类型（这里是一个类型构造器 `m : Type → Type`）的结构。 -/
 
 class LawfulMonad (m : Type → Type)
   extends Pure m, Bind m where
@@ -234,25 +212,20 @@ class LawfulMonad (m : Type → Type)
       (ma : m α) :
     ((ma >>= f) >>= g) = (ma >>= (fun a ↦ f a >>= g))
 
-/- Step by step:
+/- 逐步说明：
 
-* We are creating a structure parameterized by a unary type constructor `m`.
+* 我们创建一个参数化一元类型构造器 `m` 的结构。
 
-* The structure inherits the fields, and any syntactic sugar, from structures
-  called `Bind` and `Pure`, which provide the `bind` and `pure` operations on
-  `m` and some syntactic sugar.
+* 该结构继承自名为 `Bind` 和 `Pure` 的结构，这些结构提供了 `m` 上的 `bind` 和 `pure` 操作及一些语法糖。
 
-* The definition adds three fields to those already provided by `Bind` and
-  `Pure`, to store the proofs of the laws.
+* 定义向 `Bind` 和 `Pure` 已有的字段中添加了三个字段，用于存储定律的证明。
 
-To instantiate this definition with a concrete monad, we must supply the type
-constructor `m` (e.g., `Option`), `bind` and `pure` operators, and proofs of the
-laws.
+要用具体单子实例化此定义，必须提供类型构造器 `m`（如 `Option`）、`bind` 和 `pure` 操作符，以及定律的证明。
 
 
-## No Effects
+## 无副作用
 
-Our first monad is the trivial monad `m := id` (i.e., `m := (fun α ↦ α)`). -/
+我们的第一个单子是平凡单子 `m := id`（即 `m := (fun α ↦ α)`）。 -/
 
 def id.pure {α : Type} : α → id α
   | a => a
@@ -277,9 +250,9 @@ instance id.LawfulMonad : LawfulMonad id :=
         rfl }
 
 
-/- ## Basic Exceptions
+/- ## 基本异常
 
-As we saw above, the option type provides a basic exception mechanism. -/
+如前所述，选项类型提供了基本的异常机制。 -/
 
 def Option.pure {α : Type} : α → Option α :=
   Option.some
@@ -317,10 +290,9 @@ def Option.catch {α : Type} : Option α → Option α → Option α
   | Option.some a, _   => Option.some a
 
 
-/- ## Mutable State
+/- ## 可变状态
 
-The state monad provides an abstraction corresponding to a mutable state. Some
-compilers recognize the state monad to produce efficient imperative code. -/
+状态单子提供了对应于可变状态的抽象。某些编译器能识别状态单子以生成高效的命令式代码。 -/
 
 def Action (σ α : Type) : Type :=
   σ → α × σ
@@ -341,10 +313,9 @@ def Action.bind {σ : Type} {α β : Type} (ma : Action σ α)
     match ma s with
     | (a, s') => f a s'
 
-/- `Action.pure` is like a `return` statement; it does not change the state.
+/- `Action.pure` 类似于 `return` 语句；它不改变状态。
 
-`Action.bind` is like the sequential composition of two statements with
-respect to a state. -/
+`Action.bind` 类似于两个语句相对于状态的顺序组合。 -/
 
 instance Action.LawfulMonad {σ : Type} :
   LawfulMonad (Action σ) :=
@@ -380,9 +351,9 @@ def increasingly : List ℕ → Action ℕ (List ℕ)
 #eval increasingly [1, 2, 3, 2, 4, 5, 2] 0
 
 
-/- ## Nondeterminism
+/- ## 非确定性
 
-The set monad stores an arbitrary, possibly infinite number of `α` values. -/
+集合单子存储任意数量（可能无限）的 `α` 值。 -/
 
 #check Set
 
@@ -410,17 +381,12 @@ instance Set.LawfulMonad : LawfulMonad Set :=
         apply Set.ext
         aesop }
 
-/- `aesop` is a general-purpose proof search tactic. Among others, it performs
-elimination of the logical symbols `∧`, `∨`, `↔`, and `∃` in hypotheses and
-introduction of `∧`, `↔`, and `∃` in the target, and it regularly invokes the
-simplifier. It can succeed at proving a goal, fail, or succeed partially,
-leaving some unfinished subgoals to the user.
+/- `aesop` 是一个通用的证明搜索策略。除其他功能外，它会在假设中消除逻辑符号 `∧`、`∨`、`↔` 和 `∃`，并在目标中引入 `∧`、`↔` 和 `∃`，并定期调用简化器。它可以成功证明目标、失败或部分成功，留下一些未完成的子目标给用户。
 
 
-## A Generic Algorithm: Iteration over a List
+## 通用算法：列表迭代
 
-We consider a generic effectful program `mmap` that iterates over a list and
-applies a function `f` to each element. -/
+我们考虑一个通用的带效应程序 `mmap`，它遍历列表并对每个元素应用函数 `f`。 -/
 
 def nthsFine {α : Type} (xss : List (List α)) (n : ℕ) :
   List (Option α) :=
@@ -460,3 +426,4 @@ theorem mmap_append {m : Type → Type} [LawfulMonad m]
       LawfulMonad.bind_assoc]
 
 end LoVe
+

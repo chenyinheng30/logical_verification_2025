@@ -1,10 +1,10 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Exercise 4: Forward Proofs -/
+/- # LoVe 练习4：前向证明 -/
 
 
 set_option autoImplicit false
@@ -13,9 +13,9 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Connectives and Quantifiers
+/- ## 问题1：连接词与量词
 
-1.1. Supply structured proofs of the following theorems. -/
+1.1. 为以下定理提供结构化证明。 -/
 
 theorem I (a : Prop) :
     a → a :=
@@ -33,7 +33,7 @@ theorem proj_fst (a : Prop) :
     a → a → a :=
   sorry
 
-/- Please give a different answer than for `proj_fst`. -/
+/- 请给出与 `proj_fst` 不同的答案。 -/
 
 theorem proj_snd (a : Prop) :
     a → a → a :=
@@ -43,29 +43,29 @@ theorem some_nonsense (a b c : Prop) :
     (a → b → c) → a → (a → c) → b → c :=
   sorry
 
-/- 1.2. Supply a structured proof of the contraposition rule. -/
+/- 1.2. 为反证规则提供结构化证明。 -/
 
 theorem contrapositive (a b : Prop) :
     (a → b) → ¬ b → ¬ a :=
   sorry
 
-/- 1.3. Supply a structured proof of the distributivity of `∀` over `∧`. -/
+/- 1.3. 为 `∀` 对 `∧` 的分配律提供结构化证明。 -/
 
 theorem forall_and {α : Type} (p q : α → Prop) :
     (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) :=
   sorry
 
-/- 1.4 (**optional**). Supply a structured proof of the following property,
-which can be used to pull a `∀` quantifier past an `∃` quantifier. -/
+/- 1.4 (**选做**). 为以下性质提供结构化证明，
+该性质可用于将 `∀` 量词移过 `∃` 量词。 -/
 
 theorem forall_exists_of_exists_forall {α : Type} (p : α → α → Prop) :
     (∃x, ∀y, p x y) → (∀y, ∃x, p x y) :=
   sorry
 
 
-/- ## Question 2: Chain of Equalities
+/- ## 问题2：等式链
 
-2.1. Write the following proof using `calc`.
+2.1. 使用 `calc` 编写以下证明。
 
       (a + b) * (a + b)
     = a * (a + b) + b * (a + b)
@@ -73,27 +73,25 @@ theorem forall_exists_of_exists_forall {α : Type} (p : α → α → Prop) :
     = a * a + a * b + a * b + b * b
     = a * a + 2 * a * b + b * b
 
-Hint: This is a difficult question. You might need the tactics `simp` and
-`ac_rfl` and some of the theorems `mul_add`, `add_mul`, `add_comm`, `add_assoc`,
-`mul_comm`, `mul_assoc`, , and `Nat.two_mul`. -/
+提示：这是一个难题。你可能需要用到策略 `simp` 和 `ac_rfl`，
+以及一些定理 `mul_add`, `add_mul`, `add_comm`, `add_assoc`,
+`mul_comm`, `mul_assoc`, 和 `Nat.two_mul`。 -/
 
 theorem binomial_square (a b : ℕ) :
     (a + b) * (a + b) = a * a + 2 * a * b + b * b :=
   sorry
 
-/- 2.2 (**optional**). Prove the same argument again, this time as a structured
-proof, with `have` steps corresponding to the `calc` equations. Try to reuse as
-much of the above proof idea as possible, proceeding mechanically. -/
+/- 2.2 (**选做**). 再次证明相同的命题，这次使用结构化证明，
+用 `have` 步骤对应 `calc` 等式。尽量复用上述证明思路，机械地进行。 -/
 
 theorem binomial_square₂ (a b : ℕ) :
     (a + b) * (a + b) = a * a + 2 * a * b + b * b :=
   sorry
 
 
-/- ## Question 3 (**optional**): One-Point Rules
+/- ## 问题3 (**选做**)：单点规则
 
-3.1 (**optional**). Prove that the following wrong formulation of the one-point
-rule for `∀` is inconsistent, using a structured proof. -/
+3.1 (**选做**). 用结构化证明证明以下错误的 `∀` 单点规则公式是不一致的。 -/
 
 axiom All.one_point_wrong {α : Type} (t : α) (P : α → Prop) :
     (∀x : α, x = t ∧ P x) ↔ P t
@@ -102,8 +100,7 @@ theorem All.proof_of_False :
     False :=
   sorry
 
-/- 3.2 (**optional**). Prove that the following wrong formulation of the
-one-point rule for `∃` is inconsistent, using a structured proof. -/
+/- 3.2 (**选做**). 用结构化证明证明以下错误的 `∃` 单点规则公式是不一致的。 -/
 
 axiom Exists.one_point_wrong {α : Type} (t : α) (P : α → Prop) :
     (∃x : α, x = t → P x) ↔ P t
@@ -113,3 +110,4 @@ theorem Exists.proof_of_False :
   sorry
 
 end LoVe
+

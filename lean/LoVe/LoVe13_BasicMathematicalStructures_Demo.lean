@@ -1,13 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe06_InductivePredicates_Demo
 
 
-/- # LoVe Demo 13: Basic Mathematical Structures
+/- # LoVe 演示13：基础数学结构
 
-We introduce definitions and proofs about basic mathematical structures such as
-groups, fields, and linear orders. -/
+我们介绍关于基础数学结构的定义和证明，例如群、域和线性序。 -/
 
 
 set_option autoImplicit false
@@ -16,23 +15,20 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Type Classes over a Single Binary Operator
+/- ## 单一二元运算符的类型类
 
-Mathematically, a __group__ is a set `G` with a binary operator `⬝ : G × G → G`
-with the following properties, called __group axioms__:
+数学上，一个__群__是一个集合`G`配备一个二元运算符`⬝ : G × G → G`，满足以下性质（称为__群公理__）：
 
-* associativity: for all `a, b, c ∈ G`, we have `(a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)`;
-* identity element: there exists an element `e ∈ G` such that for all `a ∈ G`,
-  we have `e ⬝ a = a` and `a ⬝ e = a`;
-* inverse element: for each `a ∈ G`, there exists an inverse element
-  `b ∈ G` such that `b ⬝ a = e` and `a ⬝ b = e`.
+* 结合律：对所有`a, b, c ∈ G`，有`(a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)`；
+* 单位元：存在一个元素`e ∈ G`使得对所有`a ∈ G`，有`e ⬝ a = a`和`a ⬝ e = a`；
+* 逆元：对每个`a ∈ G`，存在一个逆元`b ∈ G`使得`b ⬝ a = e`和`a ⬝ b = e`。
 
-Examples of groups are
-* `ℤ` with `+`;
-* `ℝ` with `+`;
-* `ℝ \ {0}` with `*`.
+群的例子包括：
+* `ℤ`配备`+`；
+* `ℝ`配备`+`；
+* `ℝ \ {0}`配备`*`。
 
-In Lean, a type class for groups can be defined as follows: -/
+在Lean中，群的类型类可以如下定义： -/
 
 namespace MonolithicGroup
 
@@ -46,36 +42,32 @@ class Group (α : Type) where
 
 end MonolithicGroup
 
-/- In Lean, however, group is part of a larger hierarchy of algebraic
-structures:
+/- 然而在Lean中，群是更大的代数结构层次的一部分：
 
-Type class             | Properties                               | Examples
----------------------- | -----------------------------------------|-------------------
-`Semigroup`            | associativity of `*`                     | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`Monoid`               | `Semigroup` with unit `1`                | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`LeftCancelSemigroup`  | `Semigroup` with `c * a = c * b → a = b` |
-`RightCancelSemigroup` | `Semigroup` with `a * c = b * c → a = b` |
-`Group`                | `Monoid` with inverse `⁻¹`               |
+类型类             | 性质                                   | 例子
+------------------ | -------------------------------------- | -------------------
+`Semigroup`        | `*`的结合律                           | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`Monoid`           | 带有单位元`1`的`Semigroup`            | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`LeftCancelSemigroup` | 满足`c * a = c * b → a = b`的`Semigroup` |
+`RightCancelSemigroup`| 满足`a * c = b * c → a = b`的`Semigroup` |
+`Group`            | 带有逆元`⁻¹`的`Monoid`                |
 
-Most of these structures have commutative versions: `CommSemigroup`,
-`CommMonoid`, `CommGroup`.
+这些结构大多有交换版本：`CommSemigroup`、`CommMonoid`、`CommGroup`。
 
-The __multiplicative__ structures (over `*`, `1`, `⁻¹`) are copied to produce
-__additive__ versions (over `+`, `0`, `-`):
+__乘法__结构（基于`*`、`1`、`⁻¹`）被复制以产生__加法__版本（基于`+`、`0`、`-`）：
 
-Type class                | Properties                                  | Examples
-------------------------- | --------------------------------------------|-------------------
-`AddSemigroup`            | associativity of `+`                        | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`AddMonoid`               | `AddSemigroup` with unit `0`                | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`AddLeftCancelSemigroup`  | `AddSemigroup` with `c + a = c + b → a = b` | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`AddRightCancelSemigroup` | `AddSemigroup` with `a + c = b + c → a = b` | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`AddGroup`                | `AddMonoid` with inverse `-`                | `ℝ`, `ℚ`, `ℤ` -/
+类型类                | 性质                                    | 例子
+--------------------- | --------------------------------------- | -------------------
+`AddSemigroup`        | `+`的结合律                            | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`AddMonoid`           | 带有单位元`0`的`AddSemigroup`          | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`AddLeftCancelSemigroup` | 满足`c + a = c + b → a = b`的`AddSemigroup` | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`AddRightCancelSemigroup`| 满足`a + c = b + c → a = b`的`AddSemigroup` | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`AddGroup`            | 带有逆元`-`的`AddMonoid`                | `ℝ`, `ℚ`, `ℤ` -/
 
 #print Group
 #print AddGroup
 
-/- Let us define our own type, of integers modulo 2, and register it as an
-additive group. -/
+/- 让我们定义自己的类型——模2整数，并将其注册为加法群。 -/
 
 inductive Int2 : Type
   | zero
@@ -119,11 +111,11 @@ instance Int2.AddGroup : AddGroup Int2 :=
         (Neg.mk (fun a ↦ a))
         (@nsmulRec Int2 (Zero.mk Int2.zero) (Add.mk Int2.add)) }
 
-/- `nsmul` and `znmul` are redundant. They are needed for technical reasons. -/
+/- `nsmul`和`znmul`是冗余的，出于技术原因需要它们。 -/
 
 #reduce Int2.one + 0 - 0 - Int2.one
 
-/- Another example: Lists are an `AddMonoid`: -/
+/- 另一个例子：列表是一个`AddMonoid`： -/
 
 instance List.AddMonoid {α : Type} : AddMonoid (List α) :=
   { zero      := []
@@ -136,31 +128,28 @@ instance List.AddMonoid {α : Type} : AddMonoid (List α) :=
         (Add.mk (fun xs ys ↦ xs ++ ys))}
 
 
-/- ## Type Classes with Two Binary Operators
+/- ## 具有两个二元运算符的类型类
 
-Mathematically, a __field__ is a set `F` such that
+数学上，一个__域__是一个集合`F`满足：
 
-* `F` forms a commutative group under an operator `+`, called addition, with
-  identity element `0`.
-* `F \ {0}` forms a commutative group under an operator `*`, called
-  multiplication.
-* Multiplication distributes over addition—i.e.,
-  `a * (b + c) = a * b + a * c` for all `a, b, c ∈ F`.
+* `F`在运算符`+`（称为加法）下形成一个交换群，单位元为`0`。
+* `F \ {0}`在运算符`*`（称为乘法）下形成一个交换群。
+* 乘法对加法满足分配律——即对所有`a, b, c ∈ F`，有`a * (b + c) = a * b + a * c`。
 
-In Lean, fields are also part of a larger hierarchy:
+在Lean中，域也是更大层次结构的一部分：
 
-Type class      |  Properties                                         | Examples
-----------------|-----------------------------------------------------|-------------------
-`Semiring`      | `Monoid` and `AddCommMonoid` with distributivity    | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`CommSemiring`  | `Semiring` with commutativity of `*`                | `ℝ`, `ℚ`, `ℤ`, `ℕ`
-`Ring`          | `Monoid` and `AddCommGroup` with distributivity     | `ℝ`, `ℚ`, `ℤ`
-`CommRing`      | `Ring` with commutativity of `*`                    | `ℝ`, `ℚ`, `ℤ`
-`DivisionRing`  | `Ring` with multiplicative inverse `⁻¹`             | `ℝ`, `ℚ`
-`Field`         | `DivisionRing` with commutativity of `*`            | `ℝ`, `ℚ` -/
+类型类      | 性质                                         | 例子
+----------- | -------------------------------------------- | -------------------
+`Semiring`  | 具有分配律的`Monoid`和`AddCommMonoid`        | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`CommSemiring` | 具有`*`交换律的`Semiring`                  | `ℝ`, `ℚ`, `ℤ`, `ℕ`
+`Ring`      | 具有分配律的`Monoid`和`AddCommGroup`         | `ℝ`, `ℚ`, `ℤ`
+`CommRing`  | 具有`*`交换律的`Ring`                      | `ℝ`, `ℚ`, `ℤ`
+`DivisionRing` | 具有乘法逆元`⁻¹`的`Ring`                  | `ℝ`, `ℚ`
+`Field`     | 具有`*`交换律的`DivisionRing`              | `ℝ`, `ℚ` -/
 
 #print Field
 
-/- We continue with our example: -/
+/- 我们继续我们的例子： -/
 
 def Int2.mul : Int2 → Int2 → Int2
   | Int2.one,  a => a
@@ -261,35 +250,30 @@ theorem ring_example (a b : Int2) :
     :=
   by ring
 
-/- `ring` proves equalities over commutative rings and semirings by normalizing
-expressions.
+/- `ring`通过规范化表达式来证明交换环和半环上的等式。
 
 
-## Coercions
+## 强制转换
 
-When combining numbers form `ℕ`, `ℤ`, `ℚ`, and `ℝ`, we might want to cast from
-one type to another. Lean has a mechanism to automatically introduce coercions,
-represented by `Coe.coe` (syntactic sugar: `↑`). `Coe.coe` can be set up to
-provide implicit coercions between arbitrary types.
+当组合来自`ℕ`、`ℤ`、`ℚ`和`ℝ`的数字时，我们可能需要将一种类型转换为另一种。Lean有一种机制可以自动引入强制转换，由`Coe.coe`（语法糖：`↑`）表示。`Coe.coe`可以设置为在任意类型之间提供隐式强制转换。
 
-Many coercions are already in place, including the following:
+许多强制转换已经就位，包括以下：
 
-* `Coe.coe : ℕ → α` casts `ℕ` to another semiring `α`;
-* `Coe.coe : ℤ → α` casts `ℤ` to another ring `α`;
-* `Coe.coe : ℚ → α` casts `ℚ` to another division ring `α`.
+* `Coe.coe : ℕ → α`将`ℕ`转换为另一个半环`α`；
+* `Coe.coe : ℤ → α`将`ℤ`转换为另一个环`α`；
+* `Coe.coe : ℚ → α`将`ℚ`转换为另一个除环`α`。
 
-For example, this works, even though negation `- n` is not defined on natural
-numbers: -/
+例如，以下代码可以工作，尽管自然数上没有定义取反`- n`： -/
 
 theorem neg_mul_neg_Nat (n : ℕ) (z : ℤ) :
     (- z) * (- n) = z * n :=
   by simp
 
-/- Notice how Lean introduced a `↑` coercion: -/
+/- 注意Lean如何引入了`↑`强制转换： -/
 
 #check neg_mul_neg_Nat
 
-/- Type annotations can document our intentions: -/
+/- 类型注解可以记录我们的意图： -/
 
 theorem neg_Nat_mul_neg (n : ℕ) (z : ℤ) :
     (- n : ℤ) * (- z) = n * z :=
@@ -297,7 +281,7 @@ theorem neg_Nat_mul_neg (n : ℕ) (z : ℤ) :
 
 #print neg_Nat_mul_neg
 
-/- In proofs involving coercions, the tactic `norm_cast` can be convenient. -/
+/- 在涉及强制转换的证明中，策略`norm_cast`可能很方便。 -/
 
 theorem Eq_coe_int_imp_Eq_Nat (m n : ℕ)
       (h : (m : ℤ) = (n : ℤ)) :
@@ -308,23 +292,22 @@ theorem Nat_coe_Int_add_eq_add_Nat_coe_Int (m n : ℕ) :
     (m : ℤ) + (n : ℤ) = ((m + n : ℕ) : ℤ) :=
   by norm_cast
 
-/- `norm_cast` moves coercions towards the inside of expressions, as a form of
-simplification. Like `simp`, it will often produce a subgoal.
+/- `norm_cast`将强制转换向表达式内部移动，作为一种简化形式。像`simp`一样，它通常会产生一个子目标。
 
-`norm_cast` relies on theorems such as these: -/
+`norm_cast`依赖于以下定理： -/
 
 #check Nat.cast_add
 #check Int.cast_add
 #check Rat.cast_add
 
 
-/- ### Lists, Multisets, and Finite Sets
+/- ### 列表、多重集和有限集
 
-For finite collections of elements different structures are available:
+对于元素的有限集合，有不同的结构可用：
 
-* lists: order and duplicates matter;
-* multisets: only duplicates matter;
-* finsets: neither order nor duplicates matter. -/
+* 列表：顺序和重复重要；
+* 多重集：仅重复重要；
+* 有限集：顺序和重复都不重要。 -/
 
 theorem List_duplicates_example :
     [2, 3, 3, 4] ≠ [2, 3, 4] :=
@@ -350,8 +333,7 @@ theorem Finset_order_example :
     ({2, 3, 4} : Finset ℕ) = {4, 3, 2} :=
   by decide
 
-/- `decide` is a tactic that can be used on true decidable goals (e.g., a true
-executable expression). -/
+/- `decide`是一个可用于真可判定目标（例如，一个真可执行表达式）的策略。 -/
 
 def List.elems : Tree ℕ → List ℕ
   | Tree.nil        => []
@@ -373,10 +355,9 @@ def Finset.elems : Tree ℕ → Finset ℕ
 #eval Multiset.prod ({2, 3, 4} : Multiset ℕ)
 
 
-/- ## Order Type Classes
+/- ## 序类型类
 
-Many of the structures introduced above can be ordered. For example, the
-well-known order on the natural numbers can be defined as follows: -/
+上面介绍的许多结构都可以排序。例如，自然数上众所周知的序可以如下定义： -/
 
 inductive Nat.le : ℕ → ℕ → Prop
   | refl : ∀a : ℕ, Nat.le a a
@@ -384,29 +365,22 @@ inductive Nat.le : ℕ → ℕ → Prop
 
 #print Preorder
 
-/- This is an example of a linear order. A __linear order__ (or
-__total order__) is a binary relation `≤` such that for all `a`, `b`, `c`, the
-following properties hold:
+/- 这是一个线性序的例子。一个__线性序__（或__全序__）是一个二元关系`≤`，满足对所有`a`、`b`、`c`，以下性质成立：
 
-* reflexivity: `a ≤ a`;
-* transitivity: if `a ≤ b` and `b ≤ c`, then `a ≤ c`;
-* antisymmetry: if `a ≤ b` and `b ≤ a`, then `a = b`;
-* totality: `a ≤ b` or `b ≤ a`.
+* 自反性：`a ≤ a`；
+* 传递性：如果`a ≤ b`且`b ≤ c`，则`a ≤ c`；
+* 反对称性：如果`a ≤ b`且`b ≤ a`，则`a = b`；
+* 完全性：`a ≤ b`或`b ≤ a`。
 
-If a relation has the first three properties, it is a __partial order__. An
-example is `⊆` on sets, finite sets, or multisets. If a relation has the first
-two properties, it is a __preorder__. An example is comparing lists by their
-length.
+如果一个关系具有前三个性质，它是一个__偏序__。一个例子是集合、有限集或多重集上的`⊆`。如果一个关系具有前两个性质，它是一个__预序__。一个例子是比较列表的长度。
 
-In Lean, there are type classes for these different kinds of orders:
-`LinearOrdeer`, `PartialOrder`, and `Preorder`. -/
+在Lean中，有这些不同类型序的类型类：`LinearOrder`、`PartialOrder`和`Preorder`。 -/
 
 #print Preorder
 #print PartialOrder
 #print LinearOrder
 
-/- We can declare the preorder on lists that compares lists by their length as
-follows: -/
+/- 我们可以如下声明按长度比较列表的预序： -/
 
 instance List.length.Preorder {α : Type} : Preorder (List α) :=
   { le :=
@@ -426,17 +400,15 @@ instance List.length.Preorder {α : Type} : Preorder (List α) :=
         intro a b
         exact Nat.lt_iff_le_not_le }
 
-/- This instance introduces the infix syntax `≤` and the relations `≥`, `<`,
-and `>`: -/
+/- 这个实例引入了中缀语法`≤`以及关系`≥`、`<`和`>`： -/
 
 theorem list.length.Preorder_example :
     [1] > [] :=
   by decide
 
-/- Complete lattices (lecture 11) are formalized as another type class,
-`CompleteLattice`, which inherits from `PartialOrder`.
+/- 完全格（第11讲）被形式化为另一个类型类`CompleteLattice`，它继承自`PartialOrder`。
 
-Type classes combining orders and algebraic structures are also available:
+结合序和代数结构的类型类也可用：
 
     `OrderedCancelCommMonoid`
     `OrderedCommGroup`
@@ -445,8 +417,7 @@ Type classes combining orders and algebraic structures are also available:
     `LinearOrderedCommRing`
     `LinearOrderedField`
 
-All these mathematical structures relate `≤` and `<` with `0`, `1`, `+`, and `*`
-by monotonicity rules (e.g., `a ≤ b → c ≤ d → a + c ≤ b + d`) and cancellation
-rules (e.g., `c + a ≤ c + b → a ≤ b`). -/
+所有这些数学结构通过单调性规则（例如，`a ≤ b → c ≤ d → a + c ≤ b + d`）和消去规则（例如，`c + a ≤ c + b → a ≤ b`）将`≤`和`<`与`0`、`1`、`+`和`*`联系起来。 -/
 
 end LoVe
+

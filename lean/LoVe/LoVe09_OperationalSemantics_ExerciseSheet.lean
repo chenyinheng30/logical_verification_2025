@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe09_OperationalSemantics_Demo
 
 
-/- # LoVe Exercise 9: Operational Semantics
+/- # LoVe 练习9：操作语义
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如`:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,30 +15,25 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Guarded Command Language
+/- ## 问题1：守卫命令语言
 
-In 1976, E. W. Dijkstra introduced the guarded command language (GCL), a
-minimalistic imperative language with built-in nondeterminism. A grammar for one
-of its variants is given below:
+1976年，E. W. Dijkstra提出了守卫命令语言（GCL），这是一种具有内置非确定性的极简命令式语言。以下是其一个变体的语法：
 
-    S  ::=  x := e       -- assignment
-         |  assert B     -- assertion
-         |  S ; S        -- sequential composition
-         |  S | ⋯ | S    -- nondeterministic choice
-         |  loop S       -- nondeterministic iteration
+    S  ::=  x := e       -- 赋值
+         |  assert B     -- 断言
+         |  S ; S        -- 顺序组合
+         |  S | ⋯ | S    -- 非确定性选择
+         |  loop S       -- 非确定性迭代
 
-Assignment and sequential composition are as in the WHILE language. The other
-statements have the following semantics:
+赋值和顺序组合与WHILE语言相同。其他语句的语义如下：
 
-* `assert B` aborts if `B` evaluates to false; otherwise, the command is a
-  no-op.
+* `assert B` 如果`B`求值为false则中止；否则该命令无操作。
 
-* `S | ⋯ | S` chooses any of the branches and executes it, ignoring the other
-  branches.
+* `S | ⋯ | S` 选择任意一个分支执行，忽略其他分支。
 
-* `loop S` executes `S` any number of times.
+* `loop S` 执行`S`任意次数。
 
-In Lean, GCL is captured by the following inductive type: -/
+在Lean中，GCL由以下归纳类型捕获： -/
 
 namespace GCL
 
@@ -51,25 +46,22 @@ inductive Stmt : Type
 
 infixr:90 "; " => Stmt.seq
 
-/- 1.1. Complete the following big-step semantics, based on the informal
-specification of GCL above. -/
+/- 1.1. 根据上述GCL的非正式规范，完成以下大步语义。 -/
 
 inductive BigStep : (Stmt × State) → State → Prop
-  -- enter the missing `assign` rule here
+  -- 在此处补充缺失的`assign`规则
   | assert (B s) (hB : B s) :
     BigStep (Stmt.assert B, s) s
-  -- enter the missing `seq` rule here
-  -- below, `Ss[i]'hless` returns element `i` of `Ss`, which exists thanks to
-  -- condition `hless`
+  -- 在此处补充缺失的`seq`规则
+  -- 下面，`Ss[i]'hless`返回`Ss`的第`i`个元素，由于条件`hless`保证其存在
   | choice (Ss s t i) (hless : i < List.length Ss)
       (hbody : BigStep (Ss[i]'hless, s) t) :
     BigStep (Stmt.choice Ss, s) t
-  -- enter the missing `loop` rules here
+  -- 在此处补充缺失的`loop`规则
 
 infixl:110 " ⟹ " => BigStep
 
-/- 1.2. Prove the following inversion rules, as we did in the lecture for the
-WHILE language. -/
+/- 1.2. 如我们在WHILE语言的讲座中所做的那样，证明以下反演规则。 -/
 
 @[simp] theorem BigStep_assign_iff {x a s t} :
     (Stmt.assign x a, s) ⟹ t ↔ t = s[x ↦ a s] :=
@@ -88,7 +80,7 @@ theorem BigStep_loop {S s u} :
     (s = u ∨ (∃t, (S, s) ⟹ t ∧ (Stmt.loop S, t) ⟹ u)) :=
   sorry
 
-/- This one is more difficult: -/
+/- 这个更有难度： -/
 
 @[simp] theorem BigStep_choice {Ss s t} :
     (Stmt.choice Ss, s) ⟹ t ↔
@@ -97,8 +89,7 @@ theorem BigStep_loop {S s u} :
 
 end GCL
 
-/- 1.3. Complete the translation below of a deterministic program to a GCL
-program, by filling in the `sorry` placeholders below. -/
+/- 1.3. 通过填充下面的`sorry`占位符，完成以下确定性程序到GCL程序的转换。 -/
 
 def gcl_of : Stmt → GCL.Stmt
   | Stmt.skip =>
@@ -112,25 +103,21 @@ def gcl_of : Stmt → GCL.Stmt
   | Stmt.whileDo B S =>
     sorry
 
-/- 1.4. In the definition of `gcl_of` above, `skip` is translated to
-`assert (fun _ ↦ True)`. Looking at the big-step semantics of both constructs,
-we can convince ourselves that it makes sense. Can you think of other correct
-ways to define the `skip` case? -/
+/- 1.4. 在上述`gcl_of`的定义中，`skip`被转换为`assert (fun _ ↦ True)`。通过比较两种结构的大步语义，我们可以确认这是合理的。你能想到其他正确的方式来定义`skip`的情况吗？ -/
 
--- enter your answer here
+-- 在此处输入你的答案
 
 
-/- ## Question 2: Program Equivalence
+/- ## 问题2：程序等价性
 
-For this question, we introduce the notion of program equivalence: `S₁ ~ S₂`. -/
+对于这个问题，我们引入程序等价性的概念：`S₁ ~ S₂`。 -/
 
 def BigStepEquiv (S₁ S₂ : Stmt) : Prop :=
   ∀s t, (S₁, s) ⟹ t ↔ (S₂, s) ⟹ t
 
 infix:50 (priority := high) " ~ " => BigStepEquiv
 
-/- Program equivalence is an equivalence relation, i.e., it is reflexive,
-symmetric, and transitive. -/
+/- 程序等价性是一种等价关系，即它是自反的、对称的和传递的。 -/
 
 theorem BigStepEquiv.refl {S} :
     S ~ S :=
@@ -151,7 +138,7 @@ theorem BigStepEquiv.trans {S₁ S₂ S₃} (h₁₂ : S₁ ~ S₂) (h₂₃ : S
   show (S₁, s) ⟹ t ↔ (S₃, s) ⟹ t from
     Iff.trans (h₁₂ s t) (h₂₃ s t)
 
-/- 2.1. Prove the following program equivalences. -/
+/- 2.1. 证明以下程序等价性。 -/
 
 theorem BigStepEquiv.skip_assign_id {x} :
     Stmt.assign x (fun s ↦ s x) ~ Stmt.skip :=
@@ -169,9 +156,7 @@ theorem BigStepEquiv.if_seq_while_skip {B S} :
     Stmt.ifThenElse B (S; Stmt.whileDo B S) Stmt.skip ~ Stmt.whileDo B S :=
   sorry
 
-/- 2.2 (**optional**). Program equivalence can be used to replace subprograms
-by other subprograms with the same semantics. Prove the following so-called
-congruence rules that facilitate such replacement: -/
+/- 2.2 (**可选**). 程序等价性可用于将子程序替换为具有相同语义的其他子程序。证明以下所谓的同余规则以促进此类替换： -/
 
 theorem BigStepEquiv.seq_congr {S₁ S₂ T₁ T₂} (hS : S₁ ~ S₂)
       (hT : T₁ ~ T₂) :
@@ -183,3 +168,4 @@ theorem BigStepEquiv.if_congr {B S₁ S₂ T₁ T₂} (hS : S₁ ~ S₂) (hT : T
   sorry
 
 end LoVe
+

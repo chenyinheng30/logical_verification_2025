@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权声明 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 以及 Jannis Limperg。参见 `LICENSE.txt` 文件。 -/
 
 import LoVe.LoVe10_HoareLogic_Demo
 
 
-/- # LoVe Exercise 10: Hoare Logic
+/- # LoVe 练习10：霍尔逻辑
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,34 +15,27 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Program Verification
+/- ## 问题1：程序验证
 
-1.1. The following WHILE program takes two numbers `a` and `b` and increments
-`b` until it reaches `a`: -/
+1.1. 以下 WHILE 程序接受两个数字 `a` 和 `b`，并递增 `b` 直到它等于 `a`： -/
 
 def COUNT_UP : Stmt :=
   Stmt.whileDo (fun s ↦ s "b" ≠ s "a")
     (Stmt.assign "b" (fun s ↦ s "b" + 1))
 
-/- Prove the following Hoare triple. The main difficulty is to figure out which
-invariant to use for the while loop. The invariant should capture both the work
-that has been done already (the intermediate result) and the work that remains
-to be done. Use a `show` command to annotate the program with a loop invariant.
+/- 证明以下霍尔三元组。主要难点在于确定 while 循环的不变式。该不变式应同时捕获已完成的工作（中间结果）和剩余的工作。使用 `show` 命令为程序标注循环不变式。
 
-Hint: If a variable `x` does not change in a program, it might be useful to
-record this in the invariant, by adding a conjunct `s "x" = x₀`. -/
+提示：如果变量 `x` 在程序中不发生变化，将其记录在不变式中可能很有用，例如添加一个合取式 `s "x" = x₀`。 -/
 
 theorem COUNT_UP_correct (a₀ : ℕ) :
     {* fun s ↦ s "a" = a₀ *} (COUNT_UP) {* fun s ↦ s "a" = a₀ ∧ s "b" = a₀ *} :=
   sorry
 
-/- 1.2. What happens if the program is run with `b > a`? How is this captured
-by the Hoare triple? -/
+/- 1.2. 如果程序运行时 `b > a` 会发生什么？这在霍尔三元组中是如何体现的？ -/
 
--- enter your solution here
+-- 在此处输入你的解答
 
-/- 1.3. The following WHILE program is intended to compute the Gaussian sum up
-to `n`, leaving the result in `r`. -/
+/- 1.3. 以下 WHILE 程序旨在计算 `n` 的高斯和，并将结果存储在 `r` 中。 -/
 
 def GAUSS (N : ℕ) : Stmt :=
   Stmt.assign "r" (fun s ↦ 0);
@@ -51,22 +44,19 @@ def GAUSS (N : ℕ) : Stmt :=
     (Stmt.assign "n" (fun s ↦ s "n" + 1);
      Stmt.assign "r" (fun s ↦ s "r" + s "n"))
 
-/- Here is a functional implementation of the same function: -/
+/- 以下是同一函数的功能实现： -/
 
 def sumUpTo : ℕ → ℕ
   | 0     => 0
   | n + 1 => n + 1 + sumUpTo n
 
-/- Invoke `vcg` on `GAUSS` using a suitable loop invariant and prove the
-emerging verification conditions. -/
+/- 使用合适的循环不变式对 `GAUSS` 调用 `vcg`，并证明出现的验证条件。 -/
 
 theorem GAUSS_correct (N : ℕ) :
     {* fun s ↦ True *} (GAUSS N) {* fun s ↦ s "r" = sumUpTo N *} :=
   sorry
 
-/- 1.4 (**optional**). The following program `MUL` is intended to compute the
-product of `n` and `m`, leaving the result in `r`. Invoke `vcg` on `MUL` using a
-suitable loop invariant and prove the emerging verification conditions. -/
+/- 1.4 (**可选**). 以下程序 `MUL` 旨在计算 `n` 和 `m` 的乘积，并将结果存储在 `r` 中。使用合适的循环不变式对 `MUL` 调用 `vcg`，并证明出现的验证条件。 -/
 
 def MUL : Stmt :=
   Stmt.assign "r" (fun s ↦ 0);
@@ -79,10 +69,9 @@ theorem MUL_correct (n₀ m₀ : ℕ) :
   sorry
 
 
-/- ## Question 2: Hoare Triples for Total Correctness
+/- ## 问题2：完全正确性的霍尔三元组
 
-The following definition captures Hoare triples for total correctness for
-deterministic languages: -/
+以下定义捕获了确定性语言中完全正确性的霍尔三元组： -/
 
 def TotalHoare (P : State → Prop) (S : Stmt) (Q : State → Prop) : Prop :=
   ∀s, P s → ∃t, (S, s) ⟹ t ∧ Q t
@@ -92,35 +81,35 @@ macro "[*" P:term " *] " "(" S:term ")" " [* " Q:term " *]" : term =>
 
 namespace TotalHoare
 
-/- 2.1. Prove the consequence rule. -/
+/- 2.1. 证明推论规则。 -/
 
 theorem consequence {P P' Q Q' S}
       (hS : [* P *] (S) [* Q *]) (hP : ∀s, P' s → P s) (hQ : ∀s, Q s → Q' s) :
     [* P' *] (S) [* Q' *] :=
   sorry
 
-/- 2.2. Prove the rule for `skip`. -/
+/- 2.2. 证明 `skip` 的规则。 -/
 
 theorem skip_intro {P} :
     [* P *] (Stmt.skip) [* P *] :=
   sorry
 
-/- 2.3. Prove the rule for `assign`. -/
+/- 2.3. 证明 `assign` 的规则。 -/
 
 theorem assign_intro {P x a} :
     [* fun s ↦ P (s[x ↦ a s]) *] (Stmt.assign x a) [* P *] :=
   sorry
 
-/- 2.4. Prove the rule for `seq`. -/
+/- 2.4. 证明 `seq` 的规则。 -/
 
 theorem seq_intro {P Q R S T} (hS : [* P *] (S) [* Q *])
       (hT : [* Q *] (T) [* R *]) :
     [* P *] (S; T) [* R *] :=
   sorry
 
-/- 2.5. Complete the proof of the rule for `if`–`then`–`else`.
+/- 2.5. 完成 `if`–`then`–`else` 规则的证明。
 
-Hint: The proof requires a case distinction on the truth value of `B s`. -/
+提示：证明需要对 `B s` 的真值进行情况区分。 -/
 
 theorem if_intro {B P Q S T}
       (hS : [* fun s ↦ P s ∧ B s *] (S) [* Q *])
@@ -128,23 +117,18 @@ theorem if_intro {B P Q S T}
     [* P *] (Stmt.ifThenElse B S T) [* Q *] :=
   sorry
 
-/- 2.6 (**optional**). Try to prove the rule for `while`.
+/- 2.6 (**可选**). 尝试证明 `while` 的规则。
 
-The rule is parameterized by a loop invariant `I` and by a variant `V` that
-decreases with each iteration of the loop body.
+该规则由一个循环不变式 `I` 和一个变式 `V` 参数化，`V` 在每次循环体迭代时递减。
 
-Before we prove the desired theorem, we introduce an auxiliary theorem. Its
-proof requires induction by pattern matching and recursion. When using
-`var_while_intro_aux` as induction hypothesis we recommend to do it directly
-after proving that the argument is less than `v₀`:
+在证明目标定理之前，我们先引入一个辅助定理。其证明需要通过模式匹配和递归进行归纳。当使用 `var_while_intro_aux` 作为归纳假设时，建议在证明参数小于 `v₀` 后直接使用：
 
     have ih : ∃u, (Stmt.whileDo B S, t) ⟹ u ∧ I u ∧ ¬ B u :=
       have _ : V t < v₀ :=
         …
       var_while_intro_aux I V h_inv (V t) …
 
-Similarly to `if`--`then`--`else`, the proof requires a case distinction on the
-truth value of `B s`. -/
+类似于 `if`–`then`–`else`，证明需要对 `B s` 的真值进行情况区分。 -/
 
 theorem var_while_intro_aux {B} (I : State → Prop) (V : State → ℕ) {S}
     (h_inv : ∀v₀,
@@ -162,3 +146,4 @@ theorem var_while_intro {B} (I : State → Prop) (V : State → ℕ) {S}
 end TotalHoare
 
 end LoVe
+

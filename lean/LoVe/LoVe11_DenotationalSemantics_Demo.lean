@@ -1,17 +1,14 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe09_OperationalSemantics_Demo
 
 
-/- # LoVe Demo 11: Denotational Semantics
+/- # LoVe 演示 11：指称语义
 
-We review a third way to specify the semantics of a programming language:
-denotational semantics. Denotational semantics attempts to directly specify the
-meaning of programs.
+我们回顾第三种编程语言语义规范方法：指称语义。指称语义试图直接定义程序的含义。
 
-If operational semantics is an idealized interpreter and Hoare logic is an
-idealized verifier, then denotational semantics is an idealized compiler. -/
+如果操作语义是理想化的解释器，霍尔逻辑是理想化的验证器，那么指称语义就是理想化的编译器。 -/
 
 
 set_option autoImplicit false
@@ -20,46 +17,40 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Compositionality
+/- ## 组合性
 
-A __denotational semantics__ defines the meaning of each program as a
-mathematical object:
+__指称语义__将每个程序的含义定义为数学对象：
 
-    `⟦ ⟧ : syntax → semantics`
+    `⟦ ⟧ : 语法 → 语义`
 
-A key property of denotational semantics is __compositionality__: The meaning of
-a compound statement should be defined in terms of the meaning of its
-components. This disqualifies
+指称语义的关键特性是__组合性__：复合语句的含义应基于其组成部分的含义来定义。这使得以下定义不合格：
 
     `⟦S⟧ = {st | (S, Prod.fst st) ⟹ Prod.snd st}`
 
-(i.e.
+（即
 
-    `⟦S⟧ = {(s, t) | (S, s) ⟹ t}`)
+    `⟦S⟧ = {(s, t) | (S, s) ⟹ t}`）
 
-because operational semantics is not compositional.
+因为操作语义不具备组合性。
 
-In short, we want
+简而言之，我们需要：
 
     `⟦S; T⟧               = … ⟦S⟧ … ⟦T⟧ …`
     `⟦if B then S else T⟧ = … ⟦S⟧ … ⟦T⟧ …`
     `⟦while B do S⟧       = … ⟦S⟧ …`
 
-An evaluation function on arithmetic expressions
+算术表达式的求值函数
 
     `eval : AExp → ((String → ℤ) → ℤ)`
 
-is a denotational semantics. We want the same for imperative programs.
+就是一种指称语义。我们希望为命令式程序实现类似的定义。
 
 
-## A Relational Denotational Semantics
+## 关系型指称语义
 
-We can represent the semantics of an imperative program as a function from
-initial state to final state or more generally as a relation between initial
-state and final state: `Set (State × State)`.
+我们可以将命令式程序的语义表示为从初始状态到最终状态的函数，或更一般地表示为初始状态与最终状态之间的关系：`Set (State × State)`。
 
-For `skip`, `:=`, `;`, and `if then else`, the denotational semantics is
-easy: -/
+对于 `skip`、`:=`、`;` 和 `if then else`，指称语义的定义较为简单： -/
 
 namespace SorryDefs
 
@@ -74,90 +65,74 @@ def denote : Stmt → Set (State × State)
 
 end SorryDefs
 
-/- We write `⟦S⟧` for `denote S`. For `while`, we would like to write
+/- 我们用 `⟦S⟧` 表示 `denote S`。对于 `while`，我们希望写成：
 
     `((denote S ◯ denote (Stmt.whileDo B S)) ⇃ B)`
     `∪ (Id ⇃ (fun s ↦ ¬ B s))`
 
-but this is ill-founded due to the recursive call on `Stmt.whileDo B S`.
+但由于对 `Stmt.whileDo B S` 的递归调用，这会导致无限递归。
 
-What we are looking for is an `X` such that
+我们需要找到一个满足以下条件的 `X`：
 
     `X = ((denote S ◯ X) ⇃ B) ∪ (Id ⇃ (fun s ↦ ¬ B s))`
 
-In other words, we are looking for a fixpoint.
+换句话说，我们需要寻找一个不动点。
 
-Most of this lecture is concerned with building a least fixpoint operator
-`lfp` that will allow us to define the `while` case as well:
+本讲座的主要内容是构建一个最小不动点算子 `lfp`，使我们能够定义 `while` 的情况：
 
     `lfp (fun X ↦ ((denote S ◯ X) ⇃ B) ∪ (Id ⇃ (fun s ↦ ¬ B s)))`
 
 
-## Fixpoints
+## 不动点
 
-A __fixpoint__ (or fixed point) of `f` is a solution for `X` in the equation
+函数 `f` 的__不动点__（或固定点）是方程 `X = f X` 的解。
 
-    `X = f X`
+一般情况下，不动点可能不存在（例如 `f := Nat.succ`），或者可能存在多个不动点（例如 `f := id`）。但在某些条件下，可以保证存在唯一的__最小不动点__和唯一的__最大不动点__。
 
-In general, fixpoints may not exist at all (e.g., `f := Nat.succ`), or there may
-be several fixpoints (e.g., `f := id`). But under some conditions on `f`, a
-unique __least fixpoint__ and a unique __greatest fixpoint__ are guaranteed to
-exist.
-
-Consider this __fixpoint equation__:
+考虑以下__不动点方程__：
 
     `X = (fun (P : ℕ → Prop) (n : ℕ) ↦ n = 0 ∨ ∃m : ℕ, n = m + 2 ∧ P m) X`
       `= (fun n : ℕ ↦ n = 0 ∨ ∃m : ℕ, n = m + 2 ∧ X m)`
 
-where `X : ℕ → Prop` and
-`f := (fun (P : ℕ → Prop) (n : ℕ) ↦ n = 0 ∨ ∃m : ℕ, n = m + 2 ∧ P m)`.
+其中 `X : ℕ → Prop` 且
+`f := (fun (P : ℕ → Prop) (n : ℕ) ↦ n = 0 ∨ ∃m : ℕ, n = m + 2 ∧ P m)`。
 
-The above example admits only one fixpoint. The fixpoint equation uniquely
-specifies `X` as the predicate specifying even numbers.
+上述示例只有一个不动点。该不动点方程唯一地指定 `X` 为描述偶数的谓词。
 
-In general, the least and greatest fixpoint may be different:
+一般情况下，最小和最大不动点可能不同：
 
     `X = X`
 
-Here, the least fixpoint is `fun _ ↦ False` and the greatest fixpoint is
-`fun _ ↦ True`. Conventionally, `False < True`, and thus
-`(fun _ ↦ False) < (fun _ ↦ True)`. Similarly, `∅ < @Set.univ ℕ`.
+这里，最小不动点是 `fun _ ↦ False`，最大不动点是 `fun _ ↦ True`。按照惯例，`False < True`，因此 `(fun _ ↦ False) < (fun _ ↦ True)`。类似地，`∅ < @Set.univ ℕ`。
 
-For the semantics of programming languages:
+对于编程语言的语义：
 
-* `X` will have type `Set (State × State)` (which is isomorphic to
-  `State → State → Prop`), representing relations between states;
+* `X` 的类型为 `Set (State × State)`（同构于 `State → State → Prop`），表示状态之间的关系；
 
-* `f` will correspond to either taking one extra iteration of the loop (if the
-  condition `B` is true) or the identity (if `B` is false).
+* `f` 对应于要么执行循环的额外一次迭代（如果条件 `B` 为真），要么保持原样（如果 `B` 为假）。
 
-The least fixpoint corresponds to finite executions of a program, which is all
-we care about.
+最小不动点对应于程序的有限执行，这正是我们关心的内容。
 
-**Key observation**:
+**关键观察**：
 
-    Inductive predicates correspond to least fixpoints, but they are built into
-    Lean's logic (the calculus of inductive constructions).
+    归纳谓词对应于最小不动点，但它们已内置于 Lean 的逻辑（归纳构造演算）中。
 
 
-## Monotone Functions
+## 单调函数
 
-Let `α` and `β` be types with partial order `≤`. A function `f : α → β` is
-__monotone__ if
+设 `α` 和 `β` 为带有偏序 `≤` 的类型。函数 `f : α → β` 是__单调的__，如果满足：
 
-    `a₁ ≤ a₂ → f a₁ ≤ f a₂`   for all `a₁`, `a₂`
+    `a₁ ≤ a₂ → f a₁ ≤ f a₂`   对所有 `a₁`, `a₂` 成立
 
-Many operations on sets (e.g., `∪`), relations (e.g., `◯`), and functions
-(e.g., `fun x ↦ x`, `fun _ ↦ k`, `∘`) are monotone or preserve monotonicity.
+集合（如 `∪`）、关系（如 `◯`）和函数（如 `fun x ↦ x`、`fun _ ↦ k`、`∘`）的许多操作都是单调的或保持单调性。
 
-All monotone functions `f : Set α → Set α` admit least and greatest fixpoints.
+所有单调函数 `f : Set α → Set α` 都存在最小和最大不动点。
 
-**Example of a nonmonotone function**:
+**非单调函数示例**：
 
     `f A = (if A = ∅ then Set.univ else ∅)`
 
-Assuming `α` is inhabited, we have `∅ ⊆ Set.univ`, but
-`f ∅ = Set.univ ⊈ ∅ = f Set.univ`. -/
+假设 `α` 非空，我们有 `∅ ⊆ Set.univ`，但 `f ∅ = Set.univ ⊈ ∅ = f Set.univ`。 -/
 
 def Monotone {α β : Type} [PartialOrder α] [PartialOrder β]
   (f : α → β) : Prop :=
@@ -185,7 +160,7 @@ theorem Monotone_union {α β : Type} [PartialOrder α]
     | inl h => exact Or.inl (hf a₁ a₂ ha h)
     | inr h => exact Or.inr (hg a₁ a₂ ha h)
 
-/- We will prove the following two theorems in the exercise. -/
+/- 我们将在练习中证明以下两个定理。 -/
 
 namespace SorryTheorems
 
@@ -203,38 +178,34 @@ theorem Monotone_restrict {α β : Type} [PartialOrder α]
 end SorryTheorems
 
 
-/- ## Complete Lattices
+/- ## 完全格
 
-To define the least fixpoint on sets, we need `⊆` and `⋂`: ⋂ {A | f A ⊆ A}.
-Complete lattices capture this concept abstractly. A __complete lattice__ is
-an ordered type `α` for which each set of type `Set α` has an infimum.
+为了在集合上定义最小不动点，我们需要 `⊆` 和 `⋂`：⋂ {A | f A ⊆ A}。完全格抽象地捕捉了这一概念。__完全格__是一个有序类型 `α`，其中每个 `Set α` 类型的集合都有一个下确界。
 
-More precisely, A complete lattice consists of
+更准确地说，完全格包含：
 
-* a partial order `≤ : α → α → Prop` (i.e., a reflexive, antisymmetric, and
-  transitive, and binary predicate);
+* 一个偏序 `≤ : α → α → Prop`（即自反、反对称、传递的二元谓词）；
 
-* an operator `Inf : Set α → α`, called __infimum__.
+* 一个称为__下确界__的算子 `Inf : Set α → α`。
 
-Moreover, `Inf A` must satisfy these two properties:
+此外，`Inf A` 必须满足以下两个性质：
 
-* `Inf A` is a lower bound of `A`: `Inf A ≤ b` for all `b ∈ A`;
+* `Inf A` 是 `A` 的下界：对所有 `b ∈ A`，`Inf A ≤ b`；
 
-* `Inf A` is a greatest lower bound: `b ≤ Inf A` for all `b` such that
-  `∀a, a ∈ A → b ≤ a`.
+* `Inf A` 是最大下界：对所有满足 `∀a, a ∈ A → b ≤ a` 的 `b`，有 `b ≤ Inf A`。
 
-**Warning:** `Inf A` is not necessarily an element of `A`.
+**注意**：`Inf A` 不一定是 `A` 的元素。
 
-Examples:
+示例：
 
-* `Set α` is an instance w.r.t. `⊆` and `⋂` for all `α`;
-* `Prop` is an instance w.r.t. `→` and `∀` (`Inf A := ∀a ∈ A, a`);
-* `ENat := ℕ ∪ {∞}`;
-* `EReal := ℝ ∪ {- ∞, ∞}`;
-* `β → α` if `α` is a complete lattice;
-* `α × β` if `α`, `β` are complete lattices.
+* 对于所有 `α`，`Set α` 是关于 `⊆` 和 `⋂` 的实例；
+* `Prop` 是关于 `→` 和 `∀` 的实例（`Inf A := ∀a ∈ A, a`）；
+* `ENat := ℕ ∪ {∞}`；
+* `EReal := ℝ ∪ {- ∞, ∞}`；
+* 如果 `α` 是完全格，则 `β → α` 也是；
+* 如果 `α` 和 `β` 是完全格，则 `α × β` 也是。
 
-Finite example (with apologies for the ASCII art):
+有限示例（抱歉使用 ASCII 艺术）：
 
                 Z            Inf {}           = ?
               /   \          Inf {Z}          = ?
@@ -242,10 +213,10 @@ Finite example (with apologies for the ASCII art):
               \   /          Inf {Z, A}       = ?
                 Y            Inf {Z, A, B, Y} = ?
 
-Nonexamples:
+非示例：
 
-* `ℕ`, `ℤ`, `ℚ`, `ℝ`: no infimum for `∅`.
-* `ERat := ℚ ∪ {- ∞, ∞}`: `Inf {q | 2 < q * q} = sqrt 2` is not in `ERat`. -/
+* `ℕ`、`ℤ`、`ℚ`、`ℝ`：`∅` 没有下确界。
+* `ERat := ℚ ∪ {- ∞, ∞}`：`Inf {q | 2 < q * q} = sqrt 2` 不在 `ERat` 中。 -/
 
 class CompleteLattice (α : Type)
   extends PartialOrder α : Type where
@@ -253,7 +224,7 @@ class CompleteLattice (α : Type)
   Inf_le : ∀A b, b ∈ A → Inf A ≤ b
   le_Inf : ∀A b, (∀a, a ∈ A → b ≤ a) → b ≤ Inf A
 
-/- For sets: -/
+/- 对于集合： -/
 
 instance Set.CompleteLattice {α : Type} :
   CompleteLattice (Set α) :=
@@ -263,7 +234,7 @@ instance Set.CompleteLattice {α : Type} :
     le_Inf      := by aesop }
 
 
-/- ## Least Fixpoint -/
+/- ## 最小不动点 -/
 
 def lfp {α : Type} [CompleteLattice α] (f : α → α) : α :=
   CompleteLattice.Inf {a | f a ≤ a}
@@ -278,10 +249,10 @@ theorem le_lfp {α : Type} [CompleteLattice α] (f : α → α)
     a ≤ lfp f :=
   CompleteLattice.le_Inf _ _ h
 
-/- **Knaster-Tarski theorem:** For any monotone function `f`:
+/- **Knaster-Tarski 定理**：对于任何单调函数 `f`：
 
-* `lfp f` is a fixpoint: `lfp f = f (lfp f)` (theorem `lfp_eq`);
-* `lfp f` is smaller than any other fixpoint: `X = f X → lfp f ≤ X`. -/
+* `lfp f` 是一个不动点：`lfp f = f (lfp f)`（定理 `lfp_eq`）；
+* `lfp f` 小于任何其他不动点：`X = f X → lfp f ≤ X`。 -/
 
 theorem lfp_eq {α : Type} [CompleteLattice α] (f : α → α)
       (hf : Monotone f) :
@@ -303,7 +274,7 @@ theorem lfp_eq {α : Type} [CompleteLattice α] (f : α → α)
     { assumption }
 
 
-/- ## A Relational Denotational Semantics, Continued -/
+/- ## 关系型指称语义（续） -/
 
 def denote : Stmt → Set (State × State)
   | Stmt.skip             => Id
@@ -330,20 +301,18 @@ theorem Monotone_while_lfp_arg (S B) :
       exact Monotone_const _ }
 
 
-/- ## Application to Program Equivalence
+/- ## 应用于程序等价性
 
-Based on the denotational semantics, we introduce the notion of program
-equivalence: `S₁ ~ S₂`. (Compare with exercise 9.) -/
+基于指称语义，我们引入程序等价性的概念：`S₁ ~ S₂`。（与练习 9 比较。） -/
 
 def DenoteEquiv (S₁ S₂ : Stmt) : Prop :=
   ⟦S₁⟧ = ⟦S₂⟧
 
 infix:50 (priority := high) " ~ " => DenoteEquiv
 
-/- It is obvious from the definition that `~` is an equivalence relation.
+/- 从定义中明显看出 `~` 是一个等价关系。
 
-Program equivalence can be used to replace subprograms by other subprograms with
-the same semantics. This is achieved by the following congruence rules: -/
+程序等价性可用于将子程序替换为具有相同语义的其他子程序。这通过以下同余规则实现： -/
 
 theorem DenoteEquiv.seq_congr {S₁ S₂ T₁ T₂ : Stmt}
       (hS : S₁ ~ S₂) (hT : T₁ ~ T₂) :
@@ -366,10 +335,9 @@ theorem DenoteEquiv.while_congr {B} {S₁ S₂ : Stmt}
     simp [DenoteEquiv, denote] at *
     simp [*]
 
-/- Compare the simplicity of these proofs with the corresponding proofs for a
-big-step semantics (exercise 8).
+/- 比较这些证明与基于大步语义的相应证明（练习 8）的简洁性。
 
-Let us prove some program equivalences. -/
+让我们证明一些程序等价性。 -/
 
 theorem DenoteEquiv.skip_assign_id {x} :
     Stmt.assign x (fun s ↦ s x) ~ Stmt.skip :=
@@ -393,8 +361,8 @@ theorem DenoteEquiv.if_seq_while {B S} :
     apply Monotone_while_lfp_arg
 
 
-/- ## Equivalence of the Denotational and the Big-Step Semantics
-## (**optional**) -/
+/- ## 指称语义与大步语义的等价性
+## （可选） -/
 
 theorem denote_of_BigStep (Ss : Stmt × State) (t : State)
       (h : Ss ⟹ t) :
@@ -490,7 +458,7 @@ theorem denote_Iff_BigStep (S : Stmt) (s t : State) :
   Iff.intro (BigStep_of_denote S s t) (denote_of_BigStep (S, s) t)
 
 
-/- ## A Simpler Approach Based on an Inductive Predicate (**optional**) -/
+/- ## 基于归纳谓词的更简单方法（可选） -/
 
 inductive Awhile (B : State → Prop)
     (r : Set (State × State)) :
@@ -514,3 +482,4 @@ def denoteAwhile : Stmt → Set (State × State)
        (Prod.snd st)}
 
 end LoVe
+

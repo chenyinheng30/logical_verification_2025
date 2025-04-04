@@ -1,13 +1,13 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 以及 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe06_InductivePredicates_Demo
 import LoVe.LoVe14_RationalAndRealNumbers_Demo
 
 
-/- # LoVe Exercise 14: Rational and Real Numbers
+/- # LoVe 练习14：有理数与实数
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如`:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -16,26 +16,24 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Rationals
+/- ## 问题1：有理数
 
-1.1. Prove the following theorem.
+1.1. 证明以下定理。
 
-Hints:
+提示：
 
-* Start with case distinctions on `a` and `b`.
+* 首先对`a`和`b`进行情况分析。
 
-* When the goal starts getting complicated, use `simp at *` to clean it up. -/
+* 当目标开始变得复杂时，使用`simp at *`来简化它。 -/
 
 theorem Fraction.ext (a b : Fraction) (hnum : Fraction.num a = Fraction.num b)
       (hdenom : Fraction.denom a = Fraction.denom b) :
     a = b :=
   sorry
 
-/- 1.2. Extending the `Fraction.Mul` instance from the lecture, declare
-`Fraction` as an instance of `Semigroup`.
+/- 1.2. 扩展讲座中的`Fraction.Mul`实例，将`Fraction`声明为`Semigroup`的实例。
 
-Hint: Use the theorem `Fraction.ext` above, and possibly `Fraction.mul_num` and
-`Fraction.mul_denom`. -/
+提示：使用上述定理`Fraction.ext`，可能还需要`Fraction.mul_num`和`Fraction.mul_denom`。 -/
 
 #check Fraction.ext
 #check Fraction.mul_num
@@ -47,8 +45,7 @@ instance Fraction.Semigroup : Semigroup Fraction :=
       sorry
   }
 
-/- 1.3. Extending the `Rat.Mul` instance from the lecture, declare `Rat` as an
-instance of `Semigroup`. -/
+/- 1.3. 扩展讲座中的`Rat.Mul`实例，将`Rat`声明为`Semigroup`的实例。 -/
 
 instance Rat.Semigroup : Semigroup Rat :=
   { Rat.Mul with
@@ -57,3 +54,4 @@ instance Rat.Semigroup : Semigroup Rat :=
   }
 
 end LoVe
+

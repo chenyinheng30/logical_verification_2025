@@ -1,14 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权声明 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Demo 9: Operational Semantics
+/- # LoVe 演示9：操作语义
 
-In this and the next two lectures, we will see how to use Lean to specify the
-syntax and semantics of programming languages and to reason about the
-semantics. -/
+在本讲及接下来两讲中，我们将了解如何使用Lean来规定编程语言的语法和语义，并对语义进行推理。 -/
 
 
 set_option autoImplicit false
@@ -17,117 +15,92 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## First Things First: Formalization Projects
+/- ## 首要事项：形式化项目
 
-Instead of two of the homework sheets, you can do a verification project, worth
-20 points. If you choose to do so, please send your lecturer a message by email
-by the end of the week. For a fully successful project, we expect about 200 (or
-more) lines of Lean, including definitions and proofs.
+作为两次作业的替代，你可以选择完成一个验证项目，价值20分。如果选择此选项，请在本周末前通过电子邮件告知授课教师。对于一个完全成功的项目，我们期望约200行（或更多）的Lean代码，包括定义和证明。
 
-Some ideas for projects follow.
+以下是一些项目构想：
 
-Computer science:
+计算机科学：
 
-* extended WHILE language with static arrays or other features;
-* functional data structures (e.g., balanced trees);
-* functional algorithms (e.g., bubble sort, merge sort, Tarjan's algorithm);
-* compiler from expressions or imperative programs to, e.g., stack machine;
-* type systems (e.g., Benjamin Pierce's __Types and Programming Languages__);
-* security properties (e.g., Volpano–Smith-style noninterference analysis);
-* theory of first-order terms, including matching, term rewriting;
-* automata theory;
-* normalization of context-free grammars or regular expressions;
-* process algebras and bisimilarity;
-* soundness and possibly completeness of proof systems (e.g., Genzen's sequent
-  calculus, natural deduction, tableaux);
-* separation logic;
-* verified program using Hoare logic.
+* 扩展WHILE语言，增加静态数组或其他特性；
+* 函数式数据结构（如平衡树）；
+* 函数式算法（如冒泡排序、归并排序、Tarjan算法）；
+* 从表达式或命令式程序到（例如）栈机器的编译器；
+* 类型系统（如Benjamin Pierce的《类型与编程语言》）；
+* 安全属性（如Volpano-Smith风格的非干涉分析）；
+* 一阶项理论，包括匹配、项重写；
+* 自动机理论；
+* 上下文无关文法或正则表达式的规范化；
+* 进程代数和互模拟；
+* 证明系统的可靠性和可能的完备性（如Genzen的相继式演算、自然演绎、表系统）；
+* 分离逻辑；
+* 使用Hoare逻辑的验证程序。
 
-Mathematics:
+数学：
 
-* graphs;
-* combinatorics;
-* number theory.
+* 图论；
+* 组合数学；
+* 数论。
 
-Metaprogramming:
+元编程：
 
-* custom tactic;
-* custom diagnosis tool.
+* 自定义策略；
+* 自定义诊断工具。
 
-Past evaluation:
+过往评价：
 
-Q: How did you find the project?
+问：你觉得项目如何？
 
-A: Enjoyable.
+答：很愉快。
 
-A: Fun and hard.
+答：有趣且困难。
 
-A: Good, I think the format was excellent in a way that it gave people the
-   chance to do challenging exercises and hand them in incomplete.
+答：很好，我认为这种形式非常棒，它给了人们完成挑战性练习并提交不完整作业的机会。
 
-A: I really really liked it. I think it's a great way of learning—find
-   something you like, dig in it a little, get stuck, ask for help. I wish I
-   could do more of that!
+答：我真的很喜欢。这是一种很棒的学习方式——找到你感兴趣的东西，深入一点，遇到困难时寻求帮助。我希望我能多做些这样的项目！
 
-A: It was great to have some time to try to work out some stuff you find
-   interesting yourself.
+答：能有时间自己研究感兴趣的内容真是太棒了。
 
-A: lots of fun actually!!!
+答：实际上非常有趣！！！
 
-A: Very helpful. It gave the opportunity to spend some more time on a
-   particular aspect of the course.
+答：非常有帮助。它提供了更多时间专注于课程的特定方面。
 
 
-## Formal Semantics
+## 形式语义
 
-A formal semantics helps specify and reason about the programming language
-itself, and about individual programs.
+形式语义有助于规定和推理编程语言本身以及单个程序。
 
-It can form the basis of verified compilers, interpreters, verifiers, static
-analyzers, type checkers, etc. Without formal proofs, these tools are
-**almost always wrong**.
+它可以构成验证编译器、解释器、验证器、静态分析器、类型检查器等的基础。没有形式化证明，这些工具几乎总是错误的。
 
-In this area, proof assistants are widely used. Every year, about 10-20% of POPL
-papers are partially or totally formalized. Reasons for this success:
+在这一领域，证明助手被广泛使用。每年，约10-20%的POPL论文部分或全部形式化。成功的原因：
 
-* Little machinery (background libraries, tactics) is needed to get started,
-  beyond inductive types and predicates and recursive functions.
+* 开始所需的机制（背景库、策略）很少，只需归纳类型、谓词和递归函数。
 
-* The proofs tend to have lots of cases, which is a good match for computers.
+* 证明往往有很多情况，这与计算机非常匹配。
 
-* Proof assistants keep track of what needs to be changed when we extend the
-  programming language with more features.
+* 证明助手会跟踪在扩展编程语言功能时需要更改的内容。
 
-Case in point: WebAssembly. To quote Conrad Watt (with some abbreviations):
+典型案例：WebAssembly。引用Conrad Watt（略有缩写）：
 
-    We have produced a full Isabelle mechanisation of the core execution
-    semantics and type system of the WebAssembly language. To complete this
-    proof, **several deficiencies** in the official WebAssembly specification,
-    uncovered by our proof and modelling work, needed to be corrected. In some
-    cases, these meant that the type system was **originally unsound**.
+    我们完成了WebAssembly语言核心执行语义和类型系统的完整Isabelle机械化。为了完成这个证明，官方WebAssembly规范中的几个缺陷（由我们的证明和建模工作发现）需要修正。在某些情况下，这意味着类型系统最初是不健全的。
 
-    We have maintained a constructive dialogue with the working group,
-    verifying new features as they are added. In particular, the mechanism by
-    which a WebAssembly implementation interfaces with its host environment was
-    not formally specified in the working group's original paper. Extending our
-    mechanisation to model this feature revealed a deficiency in the WebAssembly
-    specification that **sabotaged the soundness** of the type system.
+    我们与工作组保持了建设性对话，验证新增功能。特别是，WebAssembly实现与主机环境交互的机制在工作组原始论文中没有正式规定。扩展我们的机械化模型以涵盖这一特性揭示了WebAssembly规范中的一个缺陷，破坏了类型系统的健全性。
 
 
-## A Minimalistic Imperative Language
+## 极简命令式语言
 
-A state `s` is a function from variable names to values (`String → ℕ`).
+状态`s`是从变量名到值的函数（`String → ℕ`）。
 
-__WHILE__ is a minimalistic imperative language with the following grammar:
+__WHILE__是一种极简命令式语言，语法如下：
 
-    S  ::=  skip                 -- no-op
-         |  x := a               -- assignment
-         |  S; S                 -- sequential composition
-         |  if B then S else S   -- conditional statement
-         |  while B do S         -- while loop
+    S  ::=  skip                 -- 空操作
+         |  x := a               -- 赋值
+         |  S; S                 -- 顺序组合
+         |  if B then S else S   -- 条件语句
+         |  while B do S         -- while循环
 
-where `S` stands for a statement (also called command or program), `x` for a
-variable, `a` for an arithmetic expression, and `B` for a Boolean expression. -/
+其中`S`表示语句（也称为命令或程序），`x`表示变量，`a`表示算术表达式，`B`表示布尔表达式。 -/
 
 #print State
 
@@ -140,40 +113,29 @@ inductive Stmt : Type where
 
 infixr:90 "; " => Stmt.seq
 
-/- In our grammar, we deliberately leave the syntax of arithmetic and Boolean
-expressions unspecified. In Lean, we have the choice:
+/- 在我们的语法中，我们有意不规定算术和布尔表达式的具体语法。在Lean中，我们有选择：
 
-* We could use a type such as `AExp` from lecture 2 and similarly for Boolean
-  expressions.
+* 可以使用类似第2讲中的`AExp`类型，布尔表达式类似。
 
-* We could decide that an arithmetic expression is simply a function from
-  states to natural numbers (`State → ℕ`) and a Boolean expression is a
-  predicate (`State → Prop` or `State → Bool`).
+* 可以认为算术表达式就是从状态到自然数的函数（`State → ℕ`），布尔表达式是谓词（`State → Prop`或`State → Bool`）。
 
-This corresponds to the difference between deep and shallow embeddings:
+这对应于深嵌入和浅嵌入的区别：
 
-* A __deep embedding__ of some syntax (expression, formula, program, etc.)
-  consists of an abstract syntax tree specified in the proof assistant
-  (e.g., `AExp`) with a semantics (e.g., `eval`).
+* 某些语法（表达式、公式、程序等）的__深嵌入__由证明助手中规定的抽象语法树（如`AExp`）及其语义（如`eval`）组成。
 
-* In contrast, a __shallow embedding__ simply reuses the corresponding
-  mechanisms from the logic (e.g., terms, functions, predicate types).
+* 相比之下，__浅嵌入__直接重用逻辑中的相应机制（如项、函数、谓词类型）。
 
-A deep embedding allows us to reason about the syntax (and its semantics). A
-shallow embedding is more lightweight, because we can use it directly, without
-having to define a semantics.
+深嵌入允许我们对语法（及其语义）进行推理。浅嵌入更轻量，因为可以直接使用，无需定义语义。
 
-We will use a deep embedding of programs (which we find interesting), and
-shallow embeddings of assignments and Boolean expressions (which we find
-boring).
+我们将对程序使用深嵌入（我们觉得有趣），对赋值和布尔表达式使用浅嵌入（我们觉得乏味）。
 
-The program
+程序
 
   while x > y do
     skip;
     x := x - 1
 
-is modeled as -/
+建模为 -/
 
 def sillyLoop : Stmt :=
   Stmt.whileDo (fun s ↦ s "x" > s "y")
@@ -181,25 +143,23 @@ def sillyLoop : Stmt :=
      Stmt.assign "x" (fun s ↦ s "x" - 1))
 
 
-/- ## Big-Step Semantics
+/- ## 大步语义
 
-An __operational semantics__ corresponds to an idealized interpreter (specified
-in a Prolog-like language). Two main variants:
+__操作语义__对应于理想化的解释器（用类似Prolog的语言规定）。两种主要变体：
 
-* big-step semantics;
+* 大步语义；
 
-* small-step semantics.
+* 小步语义。
 
-In a __big-step semantics__ (also called __natural semantics__), judgments have
-the form `(S, s) ⟹ t`:
+在__大步语义__（也称为__自然语义__）中，判断形式为`(S, s) ⟹ t`：
 
-    Starting in a state `s`, executing `S` terminates in the state `t`.
+    从状态`s`开始执行`S`，终止于状态`t`。
 
-Example:
+示例：
 
     `(x := x + y; y := 0, [x ↦ 3, y ↦ 5]) ⟹ [x ↦ 8, y ↦ 0]`
 
-Derivation rules:
+推导规则：
 
     ——————————————— Skip
     (skip, s) ⟹ s
@@ -212,29 +172,23 @@ Derivation rules:
     (S; T, s) ⟹ u
 
     (S, s) ⟹ t
-    ————————————————————————————— If-True   if s(B) is true
+    ————————————————————————————— If-True   若s(B)为真
     (if B then S else T, s) ⟹ t
 
     (T, s) ⟹ t
-    ————————————————————————————— If-False   if s(B) is false
+    ————————————————————————————— If-False  若s(B)为假
     (if B then S else T, s) ⟹ t
 
     (S, s) ⟹ t   (while B do S, t) ⟹ u
-    —————————————————————————————————————— While-True   if s(B) is true
+    —————————————————————————————————————— While-True   若s(B)为真
     (while B do S, s) ⟹ u
 
-    ————————————————————————— While-False   if s(B) is false
+    ————————————————————————— While-False   若s(B)为假
     (while B do S, s) ⟹ s
 
-Above, `s(e)` denotes the value of expression `e` in state `s` and `s[x ↦ s(e)]`
-denotes the state that is identical to `s` except that the variable `x` is bound
-to the value `s(e)`.
+其中`s(e)`表示状态`s`中表达式`e`的值，`s[x ↦ s(e)]`表示与`s`相同的状态，除了变量`x`绑定到值`s(e)`。
 
-In Lean, the judgment corresponds to an inductive predicate, and the derivation
-rules correspond to the predicate's introduction rules. Using an inductive
-predicate as opposed to a recursive function allows us to cope with
-nontermination (e.g., a diverging `while`) and nondeterminism (e.g.,
-multithreading). -/
+在Lean中，判断对应于归纳谓词，推导规则对应于谓词的引入规则。使用归纳谓词而非递归函数可以处理非终止（如发散的`while`）和非确定性（如多线程）。 -/
 
 inductive BigStep : Stmt × State → State → Prop where
   | skip (s) :
@@ -273,15 +227,13 @@ theorem sillyLoop_from_1_BigStep :
       simp }
 
 
-/- ## Properties of the Big-Step Semantics
+/- ## 大步语义的性质
 
-Equipped with a big-step semantics, we can
+有了大步语义，我们可以：
 
-* prove properties of the programming language, such as **equivalence proofs**
-  between programs and **determinism**;
+* 证明编程语言的性质，如程序间的等价性证明和确定性；
 
-* reason about **concrete programs**, proving theorems relating final states `t`
-  with initial states `s`. -/
+* 对具体程序进行推理，证明关于初始状态`s`和最终状态`t`的定理。 -/
 
 theorem BigStep_deterministic {Ss l r} (hl : Ss ⟹ l)
       (hr : Ss ⟹ r) :
@@ -325,10 +277,10 @@ theorem BigStep_deterministic {Ss l r} (hl : Ss ⟹ l)
 /-
 theorem BigStep_terminates {S s} :
     ∃t, (S, s) ⟹ t :=
-  sorry   -- unprovable
+  sorry   -- 不可证
 -/
 
-/- We can define inversion rules about the big-step semantics: -/
+/- 我们可以定义关于大步语义的反演规则： -/
 
 @[simp] theorem BigStep_skip_Iff {s t} :
     (Stmt.skip, s) ⟹ t ↔ t = s :=
@@ -440,35 +392,32 @@ theorem BigStep_while_Iff {B S s u} :
     simp [hcond]
 
 
-/- ## Small-Step Semantics
+/- ## 小步语义
 
-A big-step semantics
+大步语义：
 
-* does not let us reason about intermediate states;
+* 不允许推理中间状态；
 
-* does not let us express nontermination or interleaving (for multithreading).
+* 不能表达非终止或交错（对于多线程）。
 
-__Small-step semantics__ (also called __structural operational semantics__)
-solve the above issues.
+__小步语义__（也称为__结构操作语义__）解决了上述问题。
 
-A judgment has the form `(S, s) ⇒ (T, t)`:
+判断形式为`(S, s) ⇒ (T, t)`：
 
-    Starting in a state `s`, executing one step of `S` leaves us in the
-    state `t`, with the program `T` remaining to be executed.
+    从状态`s`开始，执行`S`的一步，将我们留在状态`t`，剩余程序`T`待执行。
 
-An execution is a finite or infinite chain `(S₀, s₀) ⇒ (S₁, s₁) ⇒ …`.
+执行是有限或无限的链`(S₀, s₀) ⇒ (S₁, s₁) ⇒ …`。
 
-A pair `(S, s)` is called a __configuration__. It is __final__ if no transition
-of the form `(S, s) ⇒ _` is possible.
+对`(S, s)`称为__配置__。如果不存在形如`(S, s) ⇒ _`的转换，则称为__终止__。
 
-Example:
+示例：
 
       `(x := x + y; y := 0, [x ↦ 3, y ↦ 5])`
     `⇒ (skip; y := 0,       [x ↦ 8, y ↦ 5])`
     `⇒ (y := 0,             [x ↦ 8, y ↦ 5])`
     `⇒ (skip,               [x ↦ 8, y ↦ 0])`
 
-Derivation rules:
+推导规则：
 
     ————————————————————————————————— Assign
     (x := a, s) ⇒ (skip, s[x ↦ s(a)])
@@ -480,16 +429,16 @@ Derivation rules:
     ————————————————————— Seq-Skip
     (skip; S, s) ⇒ (S, s)
 
-    ———————————————————————————————— If-True   if s(B) is true
+    ———————————————————————————————— If-True   若s(B)为真
     (if B then S else T, s) ⇒ (S, s)
 
-    ———————————————————————————————— If-False   if s(B) is false
+    ———————————————————————————————— If-False  若s(B)为假
     (if B then S else T, s) ⇒ (T, s)
 
     ——————————————————————————————————————————————————————————————— While
     (while B do S, s) ⇒ (if B then (S; while B do S) else skip, s)
 
-There is no rule for `skip` (why?). -/
+没有`skip`的规则（为什么？）。 -/
 
 inductive SmallStep : Stmt × State → Stmt × State → Prop where
   | assign (x a s) :
@@ -535,24 +484,20 @@ theorem sillyLoop_from_1_SmallStep :
                 { simp
                   apply RTC.refl } } } } } } }
 
-/- Equipped with a small-step semantics, we can **define** a big-step
-semantics:
+/- 有了小步语义，我们可以**定义**大步语义：
 
-    `(S, s) ⟹ t` if and only if `(S, s) ⇒* (skip, t)`
+    `(S, s) ⟹ t` 当且仅当 `(S, s) ⇒* (skip, t)`
 
-where `r*` denotes the reflexive transitive closure of a relation `r`.
+其中`r*`表示关系`r`的自反传递闭包。
 
-Alternatively, if we have already defined a big-step semantics, we can **prove**
-the above equivalence theorem to validate our definitions.
+或者，如果已经定义了大步语义，可以**证明**上述等价定理来验证我们的定义。
 
-The main disadvantage of small-step semantics is that we now have two relations,
-`⇒` and `⇒*`, and reasoning tends to be more complicated.
+小步语义的主要缺点是我们现在有两个关系`⇒`和`⇒*`，推理往往更复杂。
 
 
-## Properties of the Small-Step Semantics
+## 小步语义的性质
 
-We can prove that a configuration `(S, s)` is final if and only if `S = skip`.
-This ensures that we have not forgotten a derivation rule. -/
+我们可以证明配置`(S, s)`终止当且仅当`S = skip`。这确保我们没有遗漏推导规则。 -/
 
 theorem SmallStep_final (S s) :
     (¬ ∃T t, (S, s) ⇒ (T, t)) ↔ S = Stmt.skip :=
@@ -637,8 +582,7 @@ theorem SmallStep_deterministic {Ss Ll Rr}
       cases hr with
       | whileDo => rfl
 
-/- We can define inversion rules also about the small-step semantics. Here are
-three examples: -/
+/- 我们也可以定义关于小步语义的反演规则。以下是三个例子： -/
 
 theorem SmallStep_skip {S s t} :
     ¬ ((Stmt.skip, s) ⇒ (S, t)) :=
@@ -706,14 +650,13 @@ theorem SmallStep_skip {S s t} :
           assumption }
 
 
-/- ### Equivalence of the Big-Step and the Small-Step Semantics (**optional**)
+/- ### 大步语义与小步语义的等价性（**可选**）
 
-A more important result is the connection between the big-step and the
-small-step semantics:
+更重要的结果是大步语义与小步语义之间的联系：
 
     `(S, s) ⟹ t ↔ (S, s) ⇒* (Stmt.skip, t)`
 
-Its proof, given below, is beyond the scope of this course. -/
+其证明（如下）超出了本课程范围。 -/
 
 theorem RTC_SmallStep_seq {S T s u}
       (h : (S, s) ⇒* (Stmt.skip, u)) :
@@ -800,3 +743,4 @@ theorem BigStep_Iff_RTC_SmallStep {Ss t} :
   Iff.intro RTC_SmallStep_of_BigStep BigStep_of_RTC_SmallStep
 
 end LoVe
+

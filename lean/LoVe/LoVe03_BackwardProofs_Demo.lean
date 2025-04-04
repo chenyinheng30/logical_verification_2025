@@ -1,14 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。参见`LICENSE.txt`。 -/
 
 import LoVe.LoVe02_ProgramsAndTheorems_Demo
 
 
-/- # LoVe Demo 3: Backward Proofs
+/- # LoVe 演示3：逆向证明
 
-A __tactic__ operates on a proof goal and either proves it or creates new
-subgoals. Tactics are a __backward__ proof mechanism: They start from the goal
-and work towards the available hypotheses and theorems. -/
+__策略__（tactic）对证明目标进行操作，要么证明它，要么创建新的子目标。策略是一种__逆向__证明机制：它们从目标出发，朝着可用的假设和定理方向工作。 -/
 
 
 set_option autoImplicit false
@@ -19,16 +17,16 @@ namespace LoVe
 namespace BackwardProofs
 
 
-/- ## Tactic Mode
+/- ## 策略模式
 
-Syntax of tactical proofs:
+战术证明的语法：
 
     by
-      _tactic₁_
+      _策略₁_
       …
-      _tacticN_
+      _策略N_
 
-The keyword `by` indicates to Lean the proof is tactical. -/
+关键字`by`向Lean表明这是一个战术证明。 -/
 
 theorem fst_of_two_props :
     ∀a b : Prop, a → b → a :=
@@ -37,20 +35,16 @@ theorem fst_of_two_props :
     intro ha hb
     apply ha
 
-/- Note that `a → b → a` is parsed as `a → (b → a)`.
+/- 注意`a → b → a`被解析为`a → (b → a)`。
 
-Propositions in Lean are terms of type `Prop`. `Prop` is a type, just like `Nat`
-and `List Bool`. In fact there is a close correspondence between propositions
-and types, which will be explained in lecture 4.
+Lean中的命题是`Prop`类型的项。`Prop`是一个类型，就像`Nat`和`List Bool`一样。实际上，命题和类型之间存在密切对应关系，这将在第4讲中解释。
 
 
-## Basic Tactics
+## 基础策略
 
-`intro` moves `∀`-quantified variables, or the assumptions of implications `→`,
-from the goal's conclusion (after `⊢`) into the goal's hypotheses (before `⊢`).
+`intro`将`∀`量化的变量或蕴含`→`的假设从目标的结论（`⊢`之后）移动到目标的前提（`⊢`之前）。
 
-`apply` matches the goal's conclusion with the conclusion of the specified
-theorem and adds the theorem's hypotheses as new goals. -/
+`apply`将目标的结论与指定定理的结论匹配，并将定理的假设作为新目标添加。 -/
 
 theorem fst_of_two_props_params (a b : Prop) (ha : a) (hb : b) :
     a :=
@@ -64,32 +58,27 @@ theorem prop_comp (a b c : Prop) (hab : a → b) (hbc : b → c) :
     apply hab
     apply ha
 
-/- The above proof step by step:
+/- 上述证明的逐步解释：
 
-* Assume we have a proof of `a`.
-* The goal is `c`, which we can show if we prove `b` (from `hbc`).
-* The goal is `b`, which we can show if we prove `a` (from `hab`).
-* We already know `a` (from `ha`).
+* 假设我们有一个`a`的证明。
+* 目标是`c`，如果我们能证明`b`（来自`hbc`），就可以得到`c`。
+* 目标是`b`，如果我们能证明`a`（来自`hab`），就可以得到`b`。
+* 我们已经知道`a`（来自`ha`）。
 
-Next, `exact` matches the goal's conclusion with the specified theorem, closing
-the goal. We can often use `apply` in such situations, but `exact` communicates
-our intentions better. -/
+接下来，`exact`将目标的结论与指定定理匹配，关闭目标。在这种情况下，我们通常可以使用`apply`，但`exact`能更好地传达我们的意图。 -/
 
 theorem fst_of_two_props_exact (a b : Prop) (ha : a) (hb : b) :
     a :=
   by exact ha
 
-/- `assumption` finds a hypothesis from the local context that matches the
-goal's conclusion and applies it to prove the goal. -/
+/- `assumption`从局部上下文中找到一个与目标结论匹配的假设，并应用它来证明目标。 -/
 
 theorem fst_of_two_props_assumption (a b : Prop)
       (ha : a) (hb : b) :
     a :=
   by assumption
 
-/- `rfl` proves `l = r`, where the two sides are syntactically equal up to
-computation. Computation means unfolding of definitions, β-reduction
-(application of `fun` to an argument), `let`, and more. -/
+/- `rfl`证明`l = r`，其中两边在计算上是语法相等的。计算包括定义的展开、β-归约（将`fun`应用于参数）、`let`等。 -/
 
 theorem α_example {α β : Type} (f : α → β) :
     (fun x ↦ f x) = (fun y ↦ f y) :=
@@ -106,8 +95,7 @@ theorem δ_example :
     double 5 = 5 + 5 :=
   by rfl
 
-/- `let` introduces a definition that is locally scoped. Below, `n := 2` is only
-in scope in the expression `n + n`. -/
+/- `let`引入一个局部作用域的定义。下面的`n := 2`仅在表达式`n + n`中有效。 -/
 
 theorem ζ_example :
     (let n : ℕ := 2
@@ -118,18 +106,16 @@ theorem η_example {α β : Type} (f : α → β) :
     (fun x ↦ f x) = f :=
   by rfl
 
-/- `(a, b)` is the pair whose first component is `a` and whose second component
-is `b`. `Prod.fst` is a so-called projection that extracts the first component
-of a pair. -/
+/- `(a, b)`是一个对，其第一个分量是`a`，第二个分量是`b`。`Prod.fst`是一个投影，提取对中的第一个分量。 -/
 
 theorem ι_example {α β : Type} (a : α) (b : β) :
     Prod.fst (a, b) = a :=
   by rfl
 
 
-/- ## Reasoning about Logical Connectives and Quantifiers
+/- ## 逻辑连接词和量词的推理
 
-Introduction rules: -/
+引入规则： -/
 
 #check True.intro
 #check And.intro
@@ -138,7 +124,7 @@ Introduction rules: -/
 #check Iff.intro
 #check Exists.intro
 
-/- Elimination rules: -/
+/- 消去规则： -/
 
 #check False.elim
 #check And.left
@@ -148,14 +134,13 @@ Introduction rules: -/
 #check Iff.mpr
 #check Exists.elim
 
-/- Definition of `¬` and related theorems: -/
+/- `¬`的定义及相关定理： -/
 
 #print Not
 #check Classical.em
 #check Classical.byContradiction
 
-/- There are no explicit rules for `Not` (`¬`) since `¬ p` is defined as
-`p → False`. -/
+/- 没有`Not`（`¬`）的显式规则，因为`¬ p`被定义为`p → False`。 -/
 
 theorem And_swap (a b : Prop) :
     a ∧ b → b ∧ a :=
@@ -167,18 +152,16 @@ theorem And_swap (a b : Prop) :
     apply And.left
     exact hab
 
-/- The above proof step by step:
+/- 上述证明的逐步解释：
 
-* Assume we know `a ∧ b`.
-* The goal is `b ∧ a`.
-* Show `b`, which we can if we can show a conjunction with `b` on the right.
-* We can, we already have `a ∧ b`.
-* Show `a`, which we can if we can show a conjunction with `a` on the left.
-* We can, we already have `a ∧ b`.
+* 假设我们知道`a ∧ b`。
+* 目标是`b ∧ a`。
+* 显示`b`，如果我们能显示一个右边为`b`的合取式。
+* 可以，我们已经有`a ∧ b`。
+* 显示`a`，如果我们能显示一个左边为`a`的合取式。
+* 可以，我们已经有`a ∧ b`。
 
-The `{ … }` combinator focuses on a specific subgoal. The tactic inside must
-fully prove it. In the proof below, `{ … }` is used for each of the two subgoals
-to give more structure to the proof. -/
+`{ … }`组合器专注于特定的子目标。内部的策略必须完全证明它。在下面的证明中，`{ … }`用于两个子目标，以给证明更多结构。 -/
 
 theorem And_swap_braces :
     ∀a b : Prop, a ∧ b → b ∧ a :=
@@ -188,10 +171,7 @@ theorem And_swap_braces :
     { exact And.right hab }
     { exact And.left hab }
 
-/- Notice above how we pass the hypothesis `hab` directly to the theorems
-`And.right` and `And.left`, instead of waiting for the theorems' assumptions to
-appear as new subgoals. This is a small forward step in an otherwise backward
-proof. -/
+/- 注意上面我们直接将假设`hab`传递给定理`And.right`和`And.left`，而不是等待定理的假设作为新子目标出现。这是一个小的正向步骤，在一个逆向证明中。 -/
 
 opaque f : ℕ → ℕ
 
@@ -230,14 +210,14 @@ theorem Exists_double_iden :
     rfl
 
 
-/- ## Reasoning about Equality -/
+/- ## 关于等式的推理 -/
 
 #check Eq.refl
 #check Eq.symm
 #check Eq.trans
 #check Eq.subst
 
-/- The above rules can be used directly: -/
+/- 上述规则可以直接使用： -/
 
 theorem Eq_trans_symm {α : Type} (a b c : α)
       (hab : a = b) (hcb : c = b) :
@@ -248,8 +228,7 @@ theorem Eq_trans_symm {α : Type} (a b c : α)
     { apply Eq.symm
       exact hcb }
 
-/- `rw` applies a single equation as a left-to-right rewrite rule, once. To
-apply an equation right-to-left, prefix its name with `←`. -/
+/- `rw`将单个等式作为从左到右的重写规则应用一次。要从右到左应用等式，在其名称前加`←`。 -/
 
 theorem Eq_trans_symm_rw {α : Type} (a b c : α)
       (hab : a = b) (hcb : c = b) :
@@ -258,8 +237,7 @@ theorem Eq_trans_symm_rw {α : Type} (a b c : α)
     rw [hab]
     rw [hcb]
 
-/- `rw` can expand a definition. Below, `¬¬ a` becomes `¬ a → False`, and `¬ a`
-becomes `a → False`. -/
+/- `rw`可以展开定义。下面，`¬¬ a`变成`¬ a → False`，`¬ a`变成`a → False`。 -/
 
 theorem a_proof_of_negation (a : Prop) :
     a → ¬¬ a :=
@@ -271,28 +249,23 @@ theorem a_proof_of_negation (a : Prop) :
     apply hna
     exact ha
 
-/- `simp` applies a standard set of rewrite rules (the __simp set__)
-exhaustively. The set can be extended using the `@[simp]` attribute. Theorems
-can be temporarily added to the simp set with the syntax
-`simp [_theorem₁_, …, _theoremN_]`. -/
+/- `simp`应用一组标准的重写规则（__simp集__）直到穷尽。可以使用`@[simp]`属性扩展该集。可以使用语法`simp [_定理₁_, …, _定理N_]`临时将定理添加到simp集中。 -/
 
 theorem cong_two_args_1p1 {α : Type} (a b c d : α)
       (g : α → α → ℕ → α) (hab : a = b) (hcd : c = d) :
     g a c (1 + 1) = g b d 2 :=
   by simp [hab, hcd]
 
-/- `ac_rfl` is similar to `rfl`, but it can reason up to associativity and
-commutativity of `+`, `*`, and other binary operators. -/
+/- `ac_rfl`类似于`rfl`，但它可以推理`+`、`*`和其他二元运算符的结合性和交换性。 -/
 
 theorem abc_Eq_cba (a b c : ℕ) :
     a + b + c = c + b + a :=
   by ac_rfl
 
 
-/- ## Proofs by Mathematical Induction
+/- ## 数学归纳法证明
 
-`induction` performs induction on the specified variable. It gives rise to one
-named subgoal per constructor. -/
+`induction`对指定变量进行归纳。它为每个构造函数生成一个命名的子目标。 -/
 
 theorem add_zero (n : ℕ) :
     add 0 n = n :=
@@ -322,9 +295,7 @@ theorem add_assoc (l m n : ℕ) :
     | zero       => rfl
     | succ n' ih => simp [add, ih]
 
-/- `ac_rfl` is extensible. We can register `add` as a commutative and
-associative operator using the type class instance mechanism (explained in
-lecture 5). This is useful for the `ac_rfl` invocation below. -/
+/- `ac_rfl`是可扩展的。我们可以使用类型类实例机制（在第5讲中解释）将`add`注册为交换和结合的运算符。这对于下面的`ac_rfl`调用很有用。 -/
 
 instance Associative_add : Std.Associative add :=
   { assoc := add_assoc }
@@ -342,11 +313,11 @@ theorem mul_add (l m n : ℕ) :
       ac_rfl
 
 
-/- ## Cleanup Tactics
+/- ## 清理策略
 
-`clear` removes unused variables or hypotheses.
+`clear`移除未使用的变量或假设。
 
-`rename` changes the name of a variable or hypothesis. -/
+`rename`更改变量或假设的名称。 -/
 
 theorem cleanup_example (a b c : Prop) (ha : a) (hb : b)
       (hab : a → b) (hbc : b → c) :
@@ -361,3 +332,4 @@ theorem cleanup_example (a b c : Prop) (ha : a) (hb : b)
 end BackwardProofs
 
 end LoVe
+

@@ -2,6 +2,15 @@
 <head>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+  MathJax = {
+    options: {
+      skipHtmlTags: {
+        '[-]': ['code', 'pre']  // 从跳过列表中移除 'code' 和 'pre'
+      }
+    }
+  }
+</script>
 <style>
 body {
 	box-sizing: border-box;
@@ -370,12 +379,12 @@ $$</div>
 
 <p>在数学中，通常以中缀语法书写二元运算符（例如<span class="math">\(x+y\)</span>）。此类表示法在Lean中同样适用，作为柯里化函数应用的语法糖（例如add <span class="math">\(x y\)</span>）。</p>
 
-<pre><code>opaque a : \(\mathbb{Z}\)
-opaque b : \(\mathbb{Z}\)
-opaque \(f: \mathbb{Z} \rightarrow \mathbb{Z}\)
-opaque g : \(\mathbb{Z} \rightarrow \mathbb{Z} \rightarrow \mathbb{Z}\)
-#check fun \(x: \mathbb{Z} \mapsto g(f(g a x))(g x b)\)
-#check fun \(x \mapsto g(f(g a x))(g x b)\)
+<pre><code>opaque a : <span class="math">\(\mathbb{Z}\)</span>
+opaque b : <span class="math">\(\mathbb{Z}\)</span>
+opaque <span class="math">\(f: \mathbb{Z} \rightarrow \mathbb{Z}\)</span>
+opaque g : <span class="math">\(\mathbb{Z} \rightarrow \mathbb{Z} \rightarrow \mathbb{Z}\)</span>
+#check fun <span class="math">\(x: \mathbb{Z} \mapsto g(f(g a x))(g x b)\)</span>
+#check fun <span class="math">\(x \mapsto g(f(g a x))(g x b)\)</span>
 </code></pre>
 
 <p>在Lean中工作的一种方式是使用opaque命令声明所需的类型和常量。考虑以下声明：</p>
@@ -511,25 +520,25 @@ $$</div>
 
 <p>类型声明的一般格式为</p>
 
-<p>对于自然数，可以指示Lean使用熟悉的名称<span class="math">\(\theta\)</span>、<span class="math">\(1,2, \ldots\)</span>，事实上预定义的<span class="math">\(\mathbb{N}\)</span>类型就提供了此类语法糖。但使用更冗长的表示法能更清晰地展现Lean的类型定义机制。</p>
+<p>对于自然数，可以指示Lean使用熟悉的名称<span class="math">\(\theta,1,2, \ldots\)</span>，事实上预定义的<span class="math">\(\mathbb{N}\)</span>类型就提供了此类语法糖。但使用更冗长的表示法能更清晰地展现Lean的类型定义机制。</p>
 <p>在本章附带的Lean文件中，Nat的定义位于一个由namespace MyNat和end MyNat限定的命名空间内，以将其作用域限制在文件的部分区域。在end MyNat之后，任何出现的Nat、Nat.zero或Nat.succ都将指向Lean预定义的自然数类型。同样地，整个文件被置于LoVe命名空间中，以避免与现有Lean库发生名称冲突。</p>
 <pre><code>inductive LoVe.MyNat.Nat : Type
 number of parameters: 0
 constructors:
 LoVe.MyNat.Nat.zero : Nat
-LoVe.MyNat.Nat.succ : Nat \(\rightarrow\) Nat
+LoVe.MyNat.Nat.succ : Nat <span class="math">\(\rightarrow\)</span> Nat
 </code></pre>
 <p>我们可以在Lean中随时使用#print命令查看之前的定义。例如，在MyNat命名空间内执行#print Nat会显示以下信息：</p>
 
 <p>本指南对自然数的侧重体现了其偏向计算机科学的诸多特点之一。数论学者更关注整数<span class="math">\(\mathbb{Z}\)</span>和有理数<span class="math">\(\mathbb{Q}\)</span>；分析学家则倾向于研究实数<span class="math">\(\mathbb{R}\)</span>和复数<span class="math">\(\mathbb{C}\)</span>。但自然数在计算机科学中无处不在，且作为归纳类型具有极其简洁的定义。如第12章所示，它们还可用于构建其他类型。</p>
 
 <pre><code>inductive AExp : Type where
-    | num : \(\mathbb{Z} \rightarrow\) AExp
-    | var : String \(\rightarrow\) AExp
-    | add : AExp \(\rightarrow\) AExp \(\rightarrow\) AExp
-    | sub : AExp \(\rightarrow\) AExp \(\rightarrow\) AExp
-    | mul : AExp \(\rightarrow\) AExp \(\rightarrow\) AExp
-    | div : AExp \(\rightarrow\) AExp \(\rightarrow\) AExp
+    | num : <span class="math">\(\mathbb{Z} \rightarrow\)</span> AExp
+    | var : String <span class="math">\(\rightarrow\)</span> AExp
+    | add : AExp <span class="math">\(\rightarrow\)</span> AExp <span class="math">\(\rightarrow\)</span> AExp
+    | sub : AExp <span class="math">\(\rightarrow\)</span> AExp <span class="math">\(\rightarrow\)</span> AExp
+    | mul : AExp <span class="math">\(\rightarrow\)</span> AExp <span class="math">\(\rightarrow\)</span> AExp
+    | div : AExp <span class="math">\(\rightarrow\)</span> AExp <span class="math">\(\rightarrow\)</span> AExp
 </code></pre>
 
 <h4>2.1.2 算术表达式的定义</h4>
@@ -605,9 +614,9 @@ class Div(AExp):
         self.right = right
 </code></pre>
 <p>在Python中，类声明如下所示：</p>
-<pre><code>inductive List ( \(\alpha\) : Type) where
-    | nil : List \(\alpha\)
-    | cons : \(\alpha \rightarrow\) List \(\alpha \rightarrow\) List \(\alpha\)
+<pre><code>inductive List ( <span class="math">\(\alpha\)</span> : Type) where
+    | nil : List <span class="math">\(\alpha\)</span>
+    | cons : <span class="math">\(\alpha \rightarrow\)</span> List <span class="math">\(\alpha \rightarrow\)</span> List <span class="math">\(\alpha\)</span>
 </code></pre>
 
 <h4>2.1.3 列表的定义</h4>
@@ -622,8 +631,8 @@ class Div(AExp):
 
 <p>以下命令展示了构造函数的类型：</p>
 
-<pre><code>List.nil : List ?m. 2396
-List.cons : ?m. }2397\mathrm{ -&gt; List ?m.2397 -&gt; List ?m.2397
+<pre><code>List.nil : List ?m.2396
+List.cons : ?m.2397\mathrm{ -&gt; List ?m.2397 -&gt; List ?m.2397
 </code></pre>
 
 <p>输出结果与我们预期的有所不同：</p>
@@ -633,9 +642,9 @@ List.cons : ?m. }2397\mathrm{ -&gt; List ?m.2397 -&gt; List ?m.2397
 
 <div class="math">$$
 \begin{aligned}
-&amp; \text { [] for List.nil } \\
-&amp; \mathrm{x}:: \mathrm{xs} \text { for List.cons x xs } \\
-&amp; {\left[\mathrm{x}_{1}, \ldots, \mathrm{x}_{n}\right]} \text { for } \mathrm{x}_{1}:: \ldots:: \mathrm{x}_{n}::[] \text { }
+ \text { []} & \text{ for List.nil } \\
+ \mathrm{x}:: \mathrm{xs} & \text{ for List.cons x xs } \\
+ {\left[\mathrm{x}_{1}, \ldots, \mathrm{x}_{n}\right]} &\text{ for } \mathrm{x}_{1}:: \ldots:: \mathrm{x}_{n}::[] \text { }
 \end{aligned}
 $$</div>
 
@@ -651,10 +660,10 @@ $$</div>
 <h3>2.2 函数定义</h3>
 <p>若仅需声明函数，可使用opaque命令（1.2节）。但通常我们需要定义函数行为，这时可以使用def命令。由于Lean植根于函数式编程，函数被定义为求值到结果的数学表达式，而非修改状态的命令式程序。因此，递归（而非while或for循环）成为遍历数据的主要机制。</p>
 
-<pre><code>def fib : \(\mathbb{N} \rightarrow \mathbb{N}\)
+<pre><code>def fib : <span class="math">\(\mathbb{N} \rightarrow \mathbb{N}\)</span>
     | 0 =&gt; 0
     | 1 =&gt; 1
-    | \(n+2=&gt;\) fib \((n+1)+\) fib \(n\)
+    | <span class="math">\(n+2=&gt;\)</span> fib <span class="math">\((n+1)+\)</span> fib <span class="math">\(n\)</span>
 </code></pre>
 
 <h3>2.2.1 自然数递归</h3>
@@ -663,10 +672,10 @@ $$</div>
 
 <p>左侧的模式对应于函数的参数。此处，<span class="math">\(f i b\)</span>被声明为接收一个类型为<span class="math">\(\mathbb{N}\)</span>的参数，因此我们对单个自然数进行模式匹配。当输入符合给定形式时，对应的模式会被触发。例如，若输入为1，则模式1与之匹配，并计算对应的右侧表达式。若输入为5，则模式<span class="math">\(n+2\)</span>被触发（其中<span class="math">\(n:=3\)</span>），随后将<span class="math">\(n\)</span>设为3计算右侧表达式，得到fib <span class="math">\(4+\)</span> fib 3。</p>
 
-<pre><code>def name (params \({ }_{1}:\) type \(_{1}\) ) ... (params \(_{m}:\) type \(_{m}\) ) : type
-    | patterns \(_{1}=&gt;\) result \(_{1}\)
-        \}
-    | patterns \(_{n}=&gt;\) result \(_{n}\)
+<pre><code>def name (params <span class="math">\({ }_{1}:\)</span> type <span class="math">\(_{1}\)</span> ) ... (params <span class="math">\(_{m}:\)</span> type <span class="math">\(_{m}\)</span> ) : type
+    | patterns <span class="math">\(_{1}=&gt;\)</span> result <span class="math">\(_{1}\)</span>
+      <span class="math">\(\vdots\)</span>
+    | patterns <span class="math">\(_{n}=&gt;\)</span> result <span class="math">\(_{n}\)</span>
 </code></pre>
 
 <p>递归定义的一般格式为</p>
@@ -674,7 +683,7 @@ $$</div>
 
 <p>参数params<span class="math">\(_{1}\)</span>至params<span class="math">\(_{m}\)</span>不可进行模式匹配，仅能对类型声明中其余参数进行匹配。若单行提供多个模式，则需用逗号分隔。模式可包含变量，这些变量将在对应右侧表达式中可见，构造器亦可包含其中。</p>
 
-<pre><code>def add : \(\mathbb{N} \rightarrow \mathbb{N} \rightarrow \mathbb{N}\)
+<pre><code>def add : <span class="math">\(\mathbb{N} \rightarrow \mathbb{N} \rightarrow \mathbb{N}\)</span>
     | m, Nat.zero =&gt; m
     | m, Nat.succ n =&gt; Nat.succ (add m n)
 </code></pre>
@@ -694,7 +703,7 @@ $$</div>
 
 <p>在每次定义函数时提供若干测试是良好的实践，这能确保其行为符合预期。你甚至可以将#eval或#reduce调用保留在Lean文件中作为文档。</p>
 
-<pre><code>def mul : \(\mathbb{N} \rightarrow \mathbb{N} \rightarrow \mathbb{N}\)
+<pre><code>def mul : <span class="math">\(\mathbb{N} \rightarrow \mathbb{N} \rightarrow \mathbb{N}\)</span>
     | _, Nat.zero =&gt; Nat.zero
     | m, Nat.succ n =&gt; add m (mul m n)
 </code></pre>
@@ -724,9 +733,9 @@ $$</div>
 
 <p>从外部看，这两种定义并无区别。事实上，我们已经在列表构造器（第2.1节）的类型参数<span class="math">\(\alpha\)</span>中见过这种语法。</p>
 
-<pre><code>def iter ( }\alpha\mathrm{ : Type) (z : \alpha)(f : \alpha -&gt; \alpha): N -&gt; \alpha
+<pre><code>def iter (\alpha\mathrm : Type) (z : \alpha)(f : \alpha -&gt; \alpha): N -&gt; \alpha
     | Nat.zero =&gt; z
-    | Nat.succ n =&gt; f (iter }\alpha\mathrm{ z f n)
+    | Nat.succ n =&gt; f (iter \alpha\mathrm{ z f n)
 def powerIter (m n : N) : N :=
     iter N 1 (mul m) n
 </code></pre>
@@ -751,13 +760,13 @@ $$</div>
 <h4>2.2.2 算术表达式的递归处理</h4>
 <p>回到算术表达式的类型定义，如果我们要在Java中实现eval函数，很可能会将其作为AExp接口的一部分，并在每个子类中实现。对于Add、Sub、Mul和Div操作，我们会递归地对左右对象调用eval方法。</p>
 
-<pre><code>def eval (env : String \(\rightarrow \mathbb{Z}\) ) : AExp \(\rightarrow \mathbb{Z}\)
-    | AExp.num i \(\quad=&gt;\) i
-    | AExp.var \(x \quad=&gt;\) env \(x\)
-    | AExp.add \(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\) eval env \(\mathrm{e}_{1}+\) eval env \(\mathrm{e}_{2}\)
-    | AExp.sub \(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\) eval env \(\mathrm{e}_{1}-\) eval env \(\mathrm{e}_{2}\)
-    | AExp.mul \(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\) eval env \(\mathrm{e}_{1}+\) eval env \(\mathrm{e}_{2}\)
-    | AExp.div \(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\) eval env \(\mathrm{e}_{1} /\) eval env \(\mathrm{e}_{2}\)
+<pre><code>def eval (env : String <span class="math">\(\rightarrow \mathbb{Z}\)</span> ) : AExp <span class="math">\(\rightarrow \mathbb{Z}\)</span>
+    | AExp.num i <span class="math">\(\quad=&gt;\)</span> i
+    | AExp.var <span class="math">\(x \quad=&gt;\)</span> env <span class="math">\(x\)</span>
+    | AExp.add <span class="math">\(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\)</span> eval env <span class="math">\(\mathrm{e}_{1}+\)</span> eval env <span class="math">\(\mathrm{e}_{2}\)</span>
+    | AExp.sub <span class="math">\(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\)</span> eval env <span class="math">\(\mathrm{e}_{1}-\)</span> eval env <span class="math">\(\mathrm{e}_{2}\)</span>
+    | AExp.mul <span class="math">\(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\)</span> eval env <span class="math">\(\mathrm{e}_{1}+\)</span> eval env <span class="math">\(\mathrm{e}_{2}\)</span>
+    | AExp.div <span class="math">\(\mathrm{e}_{1} \mathrm{e}_{2} \Rightarrow\)</span> eval env <span class="math">\(\mathrm{e}_{1} /\)</span> eval env <span class="math">\(\mathrm{e}_{2}\)</span>
 </code></pre>
 
 <p>在Lean中，语法非常简洁。我们定义一个单一函数，并通过模式匹配来区分六种情况：</p>
@@ -844,10 +853,10 @@ theorem reverse_reverse { }\alpha\mathrm{ : Type} (xs : List }\alpha\mathrm{ ) :
 
 <p>符号:=用于分隔定理陈述与其证明。定理的语法与不带模式匹配的def命令非常相似，其中用statement替代type，用proof替代result。在上述示例中，我们使用标记sorry作为实际证明的占位符。这个标记字面上是对未来读者和Lean系统缺失证明的致歉，同时也是需要我们消除的隐患。在第三、四章中，我们将学习如何实现这一点。</p>
 
-<pre><code>opaque a : \(\mathbb{Z}\)
-opaque b : \(\mathbb{Z}\)
+<pre><code>opaque a : <span class="math">\(\mathbb{Z}\)</span>
+opaque b : <span class="math">\(\mathbb{Z}\)</span>
 axiom a_less_b :
-    \(a&lt;b\)
+    <span class="math">\(a&lt;b\)</span>
 </code></pre>
 <p>使用sorry作为证明的定理命令的直观语义是："这个命题应该是可证明的，但我尚未完成证明过程——抱歉。"有时，我们想表达一个相关的概念，即"让我们假设这个命题成立"。为此，Lean提供了axiom命令，该命令常与opaque配合使用。例如：</p>
 <pre><code>axiom name (params; : type; ) ... (paramsm : type m):
@@ -1080,7 +1089,7 @@ $$</div>
 <p>我们在第2章遇到的sorry证明命令，可作为策略用于战术证明的任何阶段。它会"证明"当前目标而无需实际验证，使用时需谨慎。</p>
 
 <pre><code>theorem And_swap (a b : Prop) :
-    \(a \wedge b \rightarrow b \wedge a:=\)
+    <span class="math">\(a \wedge b \rightarrow b \wedge a:=\)</span>
     by
         intro hab
         apply And.intro
@@ -1094,9 +1103,9 @@ $$</div>
 
 <p>在此，我们建议您将光标悬停在Visual Studio Code中的示例上，以查看证明状态的序列。通过将光标置于每条命令上或紧随其后，您可以看到该行命令产生的效果。对于最后一行，Lean仅会显示“无目标”。</p>
 
-<pre><code>And.intro \(: ? a \rightarrow ? b \rightarrow ? a \wedge ? b\)
-    And.left : ?a \(\wedge\) ?b \(\rightarrow\) ?a
-And.right : ?a \(\wedge\) ?b \(\rightarrow\) b
+<pre><code>And.intro <span class="math">\(: ? a \rightarrow ? b \rightarrow ? a \wedge ? b\)</span>
+    And.left : ?a <span class="math">\(\wedge\)</span> ?b <span class="math">\(\rightarrow\)</span> ?a
+And.right : ?a <span class="math">\(\wedge\)</span> ?b <span class="math">\(\rightarrow\)</span> b
 </code></pre>
 <p>该证明采用了典型的引入-应用-精确化混合策略。它运用了以下定理：</p>
 
@@ -1122,7 +1131,7 @@ $$</div>
 <p>在Lean中，统一性检查会考虑计算等价性。例如，项 (fun <span class="math">\(x \mapsto\)</span> ?m) a 和 b 可以通过设定 <span class="math">\(? \mathrm{~m}:=\mathrm{b}\)</span> 实现统一，因为 (fun <span class="math">\(\mathrm{x} \mapsto \mathrm{b}\)</span> ) a 和 <span class="math">\(b\)</span> 在<span class="math">\(\beta\)</span>-规约下是语法等价的。</p>
 
 <pre><code>theorem And_swap_braces :
-    Ya b : Prop, a \(\wedge b \rightarrow b \wedge a:=\)
+    Ya b : Prop, a <span class="math">\(\wedge b \rightarrow b \wedge a:=\)</span>
     by
     intro a b hab
     apply And.intro
@@ -1175,14 +1184,14 @@ $$</div>
 
 <p>等价关系<span class="math">\((\leftrightarrow)\)</span>的引入与消解规则如下：</p>
 
-<pre><code>Exists.intro: \(\forall w,(? P w \rightarrow(\exists x, ? P x))\)
-Exists.elm: \((\exists x, ? P x) \rightarrow(\forall a, ? P a \rightarrow ? c) \rightarrow ? c\)
+<pre><code>Exists.intro: <span class="math">\(\forall w,(? P w \rightarrow(\exists x, ? P x))\)</span>
+Exists.elm: <span class="math">\((\exists x, ? P x) \rightarrow(\forall a, ? P a \rightarrow ? c) \rightarrow ? c\)</span>
 </code></pre>
 
 <p>存在量词（<span class="math">\(\exists\)</span>）的引入与消解规则如下：</p>
 
 <pre><code>theorem Exists_double_iden :
-    \(\exists n: N\), double \(n=n:=\)
+    <span class="math">\(\exists n: N\)</span>, double <span class="math">\(n=n:=\)</span>
     by
     apply Exists.intro \o
     rfl
@@ -1248,13 +1257,13 @@ $$</div>
 
 <p>前三个定理是指明等号=作为等价关系的引入规则。第四个定理是消解规则，允许我们在由元变量?P表示的任意上下文中进行等量替换。</p>
 
-<pre><code>theorem Eq_trans_symm \(\{\alpha\) : Type\} (a b c : \(\alpha\) )
+<pre><code>theorem Eq_trans_symm <span class="math">\(\{\alpha\)</span> : Type\} (a b c : <span class="math">\(\alpha\)</span> )
     (hab : a = b) (hcb : c = b) :
-    \(a=c:=\)
+    <span class="math">\(a=c:=\)</span>
     by
     apply Eq.trans
-    \(\{\) exact hab \}
-    \(\{\) apply Eq.symm
+    <span class="math">\(\{\)</span> exact hab \}
+    <span class="math">\(\{\)</span> apply Eq.symm
         exact hcb \}
 </code></pre>
 <p>以下示例将展示部分规则的实际应用。我们通过应用Eq.trans和Eq.symm规则，利用等式<span class="math">\(a=b\)</span>和<span class="math">\(c=b\)</span>来证明<span class="math">\(a=c\)</span>：</p>
@@ -1312,12 +1321,12 @@ simp [theorem-or-constant <span class="math">\(\left.{ }_{1}, \ldots\right, \tex
 
 <h3>3.6 数学归纳法证明</h3>
 <p>induction策略对归纳类型的值执行结构归纳法。结构归纳意味着归纳过程遵循归纳类型的结构。对于由Nat.zero和Nat.succ构造的自然数，结构归纳对应于标准数学归纳法：要证明p n，只需证明<span class="math">\(p \ominus\)</span>和<span class="math">\(\forall k, p k \rightarrow p(k * 1)\)</span>。借助归纳法，我们可以对第2.2节中通过递归定义的加法和乘法运算进行推理。</p>
-<pre><code>theorem add_zero ( \(n: \mathbb{N}\) ) :
-    add \(\odot n=n:=\)
+<pre><code>theorem add_zero ( <span class="math">\(n: \mathbb{N}\)</span> ) :
+    add <span class="math">\(\odot n=n:=\)</span>
     by
         induction n with
-        | zero \(\quad=&gt;r f l\)
-        | succ \(n^{\prime}\) ih =&gt; simp [add, ih]
+        | zero <span class="math">\(\quad=&gt;r f l\)</span>
+        | succ <span class="math">\(n^{\prime}\)</span> ih =&gt; simp [add, ih]
 </code></pre>
 
 <p>加法是通过对其第二个参数进行递归定义的。我们将证明两个定理：add_zero和add_succ，它们提供了基于第一个参数递归的替代等式。我们从add_zero开始：</p>
@@ -1494,8 +1503,8 @@ show a from
 假设(ha) a与(<span class="math">\(h b\)</span>) b为真。
 需证a。这显然可由ha直接得出。
 部分作者会在"命题"前加入"任意但固定"等限定词，或表述为"设a和b为某些命题"。这些变体表述均等价。此外，可用"QED"替代<span class="math">\(\square\)</span>来结束证明。</p>
-<pre><code>theorem prop_comp (a b c : Prop) (hab : a \(\rightarrow\) b) (hbc : b \(\rightarrow\) c) :
-        \(a \rightarrow c:=\)
+<pre><code>theorem prop_comp (a b c : Prop) (hab : a <span class="math">\(\rightarrow\)</span> b) (hbc : b <span class="math">\(\rightarrow\)</span> c) :
+        <span class="math">\(a \rightarrow c:=\)</span>
     assume ha : a
     have hb : b :=
         hab ha
@@ -1546,7 +1555,7 @@ show R from ...
 <p>前一节介绍了编写结构化证明的主要命令：fix、assume、have和show。现在我们将更系统地回顾结构化证明的各个组成部分。</p>
 
 <pre><code>theorem two_add_two_Eq_four :
-    \(2+2=4:=\)
+    <span class="math">\(2+2=4:=\)</span>
     by ...
 </code></pre>
 
@@ -1554,7 +1563,7 @@ show R from ...
 <p>除了sorry之外，最简单的结构化证明就是定理或假设的名称。如果我们有</p>
 
 <pre><code>theorem this_time_with_feeling :
-    \(2+2=4:=\)
+    <span class="math">\(2+2=4:=\)</span>
     two_add_two_Eq_four
 </code></pre>
 
@@ -1604,13 +1613,13 @@ let命令用于引入新的局部定义。该命令可为后续证明中多次�
 <p>show命令允许我们重复显示待证明目标，这可以作为有效的文档记录手段。该命令还支持通过计算等价的方式对目标进行语法重构。若无需重复目标或进行语法重构，可直接使用proof替代show proposition from proof的语法结构。此类证明既可采用策略式也可采用结构化形式。</p>
 
 <pre><code>theorem And_swap (a b : Prop) :
-    a \(\wedge b \rightarrow b \wedge a:=\)
-assume hab : a \(\wedge b\)
+    a <span class="math">\(\wedge b \rightarrow b \wedge a:=\)</span>
+assume hab : a <span class="math">\(\wedge b\)</span>
 have ha : a :=
     And.left hab
 have hb : b :=
     And.right hab
-show b \(\wedge\) a from
+show b <span class="math">\(\wedge\)</span> a from
     And.intro hb ha
 </code></pre>
 
@@ -1618,7 +1627,7 @@ show b \(\wedge\) a from
 <p>以正向方式对逻辑连接词和量词进行推理时，使用的引入与消解规则与策略模式相同（第3.3节）。以下示例将展示其基本思路。让我们从合取开始：</p>
 
 <pre><code>theorem And_swap_tactical (a b : Prop) :
-    a \(\wedge b \rightarrow b \wedge a:=\)
+    a <span class="math">\(\wedge b \rightarrow b \wedge a:=\)</span>
     by
         intro hab
         apply And.intro
@@ -1633,18 +1642,18 @@ show b \(\wedge\) a from
 
 <p>一般而言，逆向证明更容易"无脑"推导，且证明辅助工具提供的大多数自动化操作都是逆向进行的。这很合理：假设你是马普尔小姐或赫尔克里·波洛正在调查谋杀案。逆向调查会从犯罪现场出发，试图提取能将少数嫌疑人与罪行联系起来的线索。相比之下，正向调查可能要从多达80亿人中逐一询问不在场证明。哪种方法更可能成功？</p>
 
-<pre><code>theorem Forall.one_point \(\{\alpha\) : Type\} (t : \(\alpha\) ) (P : \(\alpha \rightarrow\) Prop) :
-    \((\forall x, x=t \rightarrow P x) \leftrightarrow P t:=\)
+<pre><code>theorem Forall.one_point <span class="math">\(\{\alpha\)</span> : Type\} (t : <span class="math">\(\alpha\)</span> ) (P : <span class="math">\(\alpha \rightarrow\)</span> Prop) :
+    <span class="math">\((\forall x, x=t \rightarrow P x) \leftrightarrow P t:=\)</span>
     Iff.intro
-    (assume hall : \(\forall x, x=t \rightarrow P x\)
-        show \(P\) t from
+    (assume hall : <span class="math">\(\forall x, x=t \rightarrow P x\)</span>
+        show <span class="math">\(P\)</span> t from
             by
-                apply hall \(t\)
+                apply hall <span class="math">\(t\)</span>
                 rfl)
     (assume hp : P t
-    fix \(x: \alpha\)
-    assume heq : \(x=t\)
-    show \(P\) x from
+    fix <span class="math">\(x: \alpha\)</span>
+    assume heq : <span class="math">\(x=t\)</span>
+    show <span class="math">\(P\)</span> x from
         by
             rw [heq]
             exact hp )
@@ -1660,8 +1669,8 @@ show b \(\wedge\) a from
 
 <p>核心思想在于证明应始终保持语法正确性。在Visual Studio Code中，我们唯一应看到的红色下划线应仅出现在占位符下方。一般而言，证明开发的一个良好原则是：从一个可编译的证明开始，进行最小可能的修改以获得新的可编译证明，如此重复直至证明完成。</p>
 <pre><code>Iff.intro
-    (assume hall : \(\forall x, x=t \rightarrow P x\)
-        show \(P\) t from
+    (assume hall : <span class="math">\(\forall x, x=t \rightarrow P x\)</span>
+        show <span class="math">\(P\)</span> t from
             _ )
     (_)
 </code></pre>
@@ -1669,10 +1678,10 @@ show b \(\wedge\) a from
 <p>将鼠标悬停在第一个占位符上会显示对应的子目标。我们可以看到Lean期望得到一个<span class="math">\(\vdash(\forall x, x=t \rightarrow P x) \rightarrow P t\)</span>的证明，因此我们提供了一个合适的框架。结构化证明一个蕴含式通常由assume后接show组成：</p>
 
 <pre><code>Iff.intro
-    (assume hall : \(\forall x, x=t \rightarrow P x\)
-        show \(P t\) from
+    (assume hall : <span class="math">\(\forall x, x=t \rightarrow P x\)</span>
+        show <span class="math">\(P t\)</span> from
             by
-                apply hall \(t\)
+                apply hall <span class="math">\(t\)</span>
                 rfl))
     (_)
 </code></pre>
@@ -1680,18 +1689,18 @@ show b \(\wedge\) a from
 <p>剩余的每个占位符都可以用结构化证明或策略证明来替换。要消除第一个占位符，我们进入策略模式并应用假设<span class="math">\(\forall x, x=t \rightarrow P x\)</span>的实例<span class="math">\(t=t \rightarrow P t\)</span>到目标<span class="math">\(\vdash P t\)</span>上。这会留下证明义务<span class="math">\(t=t\)</span>，我们使用rfl策略来完成该证明：</p>
 
 <pre><code>(assume hp : P t
-fix x : \(\alpha\)
-assume heq : \(x=t\)
-show \(P x\) from
+fix x : <span class="math">\(\alpha\)</span>
+assume heq : <span class="math">\(x=t\)</span>
+show <span class="math">\(P x\)</span> from
     _ )
 </code></pre>
 
 <p>第二个占位符表示<span class="math">\(\vdash P t \rightarrow \forall x, x=t \rightarrow P x\)</span>。要消除它，我们针对第一个蕴含的假设使用assume指令，对<span class="math">\(\forall\)</span>使用fix指令，对第二个蕴含的假设使用assume指令，并为结论部分使用show指令：</p>
 
 <pre><code>(assume hp : P t
-fix \(x: \alpha\)
-assume heq : \(x=t\)
-show \(P x\) from
+fix <span class="math">\(x: \alpha\)</span>
+assume heq : <span class="math">\(x=t\)</span>
+show <span class="math">\(P x\)</span> from
     by
         rw [heq]
         exact hp )
@@ -1700,7 +1709,7 @@ show \(P x\) from
 <p>该证明过程采用策略性操作：我们将<span class="math">\(\vdash P x\)</span>中的<span class="math">\(x\)</span>重写为<span class="math">\(t\)</span>，得到<span class="math">\(\vdash P t\)</span>，这与假设hp相匹配：</p>
 
 <pre><code>theorem beast_666 (beast : N) :
-    \((\forall n, n=666 \rightarrow\) beast \(\geq n) \leftrightarrow\) beast \(\geq 666:=\)
+    <span class="math">\((\forall n, n=666 \rightarrow\)</span> beast <span class="math">\(\geq n) \leftrightarrow\)</span> beast <span class="math">\(\geq 666:=\)</span>
 Forall.one_point _ _
 </code></pre>
 
@@ -1709,15 +1718,15 @@ Forall.one_point _ _
 
 <p>确实有效。除了使用 Forall. one_point __，我们也可以写成 Forall. one_point 666 (fun <span class="math">\(m \mapsto\)</span> beast <span class="math">\(\geq m\)</span> )。</p>
 
-<pre><code>theorem Exists.one_point \(\{\alpha\) : Type\}(t : \(\alpha\) ) (P : \(\alpha \rightarrow\) Prop) :
-    \((\exists x: \alpha, x=t \wedge P x) \leftrightarrow P t:=\)
+<pre><code>theorem Exists.one_point <span class="math">\(\{\alpha\)</span> : Type\}(t : <span class="math">\(\alpha\)</span> ) (P : <span class="math">\(\alpha \rightarrow\)</span> Prop) :
+    <span class="math">\((\exists x: \alpha, x=t \wedge P x) \leftrightarrow P t:=\)</span>
     Iff.intro
-    (assume hex : \(\exists x, x=t \wedge P x\)
-        show \(P t\) from
+    (assume hex : <span class="math">\(\exists x, x=t \wedge P x\)</span>
+        show <span class="math">\(P t\)</span> from
             Exists.elim hex
-            (fix \(x: \alpha\)
-                assume hand : \(x=t \wedge P x\)
-                have hxt : \(x=t:=\)
+            (fix <span class="math">\(x: \alpha\)</span>
+                assume hand : <span class="math">\(x=t \wedge P x\)</span>
+                have hxt : <span class="math">\(x=t:=\)</span>
 
         And.left hand
         have hpx : P x :=
@@ -1727,11 +1736,11 @@ Forall.one_point _ _
                 rw [ \leftarrowhxt]
                 exact hpx))
 (assume hp : P t
-    show \(\exists x: \alpha, x=t \wedge P x\) from
-        Exists.intro \(t\)
-            (have tt : \(t=t:=\)
+    show <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span> from
+        Exists.intro <span class="math">\(t\)</span>
+            (have tt : <span class="math">\(t=t:=\)</span>
                 by rfl
-            show \(t=t \wedge P t\) from
+            show <span class="math">\(t=t \wedge P t\)</span> from
                 And.intro tt hp))
 </code></pre>
 
@@ -1744,8 +1753,8 @@ Forall.one_point _ _
 </code></pre>
 <p>首先，我们使用<span class="math">\(\leftrightarrow\)</span>的引入规则：</p>
 <pre><code>Iff.intro
-    (assume hex : \(\exists x: \alpha, x=t \wedge P x\)
-        show \(P t\) from
+    (assume hex : <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span>
+        show <span class="math">\(P t\)</span> from
             _ )
     (_)
 </code></pre>
@@ -1753,8 +1762,8 @@ Forall.one_point _ _
 <p>对于第一个占位符，我们需要在假设<span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span>下提供<span class="math">\(P t\)</span>的证明。因此，我们将证明框架扩展为</p>
 
 <pre><code>Iff.intro
-    (assume hex : \(\exists x: \alpha, x=t \wedge P x\)
-        show \(P t\) from
+    (assume hex : <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span>
+        show <span class="math">\(P t\)</span> from
             Exists.elim hex (_))
     (_)
 </code></pre>
@@ -1762,12 +1771,12 @@ Forall.one_point _ _
 <p>此时，我们需要从假设hex中提取关于<span class="math">\(x\)</span>的见证。为此，我们使用<span class="math">\(\exists\)</span>的消解规则：</p>
 
 <pre><code>Iff.intro
-    (assume hex : \(\exists x: \alpha, x=t \wedge P x\)
-        show \(P t\) from
+    (assume hex : <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span>
+        show <span class="math">\(P t\)</span> from
             Exists.elim hex
-            (fix \(x: \alpha\)
-            assume hand : \(x=t \wedge P x\)
-            show \(P t\) from
+            (fix <span class="math">\(x: \alpha\)</span>
+            assume hand : <span class="math">\(x=t \wedge P x\)</span>
+            show <span class="math">\(P t\)</span> from
                 _))
 (_)
 </code></pre>
@@ -1775,16 +1784,16 @@ Forall.one_point _ _
 <p>第一个占位符要求提供子目标<span class="math">\(\vdash \forall x, x=t \wedge P x \rightarrow P t\)</span>的证明。我们简要描述如下：</p>
 
 <pre><code>Iff.intro
-    (assume hex : \(\exists x: \alpha, x=t \wedge P x\)
-        show \(P\) t from
+    (assume hex : <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span>
+        show <span class="math">\(P\)</span> t from
             Exists.elim hex
-            (fix \(x: \alpha\)
-                assume hand : \(x=t \wedge P x\)
-                have hxt : \(x=t\) :=
+            (fix <span class="math">\(x: \alpha\)</span>
+                assume hand : <span class="math">\(x=t \wedge P x\)</span>
+                have hxt : <span class="math">\(x=t\)</span> :=
                     And.left hand
                 have hpx : P x :=
                     And.right hand
-                show \(P\) t from
+                show <span class="math">\(P\)</span> t from
                     _))
     (_)
 </code></pre>
@@ -1792,16 +1801,16 @@ Forall.one_point _ _
 <p>注意子证明如何镜像地对应子目标：fix对应<span class="math">\(\forall\)</span>，assume对应<span class="math">\(\rightarrow\)</span>的假设部分，show对应<span class="math">\(\rightarrow\)</span>的结论部分。此时我们可以访问见证者<span class="math">\(x\)</span>及其特征性质<span class="math">\(x=t \wedge P x\)</span>。接着通过have命令和<span class="math">\(\wedge\)</span>的消解规则（And.left与And.right）提取<span class="math">\(x=t \wedge P x\)</span>的两个合取项：</p>
 
 <pre><code>Iff.intro
-    (assume hex : \(\exists x: \alpha, x=t \wedge P x\)
-        show \(P\) t from
+    (assume hex : <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span>
+        show <span class="math">\(P\)</span> t from
             Exists.elim hex
-            (fix \(x: \alpha\)
-                assume hand : \(x=t \wedge P x\)
-                have hxt : \(x=t\) :=
+            (fix <span class="math">\(x: \alpha\)</span>
+                assume hand : <span class="math">\(x=t \wedge P x\)</span>
+                have hxt : <span class="math">\(x=t\)</span> :=
                     And.left hand
                 have hpx : P x :=
                     And.right hand
-                show \(P\) t from
+                show <span class="math">\(P\)</span> t from
                     by
                         rw [t-hxt]
                         exact hpx))
@@ -1811,19 +1820,19 @@ Forall.one_point _ _
 <p>现在我们可以尝试证明<span class="math">\(P t\)</span>。我们将<span class="math">\(t\)</span>重写为<span class="math">\(x\)</span>并应用假设P x：</p>
 
 <pre><code>(assume hp : P t
-    show \(\exists x: \alpha, x=t \wedge P x\) from
+    show <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span> from
     _ )
 </code></pre>
 
 <p>对于剩余的占位符，我们首先基于子目标<span class="math">\(\vdash \mathrm{Pt} \rightarrow \exists \mathrm{x}: \alpha, \mathrm{x}=\mathrm{t} \wedge \mathrm{Px}\)</span>提供一个证明框架：</p>
 
 <pre><code>(assume hp : P t
-    show \(\exists x: \alpha, x=t \wedge P x\) from
+    show <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span> from
         Exists.intro t (_))
 </code></pre>
 <p>随后我们运用<span class="math">\(\exists\)</span>的引入规则来提供见证项<span class="math">\(t\)</span>：</p>
 <pre><code>(assume hp : P t
-    show \(\exists x: \alpha, x=t \wedge P x\) from
+    show <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span> from
         Exists.intro t
 </code></pre>
 <div class="math">$$
@@ -1836,11 +1845,11 @@ $$</div>
 <p>接下来是更多的模板化步骤：</p>
 
 <pre><code>(assume hp : P t
-    show \(\exists x: \alpha, x=t \wedge P x\) from
-        Exists.intro \(t\)
-            (have tt : \(t=t:=\)
+    show <span class="math">\(\exists x: \alpha, x=t \wedge P x\)</span> from
+        Exists.intro <span class="math">\(t\)</span>
+            (have tt : <span class="math">\(t=t:=\)</span>
                 by rfl
-            show \(t=t \wedge P t\) from
+            show <span class="math">\(t=t \wedge P t\)</span> from
                 And.intro tt hp))
 </code></pre>
 
@@ -1853,13 +1862,13 @@ $$</div>
 
 <pre><code>calc
     term
-        \(o p_{1}\) term \(_{1}:=\)
-        proo \(f_{1}\)
-    _ \(o p_{2}\) term \(_{2}:=\)
-        proo \(f_{2}\)
-        \(\vdots\)
-    _op \(_{n}\) term \(_{n}:=\)
-        proo \(f_{n}\)
+        <span class="math">\(o p_{1}\)</span> term <span class="math">\(_{1}:=\)</span>
+        proo <span class="math">\(f_{1}\)</span>
+    _ <span class="math">\(o p_{2}\)</span> term <span class="math">\(_{2}:=\)</span>
+        proo <span class="math">\(f_{2}\)</span>
+        <span class="math">\(\vdots\)</span>
+    _op <span class="math">\(_{n}\)</span> term <span class="math">\(_{n}:=\)</span>
+        proo <span class="math">\(f_{n}\)</span>
 </code></pre>
 
 <p>通用语法格式如下：</p>
@@ -1894,10 +1903,10 @@ $$</div>
 <p>数学家们（假设他们愿意为如此简单的结果提供证明）可能会将上述证明大致写成如下形式：</p>
 
 <pre><code>theorem two_mul_example_have (m n : N) :
-    \(2 * m+n=m+n+m:=\)
-    have hmul : \(2 * m+n=m+m+n:=\)
+    <span class="math">\(2 * m+n=m+n+m:=\)</span>
+    have hmul : <span class="math">\(2 * m+n=m+m+n:=\)</span>
         by rw [Nat.two_mul]
-    have hcomm : \(m+m+n=m+n+m:=\)
+    have hcomm : <span class="math">\(m+m+n=m+n+m:=\)</span>
         by ac_rfl
     show _ from
         Eq.trans hmul hcomm
@@ -1910,14 +1919,14 @@ $$</div>
 <h3>4.5 使用策略进行前向推理</h3>
 <p>许多用户更倾向于使用策略模式而非结构化证明。但即使在策略模式下，混合前向与后向推理步骤的前向推理方式仍颇具价值。结构化证明命令have、let和calc同样可作为策略使用，这使得此类推理成为可能。</p>
 
-<pre><code>theorem prop_comp_tactical (a b c : Prop) (hab : a \(\rightarrow\) b)
-    (hbc : b \(\rightarrow\) c) :
-    a \(\rightarrow\) c :=
+<pre><code>theorem prop_comp_tactical (a b c : Prop) (hab : a <span class="math">\(\rightarrow\)</span> b)
+    (hbc : b <span class="math">\(\rightarrow\)</span> c) :
+    a <span class="math">\(\rightarrow\)</span> c :=
     by
         intro ha
         have hb : b :=
             hab ha
-        let \(c^{\prime}:=c\)
+        let <span class="math">\(c^{\prime}:=c\)</span>
         have hc : c' :=
             hbc hb
         exact hc
@@ -1937,13 +1946,13 @@ have策略允许我们在策略模式中陈述并证明一个中间定理。随�
 let 策略允许我们在策略模式中引入局部定义。随后，该定义符号及其定义将在目标状态中可用。</p>
 
 <pre><code>calc
-    term \(_{0}\) op \(_{1}\) term \(_{1}:=\)
-        proof \(_{1}\)
-    _ op \(_{2}\) term \(_{2}:=\)
-        proof \(_{2}\)
+    term <span class="math">\(_{0}\)</span> op <span class="math">\(_{1}\)</span> term <span class="math">\(_{1}:=\)</span>
+        proof <span class="math">\(_{1}\)</span>
+    _ op <span class="math">\(_{2}\)</span> term <span class="math">\(_{2}:=\)</span>
+        proof <span class="math">\(_{2}\)</span>
             \vdots
-    _ op \(_{n}\) term \(_{n}:=\)
-        proof \(_{n}\)
+    _ op <span class="math">\(_{n}\)</span> term <span class="math">\(_{n}:=\)</span>
+        proof <span class="math">\(_{n}\)</span>
 </code></pre>
 
 <h4>calc</h4>
@@ -2089,10 +2098,10 @@ $$</div>
 </ul>
 
 <pre><code>theorem case_4 :
-    \(P \rightarrow Q:=\)
-    assume \(h: P\)
-    show \(Q\) from
-        \(H[h]\)
+    <span class="math">\(P \rightarrow Q:=\)</span>
+    assume <span class="math">\(h: P\)</span>
+    show <span class="math">\(Q\)</span> from
+        <span class="math">\(H[h]\)</span>
 </code></pre>
 
 <p>定理 case_5：
@@ -2175,15 +2184,15 @@ $$</div>
 <h3>4.8 基于模式匹配与递归的归纳法</h3>
 <p>在3.6节中，我们回顾了使用归纳策略进行归纳证明的方法。另一种更灵活的方式则依赖于模式匹配和PAT原理。</p>
 
-<pre><code>def reverse \(\{\alpha\) : Type \} : List \(\alpha \rightarrow\) List \(\alpha\)
-    | [] \(\Rightarrow\) []\(x:: x s=&gt;\) reverse \(x s++[x]\)
+<pre><code>def reverse <span class="math">\(\{\alpha\)</span> : Type \} : List <span class="math">\(\alpha \rightarrow\)</span> List <span class="math">\(\alpha\)</span>
+    | [] <span class="math">\(\Rightarrow\)</span> []<span class="math">\(x:: x s=&gt;\)</span> reverse <span class="math">\(x s++[x]\)</span>
 </code></pre>
 
 <p>回顾2.2.3节末尾对列表反转的定义：</p>
 
-<pre><code>theorem reverse_append \(\{\alpha\) : Type \} :
-    \(\forall x s\) ys : List \(\alpha\),
-        reverse \((x s++y s)=\) reverse ys ++ reverse xs
+<pre><code>theorem reverse_append <span class="math">\(\{\alpha\)</span> : Type \} :
+    <span class="math">\(\forall x s\)</span> ys : List <span class="math">\(\alpha\)</span>,
+        reverse <span class="math">\((x s++y s)=\)</span> reverse ys ++ reverse xs
     | [], ys =&gt; by simp [reverse]
     | x :: xs, ys =&gt; by simp [reverse, reverse_append xs]
 </code></pre>
@@ -2209,11 +2218,11 @@ ih : <span class="math">\(\forall x s\)</span>, reverse (reverse <span class="ma
 
 <p>若将[y]替代ys，该定理同样可证且有用。但养成尽可能普遍地陈述定理的习惯是良好的，这能产生更具可复用性的代码库。此外，在归纳证明中，这通常是获得足够强归纳假设的必要条件。一般而言，寻找恰当的归纳方式和定理需要思考与创造性。</p>
 
-<pre><code>theorem name (params \(\left.{ }_{1}: \operatorname{type}_{1}\right) \ldots\left(\right.\) params \(_{n}:\) type \(_{m}\) ) :
+<pre><code>theorem name (params <span class="math">\(\left.{ }_{1}: \operatorname{type}_{1}\right) \ldots\left(\right.\)</span> params <span class="math">\(_{n}:\)</span> type <span class="math">\(_{m}\)</span> ) :
     statement
-    | patterns \(_{1}=&gt;\) proof \(_{1}\)
+    | patterns <span class="math">\(_{1}=&gt;\)</span> proof <span class="math">\(_{1}\)</span>
         \vdots
-    | patterns \(_{n}=&gt;\) proof \(_{n}\)
+    | patterns <span class="math">\(_{n}=&gt;\)</span> proof <span class="math">\(_{n}\)</span>
 </code></pre>
 
 <p>支持对多个变量进行同步模式匹配（例如上文中的xs和ys）。各模式之间需用逗号分隔，其通用格式为</p>
@@ -2222,10 +2231,10 @@ ih : <span class="math">\(\forall x s\)</span>, reverse (reverse <span class="ma
 
 <p>根据PAT原理，通过模式匹配和递归进行的归纳证明与递归证明项是相同的。当我们调用归纳假设时，实际上就是在递归地调用一个递归函数。这解释了为什么归纳假设与我们证明的定理具有相同的名称。Lean的终止检查器用于确立归纳证明的良基性。</p>
 
-<pre><code>theorem reverse_reverse \(\{\alpha\) : Type \} :
-    \(\forall x s\) : List \(\alpha\), reverse (reverse \(x s)=x s\)
-    | [] \(\quad=&gt;\) by rfl
-    \(\mid x:: x s=&gt;\)
+<pre><code>theorem reverse_reverse <span class="math">\(\{\alpha\)</span> : Type \} :
+    <span class="math">\(\forall x s\)</span> : List <span class="math">\(\alpha\)</span>, reverse (reverse <span class="math">\(x s)=x s\)</span>
+    | [] <span class="math">\(\quad=&gt;\)</span> by rfl
+    <span class="math">\(\mid x:: x s=&gt;\)</span>
     by simp [reverse, reverse_append, reverse_reverse xs]
 </code></pre>
 
@@ -2294,7 +2303,7 @@ ih : <span class="math">\(\forall x s\)</span>, reverse (reverse <span class="ma
 <p>归纳类型的建模灵感来源于类型化函数式编程语言（如Haskell、ML、OCaml）的数据类型，同时也让人联想到Scala中的密封类。在第2章中，我们已经接触过一些基础的归纳类型：自然数、算术表达式类型以及有限列表。本章我们将重新审视列表结构，并研究二叉树。此外，我们还将简要探讨长度为<span class="math">\(n\)</span>的向量——一种依赖类型。</p>
 <pre><code>inductive Nat : Type where
     | zero : Nat
-    | succ : Nat \(\rightarrow\) Nat
+    | succ : Nat <span class="math">\(\rightarrow\)</span> Nat
 </code></pre>
 
 <p>回顾将自然数定义为归纳类型的定义：</p>
@@ -2364,9 +2373,9 @@ $$</div>
 
 <p>对于算术表达式，基本情况是</p>
 
-<pre><code>\(\mathrm{e}_{1} \mathrm{e}_{2}:\) AExp, ih \(_{1}: \mathrm{P}\left[\mathrm{e}_{1}\right]\), ih \(_{2}: \mathrm{P}\left[\mathrm{e}_{2}\right] \vdash \mathrm{P}\left[\mathrm{AExp} . \mathrm{add} \mathrm{e}_{1} \mathrm{e}_{2}\right]\)
-\(e_{1} e_{2}:\) AExp, ih \(_{1}: \mathrm{P}\left[\mathrm{e}_{1}\right]\), ih \(_{2}: \mathrm{P}\left[\mathrm{e}_{2}\right] \vdash \mathrm{P}\left[\mathrm{AExp} . \operatorname{sub} \mathrm{e}_{1} \mathrm{e}_{2}\right]\)
-\(e_{1} e_{2}:\) AExp, ih \(_{1}: \mathrm{P}\left[\mathrm{e}_{1}\right]\), ih \(_{2}: \mathrm{P}\left[\mathrm{e}_{2}\right] \vdash \mathrm{P}\left[\mathrm{AExp} . \mathrm{mul} \mathrm{e}_{1} \mathrm{e}_{2}\right]\)
+<pre><code><span class="math">\(\mathrm{e}_{1} \mathrm{e}_{2}:\)</span> AExp, ih <span class="math">\(_{1}: \mathrm{P}\left[\mathrm{e}_{1}\right]\)</span>, ih <span class="math">\(_{2}: \mathrm{P}\left[\mathrm{e}_{2}\right] \vdash \mathrm{P}\left[\mathrm{AExp} . \mathrm{add} \mathrm{e}_{1} \mathrm{e}_{2}\right]\)</span>
+<span class="math">\(e_{1} e_{2}:\)</span> AExp, ih <span class="math">\(_{1}: \mathrm{P}\left[\mathrm{e}_{1}\right]\)</span>, ih <span class="math">\(_{2}: \mathrm{P}\left[\mathrm{e}_{2}\right] \vdash \mathrm{P}\left[\mathrm{AExp} . \operatorname{sub} \mathrm{e}_{1} \mathrm{e}_{2}\right]\)</span>
+<span class="math">\(e_{1} e_{2}:\)</span> AExp, ih <span class="math">\(_{1}: \mathrm{P}\left[\mathrm{e}_{1}\right]\)</span>, ih <span class="math">\(_{2}: \mathrm{P}\left[\mathrm{e}_{2}\right] \vdash \mathrm{P}\left[\mathrm{AExp} . \mathrm{mul} \mathrm{e}_{1} \mathrm{e}_{2}\right]\)</span>
 </code></pre>
 <p>归纳步骤为</p>
 
@@ -2392,11 +2401,11 @@ $$</div>
 <li>明确引用了证明所依赖的关键定理（例如Nat.succ的单射性）。现在让我们在Lean中完成这个证明：</li>
 </ul>
 
-<pre><code>theorem Nat.succ_neq_self ( \(\mathrm{n}: \mathbb{N}\) ) :
-    Nat.succ \(\mathrm{n} \neq \mathrm{n}:=\)
+<pre><code>theorem Nat.succ_neq_self ( <span class="math">\(\mathrm{n}: \mathbb{N}\)</span> ) :
+    Nat.succ <span class="math">\(\mathrm{n} \neq \mathrm{n}:=\)</span>
     by
     induction n with
-    | zero \(\quad=&gt;\) simp
+    | zero <span class="math">\(\quad=&gt;\)</span> simp
     | succ n' ih =&gt; simp [ih]
 </code></pre>
 <p>关于构造函数的常规推理都由simp自动完成。</p>
@@ -2457,10 +2466,10 @@ show False from
 
 <p>细心的读者可能已经注意到，上述阶乘定义在数学上是错误的：无论参数为何，fact和factThreeCases函数都惊人地返回0。我们简直是把阶乘(fact)搞砸了。这些令人尴尬的错误提醒我们要测试定义并证明其某些属性。虽然有缺陷的公理偶尔会出现，但更常见的是定义未能捕捉预期概念的情况。仅仅因为一个函数被命名为fact，并不意味着它真的能计算阶乘。</p>
 
-<pre><code>match \(\operatorname{term}_{1}, \ldots, \operatorname{term}_{n}\) with
-    | pattern \(_{11}, \ldots\), pattern \(_{1 m} \Rightarrow\) result \(_{1}\)
-        \(\vdots\)
-    | pattern \(_{n 1}, \ldots\), pattern \(_{n m} \Rightarrow\) result \(_{n}\)
+<pre><code>match <span class="math">\(\operatorname{term}_{1}, \ldots, \operatorname{term}_{n}\)</span> with
+    | pattern <span class="math">\(_{11}, \ldots\)</span>, pattern <span class="math">\(_{1 m} \Rightarrow\)</span> result <span class="math">\(_{1}\)</span>
+        <span class="math">\(\vdots\)</span>
+    | pattern <span class="math">\(_{n 1}, \ldots\)</span>, pattern <span class="math">\(_{n m} \Rightarrow\)</span> result <span class="math">\(_{n}\)</span>
 </code></pre>
 
 <h3>5.4 模式匹配表达式</h3>
@@ -2518,11 +2527,11 @@ show False from
 <pre><code>inductive RGB : Type where
     | mk : N -&gt; N -&gt; N -&gt; RGB
 
-def RGB.red : RGB \(\rightarrow\) N
+def RGB.red : RGB <span class="math">\(\rightarrow\)</span> N
     | RGB.mk r _ _ =&gt; r
-def RGB.green : RGB \(\rightarrow\) N
+def RGB.green : RGB <span class="math">\(\rightarrow\)</span> N
     | RGB.mk _ g _ =&gt; g
-def RGB.blue : RGB \(\rightarrow\) N
+def RGB.blue : RGB <span class="math">\(\rightarrow\)</span> N
     | RGB.mk _ _ b =&gt; b
 </code></pre>
 <p>该定义的效果大致等同于以下命令：</p>
@@ -2531,10 +2540,10 @@ def RGB.blue : RGB \(\rightarrow\) N
 </code></pre>
 <p>我们可以将新结构定义为现有结构的扩展。以下定义通过添加名为alpha的第四个字段来扩展RGB结构：</p>
 <pre><code>structure structure-name (params 1 : type 1 ) ... (params 12 : type 1
-    [extends structure \(_{1}, \ldots\), structure \(_{n}\) ] where
-    field-name \(_{1}\) : field-type \(_{1}\)
+    [extends structure <span class="math">\(_{1}, \ldots\)</span>, structure <span class="math">\(_{n}\)</span> ] where
+    field-name <span class="math">\(_{1}\)</span> : field-type <span class="math">\(_{1}\)</span>
         \vdots
-    field-name \(_{n}\) : field-type \(_{n}\)
+    field-name <span class="math">\(_{n}\)</span> : field-type <span class="math">\(_{n}\)</span>
 </code></pre>
 <p>定义结构体的通用语法为</p>
 
@@ -2610,9 +2619,9 @@ $$</div>
 <p>实例 Fun.Inhabited <span class="math">\(\{\alpha \beta\)</span> : 类型 <span class="math">\(\}\)</span> [Inhabited <span class="math">\(\beta]\)</span> : Inhabited <span class="math">\((\alpha \rightarrow \beta):=\)</span> { 默认值 := fun a : <span class="math">\(\alpha \mapsto\)</span> Inhabited.default }
 该实例自身依赖于相同类型类但作用于不同类型的另一个实例。这种情况经常发生。</p>
 
-<pre><code>instance Prod.Inhabited \(\{\alpha \beta\) : Type \}
-    [Inhabited \(\alpha]\) [Inhabited \(\beta]\) :
-Inhabited \((\alpha \times \beta):=\)
+<pre><code>instance Prod.Inhabited <span class="math">\(\{\alpha \beta\)</span> : Type \}
+    [Inhabited <span class="math">\(\alpha]\)</span> [Inhabited <span class="math">\(\beta]\)</span> :
+Inhabited <span class="math">\((\alpha \times \beta):=\)</span>
 \{ default := (Inhabited.default, Inhabited.default) \}
 </code></pre>
 
@@ -2704,18 +2713,18 @@ instance Commutative_add : Std.Commutative add :=
 <pre><code>instance instance-name : type-class arguments :=
     { constant : = definition
         \vdots
-    constant \(_{n}:=\) definition \(_{n}\)
-    property \(_{1}:=\operatorname{proof}_{1}\),
+    constant <span class="math">\(_{n}:=\)</span> definition <span class="math">\(_{n}\)</span>
+    property <span class="math">\(_{1}:=\operatorname{proof}_{1}\)</span>,
         \vdots
-    property \(_{p}:=\operatorname{proof}_{p}\)
+    property <span class="math">\(_{p}:=\operatorname{proof}_{p}\)</span>
 </code></pre>
 <p>实例化类型类的通用语法如下：</p>
 
 <h3>5.7 列表</h3>
 <p>Lean为有限列表提供了丰富的函数库。本节我们将回顾其中部分函数，并自行定义一些函数；这些练习能帮助我们熟悉Lean中的函数式编程。</p>
 
-<pre><code>theorem head_head_cases { \(\alpha\) : Type \} [Inhabited \(\alpha]\)
-    (xs : List \(\alpha\) ) :
+<pre><code>theorem head_head_cases { <span class="math">\(\alpha\)</span> : Type \} [Inhabited <span class="math">\(\alpha]\)</span>
+    (xs : List <span class="math">\(\alpha\)</span> ) :
     head [head xs] = head xs :=
     by
     cases xs with
@@ -2726,21 +2735,21 @@ instance Commutative_add : Std.Commutative add :=
 
 <p>该证明采用分情形法，这是归纳法的近亲。它对参数进行情形区分但不生成归纳假设。调用cases xs将目标<span class="math">\(\vdash \mathrm{P}[\mathrm{xs}]\)</span>转化为两个子目标：<span class="math">\(\vdash \mathrm{P}[[]]\)</span>和<span class="math">\(\vdash \mathrm{P}\left[\mathrm{x}::\right.\)</span> xs']。我们本也可以使用induction xs。若在归纳法与分情形法间犹豫不决，可优先选择归纳法，随后观察是否需要归纳假设——若最终未使用归纳假设，最佳实践是通过将induction替换为cases来记录这一事实。</p>
 
-<pre><code>theorem head_head_match \(\{\alpha\) : Type \} [Inhabited \(\alpha]\)
-    (xs : List \(\alpha\) ) :
+<pre><code>theorem head_head_match <span class="math">\(\{\alpha\)</span> : Type \} [Inhabited <span class="math">\(\alpha]\)</span>
+    (xs : List <span class="math">\(\alpha\)</span> ) :
     head [head xs] = head xs :=
 match xs with
-| List.nil \(\quad=&gt;\) by rfl
+| List.nil <span class="math">\(\quad=&gt;\)</span> by rfl
 | List.cons x xs' =&gt; by rfl
 </code></pre>
 
 <p>在结构化证明中，我们可以使用匹配表达式来进行情况区分：</p>
 
-<pre><code>theorem injection_example \(\{\alpha\) : Type \} (x y : \(\alpha\) ) (xs ys : List \(\alpha\) )
-        \((h: x:: x s=y:: y s):\)
-    \(x=y \wedge x s=y s:=\)
+<pre><code>theorem injection_example <span class="math">\(\{\alpha\)</span> : Type \} (x y : <span class="math">\(\alpha\)</span> ) (xs ys : List <span class="math">\(\alpha\)</span> )
+        <span class="math">\((h: x:: x s=y:: y s):\)</span>
+    <span class="math">\(x=y \wedge x s=y s:=\)</span>
     by
-    cases \(h\)
+    cases <span class="math">\(h\)</span>
     simp
 </code></pre>
 
@@ -2752,28 +2761,28 @@ $$</div>
 
 <p>cases策略将目标中的<span class="math">\(y\)</span>替换为<span class="math">\(x\)</span>，并将<span class="math">\(y s\)</span>替换为<span class="math">\(x s\)</span>，从而生成子目标</p>
 
-<pre><code>theorem distinctness_example \(\{\alpha\) : Type \} (y : \(\alpha\) ) (ys : List \(\alpha\) )
-        \((h:[]=y::\) ys) :
+<pre><code>theorem distinctness_example <span class="math">\(\{\alpha\)</span> : Type \} (y : <span class="math">\(\alpha\)</span> ) (ys : List <span class="math">\(\alpha\)</span> )
+        <span class="math">\((h:[]=y::\)</span> ys) :
         False :=
-    by cases \(h\)
+    by cases <span class="math">\(h\)</span>
 </code></pre>
 
 <p>这一子目标simp策略可以轻松证明。当构造函数不同时，cases策略同样适用于检测不可能出现的情况：</p>
 
-<pre><code>def map { \(\alpha \beta\) : Type \} (f : \(\alpha \rightarrow \beta)\) : List \(\alpha \rightarrow\) List \(\beta\)
-    | [] \(\quad=&gt;[]\)
+<pre><code>def map { <span class="math">\(\alpha \beta\)</span> : Type \} (f : <span class="math">\(\alpha \rightarrow \beta)\)</span> : List <span class="math">\(\alpha \rightarrow\)</span> List <span class="math">\(\beta\)</span>
+    | [] <span class="math">\(\quad=&gt;[]\)</span>
     | x :: xs =&gt; f x :: map f xs
 </code></pre>
 
 <p>接下来，我们定义列表的映射函数：该函数将其参数f（本身也是一个函数）应用于存储在集合中的所有元素。</p>
 
-<pre><code>def mapArgs { \(\alpha \beta\) : Type \} : \((\alpha \rightarrow \beta) \rightarrow\) List \(\alpha \rightarrow\) List \(\beta\)
-    | _, [] \(\quad=&gt;[]\)
+<pre><code>def mapArgs { <span class="math">\(\alpha \beta\)</span> : Type \} : <span class="math">\((\alpha \rightarrow \beta) \rightarrow\)</span> List <span class="math">\(\alpha \rightarrow\)</span> List <span class="math">\(\beta\)</span>
+    | _, [] <span class="math">\(\quad=&gt;[]\)</span>
     | f, x :: xs =&gt; f x :: mapArgs f xs
 </code></pre>
 <p>注意由于<span class="math">\(f\)</span>在递归调用中保持不变，我们将其作为整个定义的参数传入。另一种处理方式（这是对递归调用中变化参数唯一可行的方案）如下所示：</p>
-<pre><code>theorem map_ident \(\{\alpha\) : Type \} (xs : List \(\alpha\) ) :
-    map (fun \(x \mapsto x) x s=x s:=\)
+<pre><code>theorem map_ident <span class="math">\(\{\alpha\)</span> : Type \} (xs : List <span class="math">\(\alpha\)</span> ) :
+    map (fun <span class="math">\(x \mapsto x) x s=x s:=\)</span>
     by
     induction xs with
     | nil =&gt; rfl
@@ -2782,9 +2791,9 @@ $$</div>
 
 <p>映射函数的一个基本性质是：当参数为恒等函数（fun <span class="math">\(x \mapsto x\)</span>）时，它们不会产生任何效果：</p>
 
-<pre><code>theorem map_comp \(\{\alpha \beta \gamma\) : Type \} (f : \(\alpha \rightarrow \beta\) ) (g : \(\beta \rightarrow \gamma\) )
-        (xs : List \(\alpha\) ) :
-    map g (map f xs) = map (fun \(x \mapsto g(f x)) x s:=\)
+<pre><code>theorem map_comp <span class="math">\(\{\alpha \beta \gamma\)</span> : Type \} (f : <span class="math">\(\alpha \rightarrow \beta\)</span> ) (g : <span class="math">\(\beta \rightarrow \gamma\)</span> )
+        (xs : List <span class="math">\(\alpha\)</span> ) :
+    map g (map f xs) = map (fun <span class="math">\(x \mapsto g(f x)) x s:=\)</span>
     by
         induction xs with
     | nil =&gt; rfl
@@ -2793,8 +2802,8 @@ $$</div>
 
 <p>另一个基本特性是连续的映射操作可以被压缩为单一映射，其参数是所涉及函数的组合：</p>
 
-<pre><code>theorem map_append \(\{\alpha \beta\) : Type \} (f : \(\alpha \rightarrow \beta\) )
-            (xs ys : List \(\alpha\) ) :
+<pre><code>theorem map_append <span class="math">\(\{\alpha \beta\)</span> : Type \} (f : <span class="math">\(\alpha \rightarrow \beta\)</span> )
+            (xs ys : List <span class="math">\(\alpha\)</span> ) :
     map f (xs ++ ys) = map f xs ++ map f ys :=
     by
         induction xs with
@@ -2805,13 +2814,13 @@ $$</div>
 <p>在引入新运算时，展示这些运算与其他运算结合使用时的行为十分有用。示例如下：</p>
 
 <p>值得注意的是，最后三个证明在文本上完全相同。这些都是典型的归纳-rfl-simp式证明。</p>
-<pre><code>def tail \(\{\alpha\) : Type \} : List \(\alpha \rightarrow\) List \(\alpha\)
-    | [] \(\quad=&gt;[]\)
+<pre><code>def tail <span class="math">\(\{\alpha\)</span> : Type \} : List <span class="math">\(\alpha \rightarrow\)</span> List <span class="math">\(\alpha\)</span>
+    | [] <span class="math">\(\quad=&gt;[]\)</span>
     | _ :: xs =&gt; xs
 </code></pre>
 <p>下一个列表操作是移除列表的首个元素，返回剩余部分：</p>
-<pre><code>def headOpt \(\{\alpha\) : Type \} : List \(\alpha \rightarrow\) Option \(\alpha\)
-    | [] \(\quad=&gt;\) Option. none
+<pre><code>def headOpt <span class="math">\(\{\alpha\)</span> : Type \} : List <span class="math">\(\alpha \rightarrow\)</span> Option <span class="math">\(\alpha\)</span>
+    | [] <span class="math">\(\quad=&gt;\)</span> Option. none
     | x :: _ =&gt; Option. some x
 </code></pre>
 
@@ -2935,12 +2944,12 @@ theorem min_add_add_if (l m n : N) :
 
 <p>我们再次看到，用于编写函数式程序的机制（如模式匹配和if-then-else条件语句）同样适用于编写结构化证明（毕竟这些证明本质上也是项）。现在我们可以向4.7节末尾的表格中添加几行内容：</p>
 
-<pre><code>theorem map_zip \(\left\{\alpha \alpha^{\prime} \beta \beta^{\prime}: \text { Type }\right\}\left(f: \alpha \rightarrow \alpha^{\prime}\right)\)
-    \((g: \beta \rightarrow \beta')\) :
-    \(\forall x s\) ys,
-        map (fun ab : \(\alpha \times \beta \mapsto\)
+<pre><code>theorem map_zip <span class="math">\(\left\{\alpha \alpha^{\prime} \beta \beta^{\prime}: \text { Type }\right\}\left(f: \alpha \rightarrow \alpha^{\prime}\right)\)</span>
+    <span class="math">\((g: \beta \rightarrow \beta')\)</span> :
+    <span class="math">\(\forall x s\)</span> ys,
+        map (fun ab : <span class="math">\(\alpha \times \beta \mapsto\)</span>
             (f (Prod.fst ab), g (Prod.snd ab)))
-            (zip xs ys) \(=\)
+            (zip xs ys) <span class="math">\(=\)</span>
 
         zip (map f xs) (map g ys)
 | x :: xs, y :: ys =&gt; by simp [zip, map, map_zip f g xs ys]
@@ -3191,9 +3200,9 @@ $$</div>
 
 <p>此时证明就是一个推导树：</p>
 
-<pre><code>inductive Even : \(\mathbb{N} \rightarrow\) Prop where
+<pre><code>inductive Even : <span class="math">\(\mathbb{N} \rightarrow\)</span> Prop where
     | zero : Even \0
-    | add_two : Yk : N, Even k \(\rightarrow\) Even (k + 2)
+    | add_two : Yk : N, Even k <span class="math">\(\rightarrow\)</span> Even (k + 2)
 </code></pre>
 
 <p>当我们自上而下阅读时，该证明是正向的；而自下而上阅读时则是反向的。归纳谓词是逻辑学家实现相同效果的方式。在Lean中，我们会通过归纳方式定义一个特征谓词，而非集合：</p>
@@ -3289,7 +3298,7 @@ axiom Even.add_two : VK : N, Even k -&gt; Even (k + 2)
 <p>标准局的得分规则如下（发球方分数报在前）：</p>
 <p>但若双方各赢得三分，则比分称为"平分"。在"平分"后，赢得下一分的球员/队伍将获得"占先"。若该球员/队伍继续赢得下一分，则赢得该"局"；若对方球员/队伍赢得下一分，则比分再次回到"平分"。球员/队伍需在"平分"后连续赢得两分才能赢得该"局"。</p>
 <pre><code>inductive Score : Type where
-    | vs \(\quad: \mathbb{N} \rightarrow \mathbb{N} \rightarrow\) Score
+    | vs <span class="math">\(\quad: \mathbb{N} \rightarrow \mathbb{N} \rightarrow\)</span> Score
     | advServ : Score
     | advRecv : Score
     | gameServ : Score
@@ -3301,18 +3310,18 @@ axiom Even.add_two : VK : N, Even k -&gt; Even (k + 2)
 
 <p>例如30-15这样的比分被表示为Score.vs 3015，我们也会用中缀记法写作<span class="math">\(30-15\)</span>。我们忽略了计分规则中某些最不重要的细节，用o表示"Love"，用40-40表示"Deuce"。如果需要，我们可以引入别名，例如def love : <span class="math">\(\mathbb{N}:=\)</span> Score.vs 00。</p>
 
-<pre><code>inductive Step : Score \(\rightarrow\) Score \(\rightarrow\) Prop where
-    | serv_0_15 : \(\forall n\), Step ( \(0-n\) ) (15-n)
-    | serv_15_30 : \(\forall n\), Step (15-n) (30-n)
-    | serv_30_40 : \(\forall n\), Step (30-n) (40-n)
-    | serv_40_game : \(\forall n, n&lt;40 \rightarrow\) Step (40-n) Score.gameServ
+<pre><code>inductive Step : Score <span class="math">\(\rightarrow\)</span> Score <span class="math">\(\rightarrow\)</span> Prop where
+    | serv_0_15 : <span class="math">\(\forall n\)</span>, Step ( <span class="math">\(0-n\)</span> ) (15-n)
+    | serv_15_30 : <span class="math">\(\forall n\)</span>, Step (15-n) (30-n)
+    | serv_30_40 : <span class="math">\(\forall n\)</span>, Step (30-n) (40-n)
+    | serv_40_game : <span class="math">\(\forall n, n&lt;40 \rightarrow\)</span> Step (40-n) Score.gameServ
     | serv_40_adv : Step (40-40) Score.advServ
     | serv_adv_40 : Step Score.advServ (40-40)
     | serv_adv_game : Step Score.advServ Score.gameServ
-    | recv_0_15 : \(\forall n\), Step ( \(n-0\) ) ( \(n-15\) )
-    | recv_15_30 : \(\forall n\), Step ( \(n-15\) ) ( \(n-30\) )
-    | recv_30_40 : \(\forall n\), Step ( \(n-30\) ) ( \(n-40\) )
-    | recv_40_game : \(\forall n, n&lt;40 \rightarrow\) Step ( \(n-40\) ) Score.gameRecv
+    | recv_0_15 : <span class="math">\(\forall n\)</span>, Step ( <span class="math">\(n-0\)</span> ) ( <span class="math">\(n-15\)</span> )
+    | recv_15_30 : <span class="math">\(\forall n\)</span>, Step ( <span class="math">\(n-15\)</span> ) ( <span class="math">\(n-30\)</span> )
+    | recv_30_40 : <span class="math">\(\forall n\)</span>, Step ( <span class="math">\(n-30\)</span> ) ( <span class="math">\(n-40\)</span> )
+    | recv_40_game : <span class="math">\(\forall n, n&lt;40 \rightarrow\)</span> Step ( <span class="math">\(n-40\)</span> ) Score.gameRecv
     | recv_40_adv : Step (40-40) Score.advRecv
     | recv_adv_40 : Step Score.advRecv (40-40)
     | recv_adv_game : Step Score.advRecv Score.gameRecv
@@ -3324,7 +3333,7 @@ axiom Even.add_two : VK : N, Even k -&gt; Even (k + 2)
 <p>设<span class="math">\(s \sim t\)</span>表示Step<span class="math">\(s t\)</span>的缩写。一个比赛就是形如<span class="math">\(s_{0} \sim s_{1} \sim s_{2} \sim \cdots \sim s_{n}\)</span>的链条，其中<span class="math">\(s_{0}=0-0\)</span>且无法从<span class="math">\(s_{n}\)</span>继续转移。该谓词允许诸如15-99转30-99这类无意义的过渡，但由于分数15-99不可能从<span class="math">\(0-0\)</span>达到，这些转移是无害的。</p>
 
 <pre><code>theorem no_Step_to_0_0 (s : Score) :
-    \(\neg \mathrm{s} \sim 0-0:=\)
+    <span class="math">\(\neg \mathrm{s} \sim 0-0:=\)</span>
     by
         intro h
         cases h
@@ -3353,11 +3362,11 @@ $$</div>
 
 <p>这些规则将<span class="math">\(r^{*}\)</span>定义为包含<span class="math">\(r\)</span>（通过BASE规则）的最小关系，且该关系具有自反性（通过REFL规则）和传递性（通过TRANS规则）。若需定义传递闭包<span class="math">\(r^{*}\)</span>，只需省略REFL规则；若需定义自反对称闭包，则需将TRANS规则替换为SYMM规则。在形式化系统中，我们只需声明所需的属性成立，而无需考虑终止性或可执行性问题。</p>
 
-<pre><code>inductive Star \(\{\alpha:\) Type \} (R : \alpha \rightarrow \alpha \rightarrow\) Prop) : \(\alpha \rightarrow \alpha \rightarrow\) Prop
+<pre><code>inductive Star <span class="math">\(\{\alpha:\)</span> Type \} (R : \alpha \rightarrow \alpha \rightarrow\) Prop) : <span class="math">\(\alpha \rightarrow \alpha \rightarrow\)</span> Prop
 where
-    | base (a b : \(\alpha) \quad: R\) a b \(\rightarrow\) Star R a b
-    | refl (a : \(\alpha) \quad\) : Star R a a
-    | trans (a b c : \(\alpha\) ) : Star R a b \(\rightarrow\) Star R b c \(\rightarrow\) Star R a c
+    | base (a b : <span class="math">\(\alpha) \quad: R\)</span> a b <span class="math">\(\rightarrow\)</span> Star R a b
+    | refl (a : <span class="math">\(\alpha) \quad\)</span> : Star R a a
+    | trans (a b c : <span class="math">\(\alpha\)</span> ) : Star R a b <span class="math">\(\rightarrow\)</span> Star R b c <span class="math">\(\rightarrow\)</span> Star R a c
 </code></pre>
 <p>将上述推导规则转换为归纳谓词的引入规则是直截了当的：</p>
 <div class="math">$$
@@ -3372,13 +3381,13 @@ $$</div>
 
 <p>或者在另一个极端情况下</p>
 
-<pre><code>inductive predicate-name (params \({ }_{1}:\) type \(_{1}\) ) ... (params\(_{k}:\) type \(_{k}\) ) :
-    type \(_{k+1} \rightarrow \cdots \rightarrow\) type \(_{k+p} \rightarrow\) Prop where
-    | rule-name \(_{1}\) (params \(_{11}:\) type \(_{11}\) ) ... (params \(_{1 m_{1}}:\) type \(_{1 m_{1}}\)) :
-        proposition \(_{1}\)
+<pre><code>inductive predicate-name (params <span class="math">\({ }_{1}:\)</span> type <span class="math">\(_{1}\)</span> ) ... (params<span class="math">\(_{k}:\)</span> type <span class="math">\(_{k}\)</span> ) :
+    type <span class="math">\(_{k+1} \rightarrow \cdots \rightarrow\)</span> type <span class="math">\(_{k+p} \rightarrow\)</span> Prop where
+    | rule-name <span class="math">\(_{1}\)</span> (params <span class="math">\(_{11}:\)</span> type <span class="math">\(_{11}\)</span> ) ... (params <span class="math">\(_{1 m_{1}}:\)</span> type <span class="math">\(_{1 m_{1}}\)</span>) :
+        proposition <span class="math">\(_{1}\)</span>
         \vdots
-    | rule-name \(_{n}\) (params \(_{n 1}:\) type \(_{n 1}\) ) ... (params \(_{n m_{n}}:\) type \(_{n m_{n}}\)) :
-        proposition \(_{n}\)
+    | rule-name <span class="math">\(_{n}\)</span> (params <span class="math">\(_{n 1}:\)</span> type <span class="math">\(_{n 1}\)</span> ) ... (params <span class="math">\(_{n m_{n}}:\)</span> type <span class="math">\(_{n m_{n}}\)</span>) :
+        proposition <span class="math">\(_{n}\)</span>
 </code></pre>
 
 <p>所有这些形式在逻辑和操作上都是等价的。归纳谓词的一般格式如下：</p>
@@ -3622,13 +3631,13 @@ $$</div>
 
 <p>将引入规则和消解规则结合成单一定理会很有用，该定理可用于重写目标的假设和结论部分。格式与之前相同，只是中间的连接词变为<span class="math">\(\leftrightarrow\)</span>：</p>
 
-<pre><code>theorem Even_Iff ( \(n: \mathbb{N}\) ) :
-    Even \(n \leftrightarrow n=\theta \vee(\exists m: \mathbb{N}, n=m+2 \wedge\) Even m \():=\)
+<pre><code>theorem Even_Iff ( <span class="math">\(n: \mathbb{N}\)</span> ) :
+    Even <span class="math">\(n \leftrightarrow n=\theta \vee(\exists m: \mathbb{N}, n=m+2 \wedge\)</span> Even m <span class="math">\():=\)</span>
     by
     apply Iff.intro
     \{ intro hn
         cases hn with
-        | zero \(\quad=&gt;\) simp
+        | zero <span class="math">\(\quad=&gt;\)</span> simp
         | add_two k hk =&gt;
             apply Or.inr
             apply Exists.intro k
@@ -3649,8 +3658,8 @@ $$</div>
 
 <p>与往常一样，战术性证明并不特别易读，但我们看到引入规则和消解情形策略发挥了主要作用，无论是对于逻辑符号还是Even谓词。simp策略完成了最后的润色。</p>
 
-<pre><code>theorem Even_Iff_struct ( \(n: \mathbb{N}\) ) :
-    Even \(n \leftrightarrow n=\theta \vee(\exists m: \mathbb{N}, n=m+2 \wedge\) Even m \():=\)
+<pre><code>theorem Even_Iff_struct ( <span class="math">\(n: \mathbb{N}\)</span> ) :
+    Even <span class="math">\(n \leftrightarrow n=\theta \vee(\exists m: \mathbb{N}, n=m+2 \wedge\)</span> Even m <span class="math">\():=\)</span>
     Iff.intro
     (assume hn : Even n
 
@@ -3733,10 +3742,10 @@ $$</div>
 
 <p>从列表<span class="math">\([17,13]\)</span>已排序的假设出发，我们可以推导出不等式17<span class="math">\(\leq 13\)</span>。cases策略会静默地排除空列表和单元素列表的情况，因为它们无法匹配双元素列表。随后我们调用simp策略来利用这个不可能成立的假设<span class="math">\(17 \leq 13\)</span>。</p>
 
-<pre><code>inductive Palindrome \(\{\alpha\) : Type\} : List \(\alpha \rightarrow\) Prop where
+<pre><code>inductive Palindrome <span class="math">\(\{\alpha\)</span> : Type\} : List <span class="math">\(\alpha \rightarrow\)</span> Prop where
     | nil : Palindrome []
-    | single (x : \(\alpha\) ) : Palindrome [x]
-    | sandwich (x : \(\alpha\) ) (xs : List \(\alpha\) ) (hxs : Palindrome xs) :
+    | single (x : <span class="math">\(\alpha\)</span> ) : Palindrome [x]
+    | sandwich (x : <span class="math">\(\alpha\)</span> ) (xs : List <span class="math">\(\alpha\)</span> ) (hxs : Palindrome xs) :
         Palindrome ([x] ++ xs ++ [x])
 </code></pre>
 
@@ -3837,7 +3846,7 @@ def palindromeRec { }\alpha\mathrm{ : Type} : List }\alpha\mathrm{ -&gt; Bool
 <p>此处的关键在于对假设ht : IsFull (Tree. node a l r)进行情形区分。cases策略注意到IsFull.nil引入规则不可能被用于推导ht，因此仅生成一个对应于IsFull.node的情形。与往常一样，若在Visual Studio Code中查看并移动光标检查，该战术性证明将更易理解。</p>
 
 <pre><code>inductive Term ( }\alpha\beta\mathrm{ : Type) : Type where
-    | var : \(\beta \rightarrow\) Term \(\alpha \beta\)
+    | var : <span class="math">\(\beta \rightarrow\)</span> Term <span class="math">\(\alpha \beta\)</span>
     | fn : }\alpha\mathrm{ List (Term }\alpha\beta\mathrm{ ) } \rightarrow\) Term }\alpha\beta\mathrm{ }
 </code></pre>
 
@@ -3850,11 +3859,11 @@ def palindromeRec { }\alpha\mathrm{ : Type} : List }\alpha\mathrm{ -&gt; Bool
 
 <p>并非所有项都是合法的。例如，项<span class="math">\(\min (\cos (a), \cos (a, b))\)</span>被视为格式错误，因为函数cos被调用的参数数量不一致（1个与2个参数）。除<span class="math">\(\alpha\)</span>和<span class="math">\(\beta\)</span>外，我们还需考虑由函数arity: <span class="math">\(\alpha \rightarrow \mathbb{N}\)</span>表示的元数，它表明每个函数符号接受的参数数量。例如，二元符号的元数为2。</p>
 
-<pre><code>inductive WellFormed \(\{\alpha \beta\) : Type \} (arity : \(\alpha \rightarrow \mathbb{N})\) :
-    Term \(\alpha \beta \rightarrow\) Prop where
-    | var \((x: \beta)\) : WellFormed arity (Term.var x)
-    | fn (f : \(\alpha\) ) (ts : List (Term \(\alpha \beta\) ))
-        (hargs : \(\forall \mathrm{t} \in \mathrm{ts}\), WellFormed arity t )
+<pre><code>inductive WellFormed <span class="math">\(\{\alpha \beta\)</span> : Type \} (arity : <span class="math">\(\alpha \rightarrow \mathbb{N})\)</span> :
+    Term <span class="math">\(\alpha \beta \rightarrow\)</span> Prop where
+    | var <span class="math">\((x: \beta)\)</span> : WellFormed arity (Term.var x)
+    | fn (f : <span class="math">\(\alpha\)</span> ) (ts : List (Term <span class="math">\(\alpha \beta\)</span> ))
+        (hargs : <span class="math">\(\forall \mathrm{t} \in \mathrm{ts}\)</span>, WellFormed arity t )
         (hlen : length ts = arity f) :
     WellFormed arity (Term.fn f ts)
 </code></pre>
@@ -3864,9 +3873,9 @@ def palindromeRec { }\alpha\mathrm{ : Type} : List }\alpha\mathrm{ -&gt; Bool
 
 <p>变量(var)情形规定变量总是良构的。函数(fn)情形则递归检查参数<span class="math">\(t s\)</span>是否良构，并验证<span class="math">\(t s\)</span>的长度是否等于当前函数符号<span class="math">\(f\)</span>所规定的元数。</p>
 
-<pre><code>inductive VariableFree \(\{\alpha \beta\) : Type \} : Term \(\alpha \beta \rightarrow\) Prop where
-    | fn (f : \(\alpha\) ) (ts : List (Term \(\alpha \beta\) ))
-        (hargs : \(\forall \mathrm{t} \in \mathrm{ts}\), VariableFree t) :
+<pre><code>inductive VariableFree <span class="math">\(\{\alpha \beta\)</span> : Type \} : Term <span class="math">\(\alpha \beta \rightarrow\)</span> Prop where
+    | fn (f : <span class="math">\(\alpha\)</span> ) (ts : List (Term <span class="math">\(\alpha \beta\)</span> ))
+        (hargs : <span class="math">\(\forall \mathrm{t} \in \mathrm{ts}\)</span>, VariableFree t) :
         VariableFree (Term.fn f ts)
 </code></pre>
 
@@ -3879,9 +3888,9 @@ def palindromeRec { }\alpha\mathrm{ : Type} : List }\alpha\mathrm{ -&gt; Bool
 <h3>6.7 归纳法陷阱</h3>
 <p>对归纳谓词进行归纳调用时需要格外谨慎。归纳谓词的参数通常会在归纳过程中演变。这些细节在非形式化证明中常被忽略，但证明辅助工具要求我们必须精确处理。</p>
 
-<pre><code>inductive Even : \(\mathbb{N} \rightarrow\) Prop where
+<pre><code>inductive Even : <span class="math">\(\mathbb{N} \rightarrow\)</span> Prop where
     | zero : Even \ 0
-    | add_two : \(\forall \mathrm{k}: \mathbb{N}\), Even \(\mathrm{k} \rightarrow\) Even \((k+2)\)
+    | add_two : <span class="math">\(\forall \mathrm{k}: \mathbb{N}\)</span>, Even <span class="math">\(\mathrm{k} \rightarrow\)</span> Even <span class="math">\((k+2)\)</span>
 </code></pre>
 
 <p>回顾偶数的定义：</p>
@@ -4224,15 +4233,15 @@ $$</div>
 <h3>7.3 类型类</h3>
 <p>单子(Monad)是一种数学结构，因此我们使用类型类在Lean中对其进行规范。需知类型类是一种参数化的结构类型，通常由类型参数化，但此处由类型构造器<span class="math">\(m\)</span> : Type <span class="math">\(\rightarrow\)</span> Type参数化。当我们在具体<span class="math">\(m\)</span>上使用类型类的字段时，类型类推断机制会检索相关的结构值——即类型类实例。</p>
 
-<pre><code>class LawfulMonad (m : Type \(\rightarrow\) Type)
+<pre><code>class LawfulMonad (m : Type <span class="math">\(\rightarrow\)</span> Type)
     extends Pure m, Bind m where
-    pure_bind \(\{\alpha \beta\) : Type \(\}(\mathrm{a}: \alpha)(\mathrm{f}: \alpha \rightarrow \mathrm{m} \beta)\) :
-        (pure a \(\gg&gt;=\mathrm{f})=\mathrm{f}\) a
-    bind_pure \(\{\alpha\) : Type \(\}(\) ma : \(\mathrm{m} \alpha)\) :
-        (ma &gt;&gt;= pure) \(=\) ma
-    bind_assoc \(\{\alpha \beta \gamma\) : Type \(\}(f: \alpha \rightarrow m \beta)(\mathrm{g}: \beta \rightarrow \mathrm{m} \gamma)\)
-        (ma : \(m \alpha\) ) :
-        \(((\) ma \(\gg&gt;=f) \gg&gt;=g)=(\mathrm{ma} \gg&gt;=(\mathrm{fun} \mathrm{a} \mapsto \mathrm{f} \mathrm{a} \gg&gt;=g))\)
+    pure_bind <span class="math">\(\{\alpha \beta\)</span> : Type <span class="math">\(\}(\mathrm{a}: \alpha)(\mathrm{f}: \alpha \rightarrow \mathrm{m} \beta)\)</span> :
+        (pure a <span class="math">\(\gg&gt;=\mathrm{f})=\mathrm{f}\)</span> a
+    bind_pure <span class="math">\(\{\alpha\)</span> : Type <span class="math">\(\}(\)</span> ma : <span class="math">\(\mathrm{m} \alpha)\)</span> :
+        (ma &gt;&gt;= pure) <span class="math">\(=\)</span> ma
+    bind_assoc <span class="math">\(\{\alpha \beta \gamma\)</span> : Type <span class="math">\(\}(f: \alpha \rightarrow m \beta)(\mathrm{g}: \beta \rightarrow \mathrm{m} \gamma)\)</span>
+        (ma : <span class="math">\(m \alpha\)</span> ) :
+        <span class="math">\(((\)</span> ma <span class="math">\(\gg&gt;=f) \gg&gt;=g)=(\mathrm{ma} \gg&gt;=(\mathrm{fun} \mathrm{a} \mapsto \mathrm{f} \mathrm{a} \gg&gt;=g))\)</span>
 </code></pre>
 <p>以下是单子(Monad)及其三条定律在Lean中的可能定义：</p>
 <p>让我们逐步解析这个定义：</p>
@@ -4409,15 +4418,15 @@ def Action.bind { }\sigma\mathrm{ : Type} { }\alpha\beta\mathrm{ : Type} (ma : A
         bind := Action.bind
         pure_bind :=
             by
-            intro \(\alpha \beta\) a f
+            intro <span class="math">\(\alpha \beta\)</span> a f
             rfl
     bind_pure :=
         by
-            intro \(\alpha\) ma
+            intro <span class="math">\(\alpha\)</span> ma
             rfl
     bind_assoc :=
         by
-            intro \(\alpha \beta \gamma\) f g ma
+            intro <span class="math">\(\alpha \beta \gamma\)</span> f g ma
             rfl }
 </code></pre>
 
@@ -4544,12 +4553,12 @@ $$</div>
 
 <p>我们现在可以尝试使用mmap替代List.map：</p>
 
-<pre><code>theorem mmap_append \{m : Type \(\rightarrow\) Type\} [LawfulMonad m]
-    \(\{\alpha \beta\) : Type \} (f : \(\alpha \rightarrow \mathrm{m} \beta\) ) :
-    Yas as' : List \(\alpha\), mmap f (as ++ as') =
+<pre><code>theorem mmap_append \{m : Type <span class="math">\(\rightarrow\)</span> Type\} [LawfulMonad m]
+    <span class="math">\(\{\alpha \beta\)</span> : Type \} (f : <span class="math">\(\alpha \rightarrow \mathrm{m} \beta\)</span> ) :
+    Yas as' : List <span class="math">\(\alpha\)</span>, mmap f (as ++ as') =
         do
-            let bs \(\leftarrow\) mmap f as
-            let bs' \(\leftarrow\) mmap f as'
+            let bs <span class="math">\(\leftarrow\)</span> mmap f as
+            let bs' <span class="math">\(\leftarrow\)</span> mmap f as'
             pure (bs ++ bs')
     | [], _ =&gt;
     by simp [mmap, LawfulMonad.bind_pure, LawfulMonad.pure_bind]
@@ -4791,8 +4800,8 @@ elab "trace_goals" : tactic =&gt;
 以下演示如何使用这个新策略：</li>
 </ul>
 
-<pre><code>theorem Even_18_and_Even_20 ( \(\alpha\) : Type) (a : \(\alpha\) ) :
-    Even \(18 \wedge\) Even \(20:=\)
+<pre><code>theorem Even_18_and_Even_20 ( <span class="math">\(\alpha\)</span> : Type) (a : <span class="math">\(\alpha\)</span> ) :
+    Even <span class="math">\(18 \wedge\)</span> Even <span class="math">\(20:=\)</span>
     by
     apply And.intro
     trace_goals
@@ -4886,18 +4895,18 @@ LocalDecl.isImplementationDetail : LocalDecl -&gt; Bool
 <p>名称可通过单个反引号指定。例如，'<span class="math">\(x\)</span>表示名称<span class="math">\(x\)</span>，该名称可赋予变量或常量。引用常量时需指定包含命名空间的完整名称，因此若要引用第6章的Even谓词，必须写作'LoVe.Even而非'Even。</p>
 <p>若需引用现有常量，Lean提供了双反引号语法，该语法会按照Lean常规的名称解析规则查找名称并扩展为全名。因此，无论是''Even还是''LoVe.Even都指向名称LoVe.Even，而如果我们写入未声明的名称（例如''EvenIf），Lean会报错。</p>
 <pre><code>inductive Expr : Type where
-    | const : Name \(\rightarrow\) List Level \(\rightarrow\) Expr
-    | sort : Level \(\rightarrow\) Expr
-    | fvar : FVarId \(\rightarrow\) Expr
-    | mvar : MVarId \(\rightarrow\) Expr
-    | app : Expr \(\rightarrow\) Expr \(\rightarrow\) Expr
-    | lam : Name \(\rightarrow\) Expr \(\rightarrow\) Expr \(\rightarrow\) BinderInfo \(\rightarrow\) Expr
-    | bvar : Nat \(\rightarrow\) Expr
-    | forallE : Name \(\rightarrow\) Expr \(\rightarrow\) Expr \(\rightarrow\) BinderInfo \(\rightarrow\) Expr
-    | letE : Name \(\rightarrow\) Expr \(\rightarrow\) Expr \(\rightarrow\) Expr \(\rightarrow\) Bool \(\rightarrow\) Expr
-    | lit : Literal \(\rightarrow\) Expr
-    | mdata : MData \(\rightarrow\) Expr \(\rightarrow\) Expr
-    | proj : Name \(\rightarrow\) Nat \(\rightarrow\) Expr \(\rightarrow\) Expr
+    | const : Name <span class="math">\(\rightarrow\)</span> List Level <span class="math">\(\rightarrow\)</span> Expr
+    | sort : Level <span class="math">\(\rightarrow\)</span> Expr
+    | fvar : FVarId <span class="math">\(\rightarrow\)</span> Expr
+    | mvar : MVarId <span class="math">\(\rightarrow\)</span> Expr
+    | app : Expr <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Expr
+    | lam : Name <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> BinderInfo <span class="math">\(\rightarrow\)</span> Expr
+    | bvar : Nat <span class="math">\(\rightarrow\)</span> Expr
+    | forallE : Name <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> BinderInfo <span class="math">\(\rightarrow\)</span> Expr
+    | letE : Name <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Bool <span class="math">\(\rightarrow\)</span> Expr
+    | lit : Literal <span class="math">\(\rightarrow\)</span> Expr
+    | mdata : MData <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Expr
+    | proj : Name <span class="math">\(\rightarrow\)</span> Nat <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> Expr
 </code></pre>
 <p>Expr类型的定义如下：</p>
 
@@ -4926,7 +4935,7 @@ LocalDecl.isImplementationDetail : LocalDecl -&gt; Bool
 </li>
 </ul>
 
-<pre><code>Expr.lam 'x (Expr.const ''Nat []) (Expr.bvar \(\theta\) )
+<pre><code>Expr.lam 'x (Expr.const ''Nat []) (Expr.bvar <span class="math">\(\theta\)</span> )
     BinderInfo.default
 </code></pre>
 <pre><code>Expr.lam 'x (Expr.const ''Nat [])
@@ -4944,7 +4953,7 @@ LocalDecl.isImplementationDetail : LocalDecl -&gt; Bool
 </ul>
 
 <pre><code>Expr.forallE 'n (Expr.const ''Nat [])
-    (Expr.app (Expr.const ''Even []) (Expr.bvar \(\theta\) ))
+    (Expr.app (Expr.const ''Even []) (Expr.bvar <span class="math">\(\theta\)</span> ))
     BinderInfo.default
 </code></pre>
 <pre><code>Expr.forallE 'dummy (Expr.const 'Nat [])
@@ -5062,7 +5071,7 @@ $$</div>
 <pre><code>def applyConstant (name : Name) : TacticM Unit :=
     do
         let cst \leftarrow mkConstWithFreshMVarLevels name
-        liftMetaTactic (fun goal \(\mapsto\) MVarId.apply goal cst)
+        liftMetaTactic (fun goal <span class="math">\(\mapsto\)</span> MVarId.apply goal cst)
 </code></pre>
 
 <p>我们将使用此函数过滤掉不感兴趣的声明。下一个函数将名为name的定理应用于当前目标：</p>
@@ -5131,24 +5140,24 @@ andThenOnSubgoals (applyConstant name) hypothesis
     by prove_direct
 </code></pre>
 <p>以下是该策略的实际应用：</p>
-<pre><code>theorem Nat.symm_manual ( \(x\) y : N) (h : x = y) :
-    \(y=x:=\)
+<pre><code>theorem Nat.symm_manual ( <span class="math">\(x\)</span> y : N) (h : x = y) :
+    <span class="math">\(y=x:=\)</span>
     by
         apply symm
         hypothesis
 </code></pre>
 <p>这将打印出“由symm直接证明完成”。该提示信息很有帮助，因为我们可以直接应用指定的定理，而不必依赖相对缓慢的prove_direct策略。具体而言，我们可以结合假设按如下方式应用定理symm：</p>
-<pre><code>mkConstWithFreshMVarLevels : Name \(\rightarrow\) TacticM Expr
-    liftMetaTactic : (MVarId \(\rightarrow\) MetaM (List MVarId) ) \(\rightarrow\)
+<pre><code>mkConstWithFreshMVarLevels : Name <span class="math">\(\rightarrow\)</span> TacticM Expr
+    liftMetaTactic : (MVarId <span class="math">\(\rightarrow\)</span> MetaM (List MVarId) ) <span class="math">\(\rightarrow\)</span>
         TacticM Unit
-        MVarId.apply : MVarId \(\rightarrow\) Expr \(\rightarrow\) MetaM (List MVarId)
+        MVarId.apply : MVarId <span class="math">\(\rightarrow\)</span> Expr <span class="math">\(\rightarrow\)</span> MetaM (List MVarId)
             getGoals : TacticM (List MVarId)
-            setGoals : List MVarId \(\rightarrow\) TacticM Unit
-        MVarId.isAssigned : MVarId \(\rightarrow\) TacticM Bool
+            setGoals : List MVarId <span class="math">\(\rightarrow\)</span> TacticM Unit
+        MVarId.isAssigned : MVarId <span class="math">\(\rightarrow\)</span> TacticM Bool
             getEnv : TacticM Environment
-            SMap.toList : ConstMap \(\rightarrow\) List (Name \(\times\) ConstantInfo)
-        Environment.constants : Environment \(\rightarrow\) ConstMap
-        ConstantInfo.isUnsafe : ConstantInfo \(\rightarrow\) Bool
+            SMap.toList : ConstMap <span class="math">\(\rightarrow\)</span> List (Name <span class="math">\(\times\)</span> ConstantInfo)
+        Environment.constants : Environment <span class="math">\(\rightarrow\)</span> ConstMap
+        ConstantInfo.isUnsafe : ConstantInfo <span class="math">\(\rightarrow\)</span> Bool
 </code></pre>
 
 <p>以下是本例中涉及的新常量列表：</p>
@@ -5270,10 +5279,10 @@ try
 
 <pre><code>inductive Stmt : Type where
     | skip : Stmt
-    | assign : String \(\rightarrow\) (State \(\rightarrow \mathbb{N}) \rightarrow\) Stmt
-    | seq : Stmt \(\rightarrow\) Stmt \(\rightarrow\) Stmt
-    | ifThenElse : (State \(\rightarrow\) Prop) \(\rightarrow\) Stmt \(\rightarrow\) Stmt \(\rightarrow\) Stmt
-    | whileDo : (State \(\rightarrow\) Prop) \(\rightarrow\) Stmt \(\rightarrow\) Stmt
+    | assign : String <span class="math">\(\rightarrow\)</span> (State <span class="math">\(\rightarrow \mathbb{N}) \rightarrow\)</span> Stmt
+    | seq : Stmt <span class="math">\(\rightarrow\)</span> Stmt <span class="math">\(\rightarrow\)</span> Stmt
+    | ifThenElse : (State <span class="math">\(\rightarrow\)</span> Prop) <span class="math">\(\rightarrow\)</span> Stmt <span class="math">\(\rightarrow\)</span> Stmt <span class="math">\(\rightarrow\)</span> Stmt
+    | whileDo : (State <span class="math">\(\rightarrow\)</span> Prop) <span class="math">\(\rightarrow\)</span> Stmt <span class="math">\(\rightarrow\)</span> Stmt
 </code></pre>
 
 <p>在第七章中，我们采用了效应式程序的浅层嵌入。此处，我们将对程序采用深层嵌入（这是我们感兴趣且希望深入研究的部分），而对算术及布尔表达式采用浅层嵌入（这部分我们认为价值较低）。我们的Lean程序定义如下：</p>
@@ -5354,11 +5363,11 @@ $$</div>
 
 <p>推导规则可以直观地理解。以Seq规则为例：若(1)在状态<span class="math">\(s\)</span>下执行<span class="math">\(S\)</span>会到达状态<span class="math">\(t\)</span>，且(2)在状态<span class="math">\(t\)</span>下执行<span class="math">\(T\)</span>会到达状态<span class="math">\(u\)</span>，那么在状态<span class="math">\(s\)</span>下执行顺序组合<span class="math">\(S ; T\)</span>就会到达状态<span class="math">\(u\)</span>。</p>
 
-<pre><code>inductive BigStep : Stmt \(\times\) State \(\rightarrow\) State \(\rightarrow\) Prop where
+<pre><code>inductive BigStep : Stmt <span class="math">\(\times\)</span> State <span class="math">\(\rightarrow\)</span> State <span class="math">\(\rightarrow\)</span> Prop where
     | skip (s) :
         BigStep (Stmt.skip, s) s
     | assign (x a s) :
-        BigStep (Stmt.assign x a, s) (s[x \(\mapsto\) a s])
+        BigStep (Stmt.assign x a, s) (s[x <span class="math">\(\mapsto\)</span> a s])
     | seq (S T s t u) (hS : BigStep (S, s) t)
         (hT : BigStep (T, t) u) :
         BigStep (S; T, s) u
@@ -5412,9 +5421,9 @@ $$</div>
 <h3>9.4 大步语义的特性</h3>
 <p>大步语义使我们能够推理具体程序，证明关于最终状态与初始状态关系的定理。同样重要的是，它允许我们证明编程语言的特性，例如确定性和非终止性。</p>
 
-<pre><code>theorem BigStep_deterministic \(\{S s 1 \mathrm{r}\} \quad(\mathrm{hl}: S s \Longrightarrow 1)\)
-    \((h r: S s \Longrightarrow r)\) :
-    \(l=r\)
+<pre><code>theorem BigStep_deterministic <span class="math">\(\{S s 1 \mathrm{r}\} \quad(\mathrm{hl}: S s \Longrightarrow 1)\)</span>
+    <span class="math">\((h r: S s \Longrightarrow r)\)</span> :
+    <span class="math">\(l=r\)</span>
 </code></pre>
 <p>我们从确定性开始讨论。这看似是个微不足道的特性，但规则若出现笔误就可能导致非确定性。例如在赋值规则中，如果我们错误地将BigStep (Stmt. assign x a, s) (s[y <span class="math">\(\mapsto\)</span> a s])中的<span class="math">\(x\)</span>写成y，就能随意用该规则修改任意变量<span class="math">\(y\)</span>。换言之，程序执行时可能随机修改任何变量。因此我们需要验证WHILE语言确实是确定性的：</p>
 
@@ -5426,8 +5435,8 @@ $$</div>
 情形SEQ：我们有假设<span class="math">\((S, s) \Longrightarrow t,(T, t) \Longrightarrow 1,(S, s)\)</span> <span class="math">\(\Longrightarrow t^{\prime}\)</span>，以及<span class="math">\(\left(T, t^{\prime}\right) \Longrightarrow r\)</span>，且归纳假设为<span class="math">\(\forall r,(S, s) \Longrightarrow\)</span> <span class="math">\(r \rightarrow t=r\)</span>和<span class="math">\(\forall r,(T, t) \Longrightarrow r \rightarrow l=r\)</span>。由第一个归纳假设与<span class="math">\((S, s) \Longrightarrow t^{\prime}\)</span>可得<span class="math">\(t=t^{\prime}\)</span>。由第二个归纳假设与<span class="math">\(\left(T, t^{\prime}\right) \Longrightarrow r\)</span>可得<span class="math">\(l=r\)</span>。
 情形IF-TRUE：由于<span class="math">\(b\)</span> s为真，(if <span class="math">\(b\)</span> then <span class="math">\(S\)</span> else <span class="math">\(T, s) \Longrightarrow r\)</span>只能通过IF-TRUE规则推导，因此有<span class="math">\((S, s) \Longrightarrow r\)</span>。归纳假设为<span class="math">\(\forall r,(S, s) \Longrightarrow r \rightarrow l=r\)</span>。将<span class="math">\((S, s) \Longrightarrow r\)</span>应用于该假设可得<span class="math">\(l=r\)</span>。</p>
 
-<pre><code>theorem BigStep_terminates \(\{S \mathrm{~s}\}:\)
-    \(\exists t,(S, s) \Longrightarrow t\)
+<pre><code>theorem BigStep_terminates <span class="math">\(\{S \mathrm{~s}\}:\)</span>
+    <span class="math">\(\exists t,(S, s) \Longrightarrow t\)</span>
 </code></pre>
 
 <p>CASE IF-FALSE: 与IF-TRUE情况类似。
@@ -5436,27 +5445,27 @@ CASE WHILE-FALSE: 与SKIP情况类似。
 鉴于WHILE语言具有确定性，在大步语义下，终止性可归结为以下结论：</p>
 
 <p>该性质表明，对于每个语句<span class="math">\(S\)</span>和状态<span class="math">\(s\)</span>，总存在一个状态<span class="math">\(t\)</span>使得从<span class="math">\(s\)</span>开始执行<span class="math">\(S\)</span>可能终止于<span class="math">\(t\)</span>。由于WHILE语言具有确定性，"可能终止"等价于"必然终止"。然而，这一性质并不成立。</p>
-<pre><code>@[simp] theorem BigStep_skip_Iff \(\{s t\}\) :
-    (Stmt.skip, s) \(\Longrightarrow t \leftrightarrow t=s\)
+<pre><code>@[simp] theorem BigStep_skip_Iff <span class="math">\(\{s t\}\)</span> :
+    (Stmt.skip, s) <span class="math">\(\Longrightarrow t \leftrightarrow t=s\)</span>
 
 @[simp] theorem BigStep_assign_Iff {x a s t} :
     (Stmt.assign x a, s) \(\Longrightarrow \mathrm{t} \leftrightarrow \mathrm{t}=\mathrm{s}[\mathrm{x} \mapsto \mathrm{a} \mathrm{s}\]
 @[simp] theorem BigStep_seq_Iff \{S T s u\} :
-    \((\mathrm{S} ; \mathrm{T}, \mathrm{s}) \Longrightarrow \mathrm{u} \leftrightarrow(\exists \mathrm{t},(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \wedge(\mathrm{T}, \mathrm{t}) \Longrightarrow \mathrm{u})\)
+    <span class="math">\((\mathrm{S} ; \mathrm{T}, \mathrm{s}) \Longrightarrow \mathrm{u} \leftrightarrow(\exists \mathrm{t},(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \wedge(\mathrm{T}, \mathrm{t}) \Longrightarrow \mathrm{u})\)</span>
 @[simp] theorem BigStep_if_Iff \{B S T s t\} :
-    (Stmt.ifThenElse B S T, s) \(\Longrightarrow \mathrm{t} \leftrightarrow\)
-    \((B \mathrm{~s} \wedge(\mathrm{~S}, \mathrm{~s}) \Longrightarrow \mathrm{t}) \vee(\neg \mathrm{B} \mathrm{s} \wedge(\mathrm{T}, \mathrm{s}) \Longrightarrow \mathrm{t})\)
+    (Stmt.ifThenElse B S T, s) <span class="math">\(\Longrightarrow \mathrm{t} \leftrightarrow\)</span>
+    <span class="math">\((B \mathrm{~s} \wedge(\mathrm{~S}, \mathrm{~s}) \Longrightarrow \mathrm{t}) \vee(\neg \mathrm{B} \mathrm{s} \wedge(\mathrm{T}, \mathrm{s}) \Longrightarrow \mathrm{t})\)</span>
 theorem BigStep_while_Iff \{B S s u\} :
-    (Stmt.whileDo B S, s) \(\Longrightarrow u \leftrightarrow\)
-    \((B \mathrm{~s} \wedge \exists \mathrm{t},(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \wedge\) (Stmt.whileDo B S, t) \(\Longrightarrow \mathrm{u})\)
-    \(\vee(\neg \mathrm{B} \mathrm{s} \wedge \mathrm{u}=\mathrm{s})\)
+    (Stmt.whileDo B S, s) <span class="math">\(\Longrightarrow u \leftrightarrow\)</span>
+    <span class="math">\((B \mathrm{~s} \wedge \exists \mathrm{t},(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \wedge\)</span> (Stmt.whileDo B S, t) <span class="math">\(\Longrightarrow \mathrm{u})\)</span>
+    <span class="math">\(\vee(\neg \mathrm{B} \mathrm{s} \wedge \mathrm{u}=\mathrm{s})\)</span>
 @[simp] theorem BigStep_while_true_Iff \{B S s u\}
         (hcond : B s) :
-    (Stmt.whileDo B S, s) \(\Longrightarrow u \leftrightarrow\)
-    \((\exists \mathrm{t},(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \wedge(\) stmt.whileDo B S, t) \(\Longrightarrow \mathrm{u})\)
+    (Stmt.whileDo B S, s) <span class="math">\(\Longrightarrow u \leftrightarrow\)</span>
+    <span class="math">\((\exists \mathrm{t},(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \wedge(\)</span> stmt.whileDo B S, t) <span class="math">\(\Longrightarrow \mathrm{u})\)</span>
 @[simp] theorem BigStep_while_false_Iff \{B S s t\}
-        (hcond : \(\neg \mathrm{B} \mathrm{s})\)
-    (Stmt.whileDo B S, s) \(\Longrightarrow \mathrm{t} \leftrightarrow \mathrm{t}=\mathrm{s}\)
+        (hcond : <span class="math">\(\neg \mathrm{B} \mathrm{s})\)</span>
+    (Stmt.whileDo B S, s) <span class="math">\(\Longrightarrow \mathrm{t} \leftrightarrow \mathrm{t}=\mathrm{s}\)</span>
 </code></pre>
 <p>在推理归纳谓词时，使用反演规则（第6.5节）通常较为方便。因此，我们证明以下规则：</p>
 <p>我们将这些规则添加到simp集合中，但BigStep_while_Iff除外，因为它会导致simp进入循环。</p>
@@ -5505,17 +5514,17 @@ $$</div>
 
 <p>对于while循环，存在一条无条件规则，该规则会展开循环的一次迭代，并引入一个if语句。随后由IF-TRUE和IF-FALSE规则来处理这个if语句。在IF-TRUE情况下，我们最终会再次回到while循环。对于无限循环，这个过程可以永远持续下去。</p>
 
-<pre><code>inductive SmallStep : Stmt \(\times\) State \(\rightarrow\) Stmt \(\times\) State \(\rightarrow\) Prop
+<pre><code>inductive SmallStep : Stmt <span class="math">\(\times\)</span> State <span class="math">\(\rightarrow\)</span> Stmt <span class="math">\(\times\)</span> State <span class="math">\(\rightarrow\)</span> Prop
     where
     | assign (x a s) :
-        SmallStep (Stmt.assign x a, s) (Stmt.skip, s[x \(\mapsto\) a s])
+        SmallStep (Stmt.assign x a, s) (Stmt.skip, s[x <span class="math">\(\mapsto\)</span> a s])
     | seq_step (S S' T s s') (hS : SmallStep (S, s) (S', s')) :
         SmallStep (S; T, s) (S'; T, s')
     | seq_skip (T s) :
         SmallStep (Stmt.skip; T, s) (T, s)
     | if_true (B S T s) (hcond : B s) :
         SmallStep (Stmt.ifThenElse B S T, s) (S, s)
-    | if_false (B S T s) (hcond : \(\neg\) B s) :
+    | if_false (B S T s) (hcond : <span class="math">\(\neg\)</span> B s) :
         SmallStep (Stmt.ifThenElse B S T, s) (T, s)
     | whileDo (B S s) :
 </code></pre>
@@ -5586,18 +5595,18 @@ $$</div>
 <pre><code>theorem SmallStep_skip {S s t} :
     \ ((Stmt.skip, s) \Rightarrow (S, t))
 @[simp] theorem SmallStep_seq_Iff {S T s Ut} :
-    (S; T, s) \(\Rightarrow\) Ut \(\leftrightarrow\)
-    \((\exists S^{\prime} t,(S, s) \Rightarrow\left(S^{\prime}, t\right) \wedge U t=\left(S^{\prime} ; T, t\right))\)
-    \(\vee(S=\) Stmt.skip \(\wedge \mathrm{Ut}=(T, s))\)
+    (S; T, s) <span class="math">\(\Rightarrow\)</span> Ut <span class="math">\(\leftrightarrow\)</span>
+    <span class="math">\((\exists S^{\prime} t,(S, s) \Rightarrow\left(S^{\prime}, t\right) \wedge U t=\left(S^{\prime} ; T, t\right))\)</span>
+    <span class="math">\(\vee(S=\)</span> Stmt.skip <span class="math">\(\wedge \mathrm{Ut}=(T, s))\)</span>
 @[simp] theorem SmallStep_if_Iff \{B S T s Us\} :
-    (Stmt.ifThenElse B S T, s) \(\Rightarrow\) Us \(\leftrightarrow\)
-    \((B \mathrm{~s} \wedge \mathrm{Us}=(S, s)) \vee(\neg B \mathrm{~B} \wedge \mathrm{Us}=(T, s))\)
+    (Stmt.ifThenElse B S T, s) <span class="math">\(\Rightarrow\)</span> Us <span class="math">\(\leftrightarrow\)</span>
+    <span class="math">\((B \mathrm{~s} \wedge \mathrm{Us}=(S, s)) \vee(\neg B \mathrm{~B} \wedge \mathrm{Us}=(T, s))\)</span>
 </code></pre>
 
 <p>我们可以定义关于小步语义的反演规则，例如：</p>
 
 <pre><code>theorem BigStep_Iff_RTC_SmallStep {Ss t} :
-    Ss \(\Longrightarrow t \leftrightarrow S s \Rightarrow *\) (Stmt.skip, t)
+    Ss <span class="math">\(\Longrightarrow t \leftrightarrow S s \Rightarrow *\)</span> (Stmt.skip, t)
 </code></pre>
 
 <p>更基础性的结论是大步语义与小步语义之间的等价性：</p>
@@ -5753,9 +5762,9 @@ $$</div>
 
 <p>我们并未采用上述方法，而是选择在Lean中基于大步语义来定义霍尔三元组，从而使其在定义层面即具备正确性。随后我们将霍尔规则作为定理进行推导，而非以引入规则的形式陈述。结合使用谓词来表示公式，这一方法从根本上遵循了语义导向的原则。</p>
 
-<pre><code>def PartialHoare (P : State \(\rightarrow\) Prop) (S : Stmt)
-    (Q : State \(\rightarrow\) Prop) : Prop :=
-    \(\forall \mathrm{s} \mathrm{t}, \mathrm{P} \mathrm{s} \rightarrow(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \rightarrow \mathrm{Q} \mathrm{t}\)
+<pre><code>def PartialHoare (P : State <span class="math">\(\rightarrow\)</span> Prop) (S : Stmt)
+    (Q : State <span class="math">\(\rightarrow\)</span> Prop) : Prop :=
+    <span class="math">\(\forall \mathrm{s} \mathrm{t}, \mathrm{P} \mathrm{s} \rightarrow(\mathrm{S}, \mathrm{s}) \Longrightarrow \mathrm{t} \rightarrow \mathrm{Q} \mathrm{t}\)</span>
 </code></pre>
 <p>霍尔三元组（针对部分正确性）的定义如下：</p>
 
@@ -5861,11 +5870,11 @@ aesop
 </code></pre>
 <p>正确性证明如下：</p>
 <pre><code>\foralls : State,
-    \(s " a "=a_{0} \wedge s " b "=b_{0} \rightarrow\)
-    \(s[" t " \mapsto s " a " \left[" a " \mapsto s[" t " \mapsto s " a " \left[" b "\right]\right.\)
-        ["b" \(\mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left.\left.[" a " \mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left[" b "\right]\right] \mathrm{t} " \mathrm{t} " \mathrm{a} "=\mathrm{b}_{0} \wedge\right.\)
-    \(s[" t " \mapsto s " a " \left[" a " \mapsto s[" t " \mapsto s " a " \left[" b "\right]\right.\)
-        ["b" \(\mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left.\left.[" a " \mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left[" b "\right]\right] \mathrm{t} " \mathrm{t} " \mathrm{b} "=\mathrm{a}_{0}\)
+    <span class="math">\(s " a "=a_{0} \wedge s " b "=b_{0} \rightarrow\)</span>
+    <span class="math">\(s[" t " \mapsto s " a " \left[" a " \mapsto s[" t " \mapsto s " a " \left[" b "\right]\right.\)</span>
+        ["b" <span class="math">\(\mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left.\left.[" a " \mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left[" b "\right]\right] \mathrm{t} " \mathrm{t} " \mathrm{a} "=\mathrm{b}_{0} \wedge\right.\)</span>
+    <span class="math">\(s[" t " \mapsto s " a " \left[" a " \mapsto s[" t " \mapsto s " a " \left[" b "\right]\right.\)</span>
+        ["b" <span class="math">\(\mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left.\left.[" a " \mapsto \mathrm{s}[" t " \mapsto \mathrm{s} " \mathrm{a} " \left[" b "\right]\right] \mathrm{t} " \mathrm{t} " \mathrm{b} "=\mathrm{a}_{0}\)</span>
 </code></pre>
 
 <p>顺序组合规则和赋值规则的应用由程序语法引导。该程序中有两个顺序组合和三个赋值，因此需要相应次数的规则调用。最终我们得到一个极不美观的子目标：</p>
@@ -5915,19 +5924,19 @@ aesop
 <h3>10.6 验证条件生成器</h3>
 <p>验证条件生成器（VCG）是应用霍尔逻辑规则的程序，它会生成需要手动证明的验证条件。我们可以将其视为处理霍尔逻辑文书工作的机械公务员。作为用户，我们必须在程序中提供足够强大的循环不变式作为注解。数以百计的程序验证工具都基于这些原理构建。</p>
 <p>验证条件生成器通常从后置条件开始逆向工作，运用那些将任意Q作为其后置条件的逆向规则。这种方式行之有效，因为霍尔逻辑的核心规则——赋值规则——本身就是逆向的。</p>
-<pre><code>def Stmt.invWhileDo (I B : State \(\rightarrow\) Prop) (S : Stmt) : Stmt :=
+<pre><code>def Stmt.invWhileDo (I B : State <span class="math">\(\rightarrow\)</span> Prop) (S : Stmt) : Stmt :=
     Stmt.whileDo B S
 </code></pre>
 <p>我们可以利用Lean的元编程框架来定义一个简单的验证条件生成器(VCG)。首先，我们引入一个名为Stmt.invWhileDo的常量，该常量除了循环条件B和循环体S外，还携带用户提供的循环不变式I：</p>
-<pre><code>theorem invWhile_intro \(\{B\) I Q S\}
-    \((h S:\{ *\) fun \(s \mapsto I s \wedge B s *\}(S)\{ * I *\})\)
-    \((h Q: \forall s, \neg B s \rightarrow I s \rightarrow Q s)\) :
-    \(\{* I *\}(\) Stmt.invWhileDo I B S) \{* Q *\} :=
+<pre><code>theorem invWhile_intro <span class="math">\(\{B\)</span> I Q S\}
+    <span class="math">\((h S:\{ *\)</span> fun <span class="math">\(s \mapsto I s \wedge B s *\}(S)\{ * I *\})\)</span>
+    <span class="math">\((h Q: \forall s, \neg B s \rightarrow I s \rightarrow Q s)\)</span> :
+    <span class="math">\(\{* I *\}(\)</span> Stmt.invWhileDo I B S) \{* Q *\} :=
     while_intro' I hS (by aesop) hQ
 theorem invWhile_intro' \{B I P Q S\}
-    \((h S:\{ *\) fun \(s \mapsto I s \wedge B s *\}(S)\{ * I *\})\)
-    \((h P: \forall s, P s \rightarrow I s)(\mathrm{hQ}: \forall s, \neg B s \rightarrow I s \rightarrow Q s)\) :
-    \(\{* P *\}(\) Stmt.invWhileDo I B S) \{* Q *\} :=
+    <span class="math">\((h S:\{ *\)</span> fun <span class="math">\(s \mapsto I s \wedge B s *\}(S)\{ * I *\})\)</span>
+    <span class="math">\((h P: \forall s, P s \rightarrow I s)(\mathrm{hQ}: \forall s, \neg B s \rightarrow I s \rightarrow Q s)\)</span> :
+    <span class="math">\(\{* P *\}(\)</span> Stmt.invWhileDo I B S) \{* Q *\} :=
     while_intro' I hS hP hQ
 </code></pre>
 
@@ -5936,7 +5945,7 @@ theorem invWhile_intro' \{B I P Q S\}
 
 <p>上述规则直接将不变式注解作为其循环不变式使用。在使用该框架时，我们必须注意为所有while循环添加合适的不变式注解。若指定了错误的不变式，将会遇到无法证明的子目标，这表明我们需要修正该不变式。</p>
 
-<pre><code>def matchPartialHoare : Expr \(\rightarrow\) Option (Expr \(\times\) Expr \(\times\) Expr)
+<pre><code>def matchPartialHoare : Expr <span class="math">\(\rightarrow\)</span> Option (Expr <span class="math">\(\times\)</span> Expr <span class="math">\(\times\)</span> Expr)
     | (Expr.app (Expr.app (Expr.app
         (Expr.const ''PartialHoare _) P) S) Q) =&gt;
         Option.some (P, S, Q)
@@ -5944,9 +5953,9 @@ theorem invWhile_intro' \{B I P Q S\}
         Option.none
 partial def vcg : TacticM Unit :=
     do
-        let goals \(\leftarrow\) getUnsolvedGoals
+        let goals <span class="math">\(\leftarrow\)</span> getUnsolvedGoals
         if goals.length != 0 then
-            let target \(\leftarrow\) getMainTarget
+            let target <span class="math">\(\leftarrow\)</span> getMainTarget
             match matchPartialHoare target with
             | Option.none =&gt; return
             | Option.some (P, S, Q) =&gt;
@@ -6116,13 +6125,13 @@ $$</div>
 <p>确定性语言的指称语义通常被定义为从前状态到后状态的函数，但关系更为通用且更便于操作。我们在此提出一种关系指称语义方法。</p>
 
 <p>程序的指称语义将是一个类型为Set (State <span class="math">\(\times\)</span> State)的数学对象。这种关系方法同样被用于大步语义，后者采用类型为State <span class="math">\(\rightarrow\)</span> State <span class="math">\(\rightarrow\)</span> Prop的谓词形式。这两种类型是同构的，但定义为<span class="math">\(\alpha \rightarrow\)</span> Prop的Set <span class="math">\(\alpha\)</span>支持许多有用操作和符号表示，例如<span class="math">\(\emptyset, \cup, \cap, \in\)</span>以及<span class="math">\(\{\ldots \mid \ldots\}\)</span>（第7.7节）。</p>
-<pre><code>def denote : Stmt \(\rightarrow\) Set (State \(\times\) State)
-    | Stmt.skip \(\quad=&gt;\) Id
-    | Stmt.assign x a \(\quad=&gt;\)
-        \(\{\) st | Prod.snd st \(=\left(\right.\) Prod.fst st) \([x \mapsto\) a (Prod.fst st) \()\}\)
-    | Stmt.seq S T \(\quad=&gt;\) denote \(S \bigcirc\) denote T
+<pre><code>def denote : Stmt <span class="math">\(\rightarrow\)</span> Set (State <span class="math">\(\times\)</span> State)
+    | Stmt.skip <span class="math">\(\quad=&gt;\)</span> Id
+    | Stmt.assign x a <span class="math">\(\quad=&gt;\)</span>
+        <span class="math">\(\{\)</span> st | Prod.snd st <span class="math">\(=\left(\right.\)</span> Prod.fst st) <span class="math">\([x \mapsto\)</span> a (Prod.fst st) <span class="math">\()\}\)</span>
+    | Stmt.seq S T <span class="math">\(\quad=&gt;\)</span> denote <span class="math">\(S \bigcirc\)</span> denote T
     | Stmt.ifThenElse B S T =&gt;
-        (denote S ; B) \(\cup\) (denote \(\mathrm{T} ;\) (fun \(\mathrm{s} \mapsto \neg \mathrm{B} \mathrm{s}\) ))
+        (denote S ; B) <span class="math">\(\cup\)</span> (denote <span class="math">\(\mathrm{T} ;\)</span> (fun <span class="math">\(\mathrm{s} \mapsto \neg \mathrm{B} \mathrm{s}\)</span> ))
 </code></pre>
 
 <p>我们的语义命名为denote，其中<span class="math">\(\llbracket \rrbracket\)</span>作为语法糖。我们先给出定义的前四个等式，而将while语句留待后续处理：</p>
@@ -6306,30 +6315,30 @@ $$</div>
 <li>
 <span class="math">\(\lg f\)</span> 小于任何其他不动点：<span class="math">\(X=f X \rightarrow \lg f \leq X\)</span>。</li>
 </ul>
-<pre><code>| Stmt.whileDo B S \(\quad \Rightarrow&gt;\)
-    lfp (fun \(X \mapsto\) ((denote \(S \bigcirc X) ; B\) )
-        \(\cup(\) Id \(;(\) fun \(\mathrm{s} \mapsto \neg \mathrm{B} \mathrm{s} \mathrm{)))}\)
+<pre><code>| Stmt.whileDo B S <span class="math">\(\quad \Rightarrow&gt;\)</span>
+    lfp (fun <span class="math">\(X \mapsto\)</span> ((denote <span class="math">\(S \bigcirc X) ; B\)</span> )
+        <span class="math">\(\cup(\)</span> Id <span class="math">\(;(\)</span> fun <span class="math">\(\mathrm{s} \mapsto \neg \mathrm{B} \mathrm{s} \mathrm{)))}\)</span>
 </code></pre>
 
 <h3>11.7 关系指称语义续</h3>
 <p>借助lfp，我们可以兑现承诺，完成WHILE程序指称语义的定义：</p>
 
 <pre><code>theorem denote_Iff_BigStep (S : Stmt) (s t : State) :
-    \((s, t) \in \llbracket S \rrbracket \leftrightarrow(s, s) \Longrightarrow t\)
+    <span class="math">\((s, t) \in \llbracket S \rrbracket \leftrightarrow(s, s) \Longrightarrow t\)</span>
 </code></pre>
 <p>为验证我们的定义，可以证明指称语义与大步语义之间存在以下关联：</p>
 <p>关于证明部分，请参阅《Concrete Semantics: With Isabelle/HOL》第11章或本章附带的演示文件。</p>
-<pre><code>def DenoteEquiv \(\left(\mathrm{S}_{1} \mathrm{~S}_{2}: \mathrm{Stmt}\right)\) : Prop :=
-    \(\llbracket \mathrm{S}_{1} \rrbracket=\llbracket \mathrm{S}_{2} \rrbracket\)
+<pre><code>def DenoteEquiv <span class="math">\(\left(\mathrm{S}_{1} \mathrm{~S}_{2}: \mathrm{Stmt}\right)\)</span> : Prop :=
+    <span class="math">\(\llbracket \mathrm{S}_{1} \rrbracket=\llbracket \mathrm{S}_{2} \rrbracket\)</span>
 </code></pre>
 <h3>11.8 程序等价性应用</h3>
 <p>基于指称语义学，我们引入程序等价性的概念。若两个程序具有相同的语义，则它们等价：</p>
 
 <p>我们用<span class="math">\(S_{1} \sim S_{2}\)</span>作为DenoteEquiv <span class="math">\(S_{1} S_{2}\)</span>的简写。容易看出这是一个等价关系。</p>
 
-<pre><code>theorem DenoteEquiv.seq_congr \(\left\{S_{1} S_{2} T_{1} T_{2}: \mathrm{Stmt}\right\}\)
-    \(\left(h S: S_{1} \sim S_{2}\right)\left(h T: T_{1} \sim T_{2}\right):\)
-    \(\mathrm{S}_{1} ; \mathrm{T}_{1} \sim \mathrm{~S}_{2} ; \mathrm{T}_{2}:=\)
+<pre><code>theorem DenoteEquiv.seq_congr <span class="math">\(\left\{S_{1} S_{2} T_{1} T_{2}: \mathrm{Stmt}\right\}\)</span>
+    <span class="math">\(\left(h S: S_{1} \sim S_{2}\right)\left(h T: T_{1} \sim T_{2}\right):\)</span>
+    <span class="math">\(\mathrm{S}_{1} ; \mathrm{T}_{1} \sim \mathrm{~S}_{2} ; \mathrm{T}_{2}:=\)</span>
     by
 
     simp [DenoteEquiv, denote] at *
@@ -6386,13 +6395,13 @@ theorem DenoteEquiv.seq_skip_right {S} :
 <h3>11.9 基于归纳谓词的更简单方法</h3>
 <p>Lean的归纳谓词对应于最小不动点，但它们直接内建于Lean的逻辑系统（归纳构造演算）中，无需使用类似lfp的不动点运算符。本节大部分内容都致力于构建lfp运算符。我们是否可以使用归纳谓词来替代，从而省去这部分工作？</p>
 
-<pre><code>inductive Awhile (B : State \(\rightarrow\) Prop)
-    (r : Set (State \(\times\) State)) :
-    State \(\rightarrow\) State \(\rightarrow\) Prop
-    | true \(\{s \mathrm{t} u\) \} (hcond : B s) (hbody : (s, t) \(\in r\) )
+<pre><code>inductive Awhile (B : State <span class="math">\(\rightarrow\)</span> Prop)
+    (r : Set (State <span class="math">\(\times\)</span> State)) :
+    State <span class="math">\(\rightarrow\)</span> State <span class="math">\(\rightarrow\)</span> Prop
+    | true <span class="math">\(\{s \mathrm{t} u\)</span> \} (hcond : B s) (hbody : (s, t) <span class="math">\(\in r\)</span> )
         (hrest : Awhile B r t u) :
         Awhile B r s u
-    | false \(\{s\}\) (hcond : \(\neg\) B s) :
+    | false <span class="math">\(\{s\}\)</span> (hcond : <span class="math">\(\neg\)</span> B s) :
         Awhile B r s s
 </code></pre>
 <p>答案是肯定的。首先需要明确，在Lean中，类型Set (State <span class="math">\(\times\)</span> State)和State <span class="math">\(\rightarrow\)</span> State <span class="math">\(\rightarrow\)</span> Prop是二元关系的等价表示形式。因此我们可以构建如下Awhile谓词，它类似于自反传递闭包，但当给定条件B为假时停止：</p>
@@ -6528,8 +6537,8 @@ only eliminate into Prop
 
 <p>unsquare函数接收一个平方数<span class="math">\(i\)</span>以及证明hsq（表明<span class="math">\(i\)</span>确实是一个平方数），然后返回平方前的数字<span class="math">\(j\)</span>，该数字是从证明中提取的。Lean会抛出错误</p>
 
-<pre><code>hsq \(_{1}:=\) Exists.intro 3 (by linarith)
-hsq \(_{2}:=\) Exists.intro (-3) (by linarith)
+<pre><code>hsq <span class="math">\(_{1}:=\)</span> Exists.intro 3 (by linarith)
+hsq <span class="math">\(_{2}:=\)</span> Exists.intro (-3) (by linarith)
 </code></pre>
 
 <p>若该定义被接受，我们可按如下方式推导出False。设</p>
@@ -6604,9 +6613,9 @@ $$</div>
 <p>下图展示了通过保留基类型五个元素中的两个所创建的子类型：</p>
 
 <p><img src="img-10.jpeg" alt="img-10.jpeg"></p>
-<pre><code>inductive Finset ( \(\alpha\) : Type) : Type
-    | empty : Finset \(\alpha\)
-    | insert : \(\alpha \rightarrow\) Finset \(\alpha \rightarrow\) Finset \(\alpha\)
+<pre><code>inductive Finset ( <span class="math">\(\alpha\)</span> : Type) : Type
+    | empty : Finset <span class="math">\(\alpha\)</span>
+    | insert : <span class="math">\(\alpha \rightarrow\)</span> Finset <span class="math">\(\alpha \rightarrow\)</span> Finset <span class="math">\(\alpha\)</span>
 </code></pre>
 
 <p>子类型化对于无法被定义为归纳类型的那些类型非常有用。例如，任何尝试按照以下方式定义有限集类型的做法</p>
@@ -6743,12 +6752,12 @@ $$</div>
 <p><img src="img-13.jpeg" alt="img-13.jpeg"></p>
 <p>商类型</p>
 <p>图示的商类型仅有三个元素，用灰色椭圆表示。每个元素对应一个或多个基类型元素。</p>
-<pre><code>instance \tau.Setoid : Setoid \(\tau:=\)
-    \(\{\mathrm{r} \quad:=R\)
-        iseqv : \(=\)
+<pre><code>instance \tau.Setoid : Setoid <span class="math">\(\tau:=\)</span>
+    <span class="math">\(\{\mathrm{r} \quad:=R\)</span>
+        iseqv : <span class="math">\(=\)</span>
             \{ refl := ...
-            symm \(:=\)...
-            trans \(:=\ldots\}\)
+            symm <span class="math">\(:=\)</span>...
+            trans <span class="math">\(:=\ldots\}\)</span>
 </code></pre>
 <p>构造商类型的前提条件是存在一个基类型<span class="math">\(\tau\)</span>和一个等价关系<span class="math">\(R: \tau \rightarrow \tau \rightarrow\)</span> Prop，该关系规定了基类型中哪些元素在商类型中被视为相等。要构造商类型，我们首先需要证明<span class="math">\(R\)</span>是<span class="math">\(\tau\)</span>上的等价关系。配备等价关系的类型<span class="math">\(\tau\)</span>称为集合体。在Lean中，Setoid是一个类型类，我们可以通过以下命令声明其实例</p>
 
@@ -6852,13 +6861,13 @@ $$</div>
 
 <p>加法可以通过逐分量相加自然数对来定义。随后我们需要证明该定义可被提升到商集上的函数，即证明当<span class="math">\(\mathrm{pn}_{1} \approx \mathrm{pn}_{1}{ }^{\prime}\)</span>且<span class="math">\(\mathrm{pn}_{2} \approx \mathrm{pn}_{2}{ }^{\prime}\)</span>时满足</p>
 
-<pre><code>def Int.add : Int \(\rightarrow\) Int \(\rightarrow\) Int \(:==\)
-    Quotient.lift \(_{3}\)
-    (fun \(\mathrm{pn}_{1} \mathrm{pn}_{2}: \mathbb{N} \times \mathbb{N} \mapsto\)
-        \llbracket(Prod.fst \(\mathrm{pn}_{1}+\) Prod.fst \(\mathrm{pn}_{2}\),
-            Prod.snd \(\mathrm{pn}_{1}+\) Prod.snd \(\mathrm{pn}_{2} \rrbracket\) )
+<pre><code>def Int.add : Int <span class="math">\(\rightarrow\)</span> Int <span class="math">\(\rightarrow\)</span> Int <span class="math">\(:==\)</span>
+    Quotient.lift <span class="math">\(_{3}\)</span>
+    (fun <span class="math">\(\mathrm{pn}_{1} \mathrm{pn}_{2}: \mathbb{N} \times \mathbb{N} \mapsto\)</span>
+        \llbracket(Prod.fst <span class="math">\(\mathrm{pn}_{1}+\)</span> Prod.fst <span class="math">\(\mathrm{pn}_{2}\)</span>,
+            Prod.snd <span class="math">\(\mathrm{pn}_{1}+\)</span> Prod.snd <span class="math">\(\mathrm{pn}_{2} \rrbracket\)</span> )
     (by
-        intro \(\mathrm{pn}_{1} \mathrm{pn}_{2} \mathrm{pn}_{1}{ }^{\prime} \mathrm{pn}_{2}{ }^{\prime} \mathrm{h}_{1} \mathrm{~h}_{2}\)
+        intro <span class="math">\(\mathrm{pn}_{1} \mathrm{pn}_{2} \mathrm{pn}_{1}{ }^{\prime} \mathrm{pn}_{2}{ }^{\prime} \mathrm{h}_{1} \mathrm{~h}_{2}\)</span>
         apply Quotient.sound
         rw [Int.Setoid_Iff] at *
         linarith)
@@ -6866,22 +6875,22 @@ $$</div>
 
 <p>形式化表述：</p>
 
-<pre><code>theorem Int.add_Eq \(\left(\mathrm{p}_{1} \mathrm{n}_{1} \mathrm{p}_{2} \mathrm{n}_{2}: \mathbb{N}\right)\);
-    Int.add \(\llbracket\left(\mathrm{p}_{1}, \mathrm{n}_{1}\right) \rrbracket \llbracket\left(\mathrm{p}_{2}, \mathrm{n}_{2}\right) \rrbracket=\)
-    \(\llbracket\left(\mathrm{p}_{1}+\mathrm{p}_{2}, \mathrm{n}_{1}+\mathrm{n}_{2}\right) \rrbracket:=\)
+<pre><code>theorem Int.add_Eq <span class="math">\(\left(\mathrm{p}_{1} \mathrm{n}_{1} \mathrm{p}_{2} \mathrm{n}_{2}: \mathbb{N}\right)\)</span>;
+    Int.add <span class="math">\(\llbracket\left(\mathrm{p}_{1}, \mathrm{n}_{1}\right) \rrbracket \llbracket\left(\mathrm{p}_{2}, \mathrm{n}_{2}\right) \rrbracket=\)</span>
+    <span class="math">\(\llbracket\left(\mathrm{p}_{1}+\mathrm{p}_{2}, \mathrm{n}_{1}+\mathrm{n}_{2}\right) \rrbracket:=\)</span>
     by rfl
 </code></pre>
 <p>最终得到的函数Int.add具有预期行为：</p>
 <pre><code>-- fails
-def Int.add : Int \(\rightarrow\) Int \(\rightarrow\) Int
-    | \(\llbracket\left(p_{1}, n_{1}\right) \rrbracket, \llbracket\left(p_{2}, n_{2}\right) \rrbracket=&gt;\llbracket\left(p_{1}+p_{2}, n_{1}+n_{2}\right) \rrbracket\)
+def Int.add : Int <span class="math">\(\rightarrow\)</span> Int <span class="math">\(\rightarrow\)</span> Int
+    | <span class="math">\(\llbracket\left(p_{1}, n_{1}\right) \rrbracket, \llbracket\left(p_{2}, n_{2}\right) \rrbracket=&gt;\llbracket\left(p_{1}+p_{2}, n_{1}+n_{2}\right) \rrbracket\)</span>
 </code></pre>
 
 <p>如果Lean能让我们直接用以下语法将这个定理作为Int. add的定义输入，那将会非常方便：</p>
 
 <pre><code>-- fails
-def Int.fst : Int \(\rightarrow \mathbb{N}\)
-    | \(\llbracket(p, n) \rrbracket=&gt;p\)
+def Int.fst : Int <span class="math">\(\rightarrow \mathbb{N}\)</span>
+    | <span class="math">\(\llbracket(p, n) \rrbracket=&gt;p\)</span>
 </code></pre>
 <p>这将是一种优雅直观的语法，但若缺乏证明该定义与<span class="math">\(\approx\)</span>的兼容性，我们可能会定义出无意义的函数并利用它们推导出False。例如，我们可以定义</p>
 
@@ -6935,9 +6944,9 @@ def UPair ( }\alpha\mathrm{ : Type) : Type :=
     Quotient.lift (fun ab : }\alpha\times\alpha\mapsto\mathrm{ {Prod.fst ab, Prod.snd ab})
         (by
 
-intro ab \(_{1}\) ab \(_{2}\) h
+intro ab <span class="math">\(_{1}\)</span> ab <span class="math">\(_{2}\)</span> h
 rw [UPair.Setoid_Iff] at *
-exact \(h)\)
+exact <span class="math">\(h)\)</span>
 </code></pre>
 
 <p>无序对的另一种表示方式是基数为1或2的集合。以下操作将UPair <span class="math">\(\alpha\)</span>值转换为该表示形式：</p>
@@ -6946,9 +6955,9 @@ exact \(h)\)
 <h4>12.5.3 通过规范化与子类型化的替代定义</h4>
 <p>商类型的每个元素对应于基类型中<span class="math">\(\approx\)</span>等价类的一个元素。若存在系统化方法为每个<span class="math">\(\approx\)</span>等价类获取规范代表元，则可用子类型替代商类型，仅保留规范代表元并过滤其他元素。</p>
 
-<pre><code>inductive Int.IsCanonical : \(\mathbb{N} \times \mathbb{N} \rightarrow\) Prop
-    | nonpos \(\{n: \mathbb{N}\} \operatorname{:Int.IsCanonical}(0, n)\)
-    | nonneg \(\{p: \mathbb{N}\} \operatorname{:Int.IsCanonical}(p, \circ)\)
+<pre><code>inductive Int.IsCanonical : <span class="math">\(\mathbb{N} \times \mathbb{N} \rightarrow\)</span> Prop
+    | nonpos <span class="math">\(\{n: \mathbb{N}\} \operatorname{:Int.IsCanonical}(0, n)\)</span>
+    | nonneg <span class="math">\(\{p: \mathbb{N}\} \operatorname{:Int.IsCanonical}(p, \circ)\)</span>
 </code></pre>
 <p>考虑上文构造的整数商类型Int。我们观察到<span class="math">\((7, \circ),(8,1),(9,2)\)</span>和<span class="math">\((10,3)\)</span>都表示整数7，但直观上<span class="math">\((7, \circ)\)</span>比其他表示更可取。我们将称一个数对<span class="math">\((p, n)\)</span>为规范形式——当且仅当p或n为o时：</p>
 <pre><code>def Int : Type :=
@@ -7075,15 +7084,15 @@ Subtype.eq 基类型上的等式蕴含子类型上的等式</p>
 <p>| 一
 加法运算定义如下：</p>
 
-<pre><code>                add : \(\alpha \rightarrow \alpha \rightarrow \alpha\)
-                zero : \(\alpha\)
-                neg : \(\alpha \rightarrow \alpha\)
+<pre><code>                add : <span class="math">\(\alpha \rightarrow \alpha \rightarrow \alpha\)</span>
+                zero : <span class="math">\(\alpha\)</span>
+                neg : <span class="math">\(\alpha \rightarrow \alpha\)</span>
             add_assoc : \Va b c, add (add a b) c = add a (add b c)
                 zero_add : \Va, add zero a = a
                 add_zero: \Va, add a zero = a
     neg_add_cancel : \Va, add (neg a) a = zero
-        nsmul : \(\mathbb{N} \rightarrow \alpha \rightarrow \alpha\)
-        zsmul : \(\mathbb{Z} \rightarrow \alpha \rightarrow \alpha\)
+        nsmul : <span class="math">\(\mathbb{N} \rightarrow \alpha \rightarrow \alpha\)</span>
+        zsmul : <span class="math">\(\mathbb{Z} \rightarrow \alpha \rightarrow \alpha\)</span>
 </code></pre>
 
 <p>要实例化AddGroup，我们需要提供以下常量和属性：</p>
@@ -7425,8 +7434,8 @@ nnratCast_def :=
 <p>Field类型类要求满足性质<span class="math">\(\forall a, a / \theta=\theta\)</span>。这只是为了使除法成为全函数的一种约定。数学家通常将除法视为偏函数。以这种方式将偏函数全函数化并无害处。</p>
 
 <pre><code>theorem ring_example (a b : Int2) :
-    \((a \cdot b) \wedge 3=a \wedge 3+3 * a \wedge 2 * b+3 * a * b \wedge 2 * b \wedge 3\)
-    \(:=\)
+    <span class="math">\((a \cdot b) \wedge 3=a \wedge 3+3 * a \wedge 2 * b+3 * a * b \wedge 2 * b \wedge 3\)</span>
+    <span class="math">\(:=\)</span>
     by ring
 </code></pre>
 
@@ -7435,8 +7444,8 @@ nnratCast_def :=
 
 <p>该策略适用于任何被声明为域或更广义上的交换半环的类型。</p>
 
-<pre><code>theorem neg_mul_neg_Nat \((n: \mathbb{N})(z: \mathbb{Z}):\)
-    \((-z) *(-\mathrm{n})=z * n:=\)
+<pre><code>theorem neg_mul_neg_Nat <span class="math">\((n: \mathbb{N})(z: \mathbb{Z}):\)</span>
+    <span class="math">\((-z) *(-\mathrm{n})=z * n:=\)</span>
     by simp
 </code></pre>
 <h3>13.3 强制类型转换</h3>
@@ -7533,9 +7542,9 @@ Reval Multiset.prod ({2, 3, 4} : Multiset N)
 </code></pre>
 <p>对于列表和多重集合，Lean提供了求和与乘积运算符来累加或连乘所有元素。以下前两条命令输出9，后两条输出24：</p>
 <p>这些运算符要求元素的类型必须声明为AddMonoid实例（用于求和）或Monoid实例（用于求积）。多重集版本还需要声明AddCommMonoid或CommMonoid实例，因为其结果不能依赖于元素相加或相乘的顺序。</p>
-<pre><code>inductive Nat.le : \(\mathbb{N} \rightarrow \mathbb{N} \rightarrow\) Prop
+<pre><code>inductive Nat.le : <span class="math">\(\mathbb{N} \rightarrow \mathbb{N} \rightarrow\)</span> Prop
     | refl : Va : N, Nat.le a a
-    | step : Va b : N, Nat.le a b \(\rightarrow\) Nat.le a (b + 1 )
+    | step : Va b : N, Nat.le a b <span class="math">\(\rightarrow\)</span> Nat.le a (b + 1 )
 </code></pre>
 
 <h3>13.6 序类型类</h3>
@@ -7637,9 +7646,9 @@ ring
 </ol>
 
 <pre><code>structure Fraction where
-    num : \(\mathbb{Z}\)
-    denom : \(\mathbb{Z}\)
-    denom_Neq_zero : denom \(\neq 0\)
+    num : <span class="math">\(\mathbb{Z}\)</span>
+    denom : <span class="math">\(\mathbb{Z}\)</span>
+    denom_Neq_zero : denom <span class="math">\(\neq 0\)</span>
 </code></pre>
 
 <h3>14.1 有理数</h3>
@@ -7768,7 +7777,7 @@ $$</div>
 </code></pre>
 <p>我们将有理数序列形式化为函数<span class="math">\(f: \mathbb{N} \rightarrow \mathbb{Q}\)</span>，并用abs表示绝对值<span class="math">\(|\mid\)</span>。由此得到柯西序列在Lean中的如下定义：</p>
 <pre><code>theorem id_Not_CauchySeq :
-    \(\neg\) IsCauchySeq (fun \(n: \mathbb{N} \mapsto(n: \mathbb{Q})):=
+    <span class="math">\(\neg\)</span> IsCauchySeq (fun \(n: \mathbb{N} \mapsto(n: \mathbb{Q})):=
     by
         rw [IsCauchySeq]
         intro h
@@ -7883,11 +7892,11 @@ namespace CauchySeq</p>
         (hg : g \ g') :
         f + g \ f' + g' :=
     by
-        intro \(\varepsilon_{0}\) h \(\varepsilon_{0}\)
+        intro <span class="math">\(\varepsilon_{0}\)</span> h <span class="math">\(\varepsilon_{0}\)</span>
         simp [Setoid_iff]
-        cases hf ( \(\varepsilon_{0} / 2\) ) (by linarith) with
+        cases hf ( <span class="math">\(\varepsilon_{0} / 2\)</span> ) (by linarith) with
         | intro Nf hNf =&gt;
-            cases hg ( \(\varepsilon_{0} / 2\) ) (by linarith) with
+            cases hg ( <span class="math">\(\varepsilon_{0} / 2\)</span> ) (by linarith) with
             | intro Ng hNg =&gt;
                 apply Exists.intro (max Nf Ng)
                 intro m hm
@@ -7934,7 +7943,7 @@ $$</div>
 
 <pre><code>namespace Real
 instance Add : Add Real :=
-{ add := Quotient.lift 2 (fun a b : CauchySeq \(\mapsto\llbracket a+b \rrbracket\) )
+{ add := Quotient.lift 2 (fun a b : CauchySeq <span class="math">\(\mapsto\llbracket a+b \rrbracket\)</span> )
     (by
         intro a b a' b' ha hb
         apply Quotient.sound

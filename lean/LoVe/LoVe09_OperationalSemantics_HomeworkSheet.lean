@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe02_ProgramsAndTheorems_Demo
 
 
-/- # LoVe Homework 9 (10 points + 1 bonus point): Operational Semantics
+/- # LoVe 家庭作业 9 (10 分 + 1 附加分): 操作语义
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,71 +15,61 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1 (5 points): Arithmetic Expressions
+/- ## 问题 1 (5 分): 算术表达式
 
-Recall the type of arithmetic expressions from lecture 1 and its evaluation
-function: -/
+回顾第一讲中算术表达式的类型及其求值函数： -/
 
 #check AExp
 #check eval
 
-/- Let us introduce the following abbreviation for an environment that maps
-variable names to values: -/
+/- 我们引入以下缩写，表示将变量名映射到值的环境： -/
 
 def Envir : Type :=
   String → ℤ
 
-/- 1.1 (2 points). Complete the following Lean definition of a big-step-style
-semantics for arithmetic expressions. The predicate `BigStep` (`⟹`) relates
-an arithmetic expression, an environment, and the value to which the expression
-evaluates in the given environment: -/
+/- 1.1 (2 分). 完成以下算术表达式的大步语义的 Lean 定义。谓词 `BigStep` (`⟹`) 关联一个算术表达式、一个环境以及该表达式在给定环境下求值得到的值： -/
 
 inductive BigStep : AExp × Envir → ℤ → Prop
   | num (i env) : BigStep (AExp.num i, env) i
 
 infix:60 " ⟹ " => BigStep
 
-/- 1.2 (1 point). Prove the following theorem to validate your definition
-above.
+/- 1.2 (1 分). 证明以下定理以验证你上面的定义。
 
-Hint: It may help to first prove
-`(AExp.add (AExp.num 2) (AExp.num 2), env) ⟹ 2 + 2`. -/
+提示：可以先证明
+`(AExp.add (AExp.num 2) (AExp.num 2), env) ⟹ 2 + 2`。 -/
 
 theorem BigStep_add_two_two (env : Envir) :
     (AExp.add (AExp.num 2) (AExp.num 2), env) ⟹ 4 :=
   sorry
 
-/- 1.3 (2 points). Prove that the big-step semantics is sound with respect to
-the `eval` function: -/
+/- 1.3 (2 分). 证明大步语义相对于 `eval` 函数是可靠的： -/
 
 theorem BigStep_sound (aenv : AExp × Envir) (i : ℤ) (hstep : aenv ⟹ i) :
     eval (Prod.snd aenv) (Prod.fst aenv) = i :=
   sorry
 
 
-/- ## Question 2 (5 points + 1 bonus point): Semantics of Regular Expressions
+/- ## 问题 2 (5 分 + 1 附加分): 正则表达式的语义
 
-Regular expressions are a very popular tool for software development. Often,
-when textual input needs to be analyzed it is matched against a regular
-expression. In this question, we define the syntax of regular expressions and
-what it means for a regular expression to match a string.
+正则表达式是软件开发中非常流行的工具。通常，当需要分析文本输入时，会将其与正则表达式进行匹配。在这个问题中，我们定义正则表达式的语法以及正则表达式匹配字符串的含义。
 
-We define `Regex` to represent the following grammar:
+我们定义 `Regex` 来表示以下文法：
 
-    R  ::=  ∅       -- `nothing`: matches nothing
-         |  ε       -- `empty`: matches the empty string
-         |  a       -- `atom`: matches the atom `a`
-         |  R ⬝ R    -- `concat`: matches the concatenation of two regexes
-         |  R + R   -- `alt`: matches either of two regexes
-         |  R*      -- `star`: matches arbitrary many repetitions of a Regex
+    R  ::=  ∅       -- `nothing`: 不匹配任何内容
+         |  ε       -- `empty`: 匹配空字符串
+         |  a       -- `atom`: 匹配原子 `a`
+         |  R ⬝ R    -- `concat`: 匹配两个正则表达式的连接
+         |  R + R   -- `alt`: 匹配两个正则表达式中的任意一个
+         |  R*      -- `star`: 匹配正则表达式的任意多次重复
 
-Notice the rough correspondence with a WHILE language:
+注意与 WHILE 语言的粗略对应关系：
 
     `empty`  ~ `skip`
-    `atom`   ~ assignment
-    `concat` ~ sequential composition
-    `alt`    ~ conditional statement
-    `star`   ~ while loop -/
+    `atom`   ~ 赋值
+    `concat` ~ 顺序组合
+    `alt`    ~ 条件语句
+    `star`   ~ while 循环 -/
 
 inductive Regex (α : Type) : Type
   | nothing : Regex α
@@ -89,8 +79,7 @@ inductive Regex (α : Type) : Type
   | alt     : Regex α → Regex α → Regex α
   | star    : Regex α → Regex α
 
-/- The `Matches r s` predicate indicates that the regular expression `r` matches
-the string `s` (where the string is a sequence of atoms). -/
+/- 谓词 `Matches r s` 表示正则表达式 `r` 匹配字符串 `s`（其中字符串是原子的序列）。 -/
 
 inductive Matches {α : Type} : Regex α → List α → Prop
 | empty :
@@ -110,21 +99,21 @@ inductive Matches {α : Type} : Regex α → List α → Prop
     (h₂ : Matches (Regex.star r) s') :
   Matches (Regex.star r) (s ++ s')
 
-/- The introduction rules correspond to the following cases:
+/- 引入规则对应以下情况：
 
-* match the empty string
-* match one atom (e.g., character)
-* match two concatenated regexes
-* match the left option
-* match the right option
-* match the empty string (the base case of `R*`)
-* match `R` followed again by `R*` (the induction step of `R*`)
+* 匹配空字符串
+* 匹配一个原子（例如字符）
+* 匹配两个连接的正则表达式
+* 匹配左侧选项
+* 匹配右侧选项
+* 匹配空字符串（`R*` 的基本情况）
+* 匹配 `R` 后跟 `R*`（`R*` 的归纳步骤）
 
-2.1 (1 point). Explain why there is no rule for `nothing`. -/
+2.1 (1 分). 解释为什么没有 `nothing` 的规则。 -/
 
--- enter your answer here
+-- 在此输入你的答案
 
-/- 2.2 (4 points). Prove the following inversion rules. -/
+/- 2.2 (4 分). 证明以下反演规则。 -/
 
 @[simp] theorem Matches_atom {α : Type} {s : List α} {a : α} :
     Matches (Regex.atom a) s ↔ s = [a] :=
@@ -147,7 +136,7 @@ inductive Matches {α : Type} : Regex α → List α → Prop
     Matches (Regex.alt r₁ r₂) s ↔ (Matches r₁ s ∨ Matches r₂ s) :=
   sorry
 
-/- 2.3 (1 bonus point). Prove the following inversion rule. -/
+/- 2.3 (1 附加分). 证明以下反演规则。 -/
 
 theorem Matches_star {α : Type} {s : List α} {r : Regex α} :
     Matches (Regex.star r) s ↔
@@ -156,3 +145,4 @@ theorem Matches_star {α : Type} {s : List α} {r : Regex α} :
   sorry
 
 end LoVe
+

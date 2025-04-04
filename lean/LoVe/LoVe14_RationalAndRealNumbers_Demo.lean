@@ -1,25 +1,22 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Demo 14: Rational and Real Numbers
+/- # LoVe 演示14：有理数与实数
 
-We review the construction of `ℚ` and `ℝ` as quotient types.
+我们回顾将`ℚ`和`ℝ`构造为商类型的过程。
 
-Our procedure to construct types with specific properties:
+构造具有特定性质的类型的步骤：
 
-1. Create a new type that can represent all elements, but not necessarily in a
-   unique manner.
+1. 创建一个能表示所有元素的新类型，但不要求唯一表示。
 
-2. Quotient this representation, equating elements that should be equal.
+2. 对这个表示进行商处理，将应该相等的元素等同起来。
 
-3. Define operators on the quotient type by lifting functions from the base
-   type and prove that they are compatible with the quotient relation.
+3. 通过从基类型提升函数来定义商类型上的运算符，并证明它们与商关系兼容。
 
-We used this approach in lecture 12 to construct `ℤ`. It can be used for `ℚ` and
-`ℝ` as well. -/
+我们在第12讲中用这种方法构造了`ℤ`。它同样适用于`ℚ`和`ℝ`。 -/
 
 
 set_option autoImplicit false
@@ -28,25 +25,20 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Rational Numbers
+/- ## 有理数
 
-**Step 1:** A rational number is a number that can be expressed as a fraction
-`n / d` of integers `n` and `d ≠ 0`: -/
+**步骤1:** 有理数可以表示为整数`n`和`d ≠ 0`的分数`n / d`： -/
 
 structure Fraction where
   num            : ℤ
   denom          : ℤ
   denom_Neq_zero : denom ≠ 0
 
-/- The number `n` is called the numerator, and the number `d` is called the
-denominator.
+/- 数字`n`称为分子，数字`d`称为分母。
 
-The representation of a rational number as a fraction is not unique—e.g.,
-`1 / 2 = 2 / 4 = -1 / -2`.
+有理数作为分数的表示不唯一——例如，`1 / 2 = 2 / 4 = -1 / -2`。
 
-**Step 2:** Two fractions `n₁ / d₁` and `n₂ / d₂` represent the same rational
-number if the ratio between numerator and denominator are the same—i.e.,
-`n₁ * d₂ = n₂ * d₁`. This will be our equivalence relation `≈` on fractions. -/
+**步骤2:** 两个分数`n₁ / d₁`和`n₂ / d₂`表示相同的有理数，当且仅当分子与分母的比例相同——即`n₁ * d₂ = n₂ * d₁`。这将是我们对分数的等价关系`≈`。 -/
 
 namespace Fraction
 
@@ -78,12 +70,12 @@ theorem Setoid_Iff (a b : Fraction) :
     a ≈ b ↔ num a * denom b = num b * denom a :=
   by rfl
 
-/- **Step 3:** Define `0 := 0 / 1`, `1 := 1 / 1`, addition, multiplication, etc.
+/- **步骤3:** 定义`0 := 0 / 1`，`1 := 1 / 1`，加法，乘法等。
 
     `n₁ / d₁ + n₂ / d₂`     := `(n₁ * d₂ + n₂ * d₁) / (d₁ * d₂)`
     `(n₁ / d₁) * (n₂ / d₂)` := `(n₁ * n₂) / (d₁ * d₂)`
 
-Then show that they are compatible with `≈`. -/
+然后证明它们与`≈`兼容。 -/
 
 def of_int (i : ℤ) : Fraction :=
   { num            := i
@@ -273,11 +265,9 @@ instance Inv : Inv Rat :=
 end Rat
 
 
-/- ### Alternative Definition of `ℚ`
+/- ### `ℚ`的替代定义
 
-Define `ℚ` as a subtype of `fraction`, with the requirement that the denominator
-is positive and that the numerator and the denominator have no common divisors
-except `1` and `-1`: -/
+将`ℚ`定义为`fraction`的子类型，要求分母为正且分子和分母的最大公约数为1或-1： -/
 
 namespace Alternative
 
@@ -291,27 +281,22 @@ def Rat : Type :=
 
 end Alternative
 
-/- This is more or less the `mathlib` definition.
+/- 这与`mathlib`的定义大致相同。
 
-Advantages:
+优点：
+* 不需要商处理；
+* 计算效率更高；
+* 更多性质在计算后是语法相等的。
 
-* no quotient required;
-* more efficient computation;
-* more properties are syntactic equalities up to computation.
-
-Disadvantage:
-
-* more complicated function definitions.
+缺点：
+* 函数定义更复杂。
 
 
-### Real Numbers
+### 实数
 
-Some sequences of rational numbers seem to converge because the numbers in the
-sequence get closer and closer to each other, and yet do not converge to a
-rational number.
+一些有理数序列看似收敛，因为序列中的数越来越接近，但实际上并不收敛到有理数。
 
-Example:
-
+例子：
     `a₀ = 1`
     `a₁ = 1.4`
     `a₂ = 1.41`
@@ -322,26 +307,20 @@ Example:
     `a₇ = 1.4142135`
        ⋮
 
-This sequence seems to converge because each `a_n` is at most `10^-n` away from
-any of the following numbers. But the limit is `√2`, which is not a rational
-number.
+这个序列看似收敛，因为每个`a_n`与后续数的差距最多为`10^-n`。但极限是`√2`，它不是有理数。
 
-The rational numbers are incomplete, and the reals are their  __completion__.
+有理数是不完备的，实数是它们的**完备化**。
 
-To construct the reals, we need to fill in the gaps that are revealed by these
-sequences that seem to converge, but do not.
+为了构造实数，我们需要填补这些看似收敛但实际不收敛的序列所揭示的空白。
 
-Mathematically, a sequence `a₀, a₁, …` of rational numbers is __Cauchy__ if for
-any `ε > 0`, there exists an `N ∈ ℕ` such that for all `m ≥ N`, we have
-`|a_N - a_m| < ε`.
+数学上，有理数序列`a₀, a₁, …`是**柯西序列**，如果对于任意`ε > 0`，存在`N ∈ ℕ`使得对于所有`m ≥ N`，有`|a_N - a_m| < ε`。
 
-In other words, no matter how small we choose `ε`, we can always find a point in
-the sequence from which all following numbers deviate less than by `ε`. -/
+换句话说，无论我们选择多小的`ε`，总能找到序列中的一个点，使得其后所有数与它的偏差小于`ε`。 -/
 
 def IsCauchySeq (f : ℕ → ℚ) : Prop :=
   ∀ε > 0, ∃N, ∀m ≥ N, abs (f N - f m) < ε
 
-/- Not every sequence is a Cauchy sequence: -/
+/- 并非所有序列都是柯西序列： -/
 
 theorem id_Not_CauchySeq :
     ¬ IsCauchySeq (fun n : ℕ ↦ (n : ℚ)) :=
@@ -354,7 +333,7 @@ theorem id_Not_CauchySeq :
         hi (i + 1) (by simp)
       simp [←sub_sub] at hi_succi
 
-/- We define a type of Cauchy sequences as a subtype: -/
+/- 我们将柯西序列定义为子类型： -/
 
 def CauchySeq : Type :=
   {f : ℕ → ℚ // IsCauchySeq f}
@@ -362,15 +341,12 @@ def CauchySeq : Type :=
 def seqOf (f : CauchySeq) : ℕ → ℚ :=
   Subtype.val f
 
-/- Cauchy sequences represent real numbers:
+/- 柯西序列表示实数：
+* `a_n = 1 / n`表示实数`0`；
+* `1, 1.4, 1.41, …`表示实数`√2`；
+* `a_n = 0`也表示实数`0`。
 
-* `a_n = 1 / n` represents the real number `0`;
-* `1, 1.4, 1.41, …` represents the real number `√2`;
-* `a_n = 0` also represents the real number `0`.
-
-Since different Cauchy sequences can represent the same real number, we need to
-take the quotient. Formally, two sequences represent the same real number when
-their difference converges to zero: -/
+由于不同的柯西序列可以表示相同的实数，我们需要进行商处理。形式上，两个序列表示相同的实数当它们的差收敛到零： -/
 
 namespace CauchySeq
 
@@ -418,8 +394,7 @@ theorem Setoid_iff (f g : CauchySeq) :
     ∀ε > 0, ∃N, ∀m ≥ N, abs (seqOf f m - seqOf g m) < ε :=
   by rfl
 
-/- We can define constants such as `0` and `1` as a constant sequence. Any
-constant sequence is a Cauchy sequence: -/
+/- 我们可以将常量如`0`和`1`定义为常序列。任何常序列都是柯西序列： -/
 
 def const (q : ℚ) : CauchySeq :=
   Subtype.mk (fun _ : ℕ ↦ q)
@@ -428,17 +403,15 @@ def const (q : ℚ) : CauchySeq :=
        intro ε hε
        aesop)
 
-/- Defining addition of real numbers requires a little more effort. We define
-addition on Cauchy sequences as pairwise addition: -/
+/- 定义实数的加法需要更多努力。我们将柯西序列的加法定义为逐点相加： -/
 
 instance Add : Add CauchySeq :=
   { add := fun f g : CauchySeq ↦
       Subtype.mk (fun n : ℕ ↦ seqOf f n + seqOf g n) sorry }
 
-/- Above, we omit the proof that the addition of two Cauchy sequences is again
-a Cauchy sequence.
+/- 上面我们省略了证明两个柯西序列的和仍然是柯西序列。
 
-Next, we need to show that this addition is compatible with `≈`: -/
+接下来，我们需要证明这个加法与`≈`兼容： -/
 
 theorem Setoid_add {f f' g g' : CauchySeq} (hf : f ≈ f')
       (hg : g ≈ g') :
@@ -478,7 +451,7 @@ theorem Setoid_add {f f' g g' : CauchySeq} (hf : f ≈ f')
 
 end CauchySeq
 
-/- The real numbers are the quotient: -/
+/- 实数是商： -/
 
 def Real : Type :=
   Quotient CauchySeq.Setoid
@@ -501,11 +474,11 @@ instance Add : Add Real :=
 end Real
 
 
-/- ### Alternative Definitions of `ℝ`
+/- ### `ℝ`的替代定义
 
-* Dedekind cuts: `r : ℝ` is represented essentially as `{x : ℚ | x < r}`.
+* 戴德金分割：`r : ℝ`本质上表示为`{x : ℚ | x < r}`。
 
-* Binary sequences `ℕ → Bool` can represent the interval `[0, 1]`. This can be
-  used to build `ℝ`. -/
+* 二进制序列`ℕ → Bool`可以表示区间`[0, 1]`。这可以用来构造`ℝ`。 -/
 
 end LoVe
+

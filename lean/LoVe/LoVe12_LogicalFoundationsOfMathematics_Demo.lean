@@ -1,14 +1,13 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe06_InductivePredicates_Demo
 
 
-/- # LoVe Demo 12: Logical Foundations of Mathematics
+/- # LoVe 演示 12：数学的逻辑基础
 
-We dive deeper into the logical foundations of Lean. Most of the features
-described here are especially relevant for defining mathematical objects and
-proving theorems about them. -/
+我们将深入探索Lean的逻辑基础。这里描述的大多数特性
+特别适用于定义数学对象并证明关于它们的定理。 -/
 
 
 set_option autoImplicit false
@@ -17,40 +16,38 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Universes
+/- ## 宇宙
 
-Not only terms have a type, but also types have a type. For example,
+不仅项有类型，类型本身也有类型。例如，
 
     `@And.intro : ∀a b, a → b → a ∧ b`
 
-and
+和
 
     `∀a b, a → b → a ∧ b : Prop`
 
-Now, what is the type of `Prop`? `Prop` has the same type as virtually all other
-types we have constructed so far:
+那么，`Prop`的类型是什么？`Prop`的类型与我们目前构造的几乎所有其他类型相同：
 
     `Prop : Type`
 
-What is the type of `Type`? The typing `Type : Type` would lead to a
-contradiction, called **Girard's paradox**, resembling Russel's paradox.
-Instead:
+`Type`的类型又是什么？类型判断 `Type : Type` 会导致矛盾，
+称为**吉拉尔悖论**，类似于罗素悖论。实际上：
 
     `Type   : Type 1`
     `Type 1 : Type 2`
     `Type 2 : Type 3`
     ⋮
 
-Aliases:
+别名：
 
     `Type`   := `Type 0`
     `Prop`   := `Sort 0`
     `Type u` := `Sort (u + 1)`
 
-The types of types (`Sort u`, `Type u`, and `Prop`) are called __universes__.
-The `u` in `Sort u` is a __universe level__.
+类型的类型（`Sort u`、`Type u` 和 `Prop`）称为__宇宙__。
+`Sort u`中的`u`称为__宇宙层级__。
 
-The hierarchy is captured by the following typing judgment:
+层级关系由以下类型判断捕获：
 
     ————————————————————————— Sort
     C ⊢ Sort u : Sort (u + 1) -/
@@ -75,44 +72,42 @@ universe u v
 #check Type _
 
 
-/- ## The Peculiarities of Prop
+/- ## Prop的特殊性
 
-`Prop` is different from the other universes in many respects.
+`Prop`在许多方面与其他宇宙不同。
 
 
-### Impredicativity
+### 非直谓性
 
-The function type `σ → τ` is put into the larger one of the universes that
-`σ` and `τ` live in:
+函数类型 `σ → τ` 被放入`σ`和`τ`所在宇宙中较大的那个：
 
     C ⊢ σ : Type u    C ⊢ τ : Type v
     ————————————————————————————————— SimpleArrow-Type
     C ⊢ σ → τ : Type (max u v)
 
-For dependent types, this generalizes to
+对于依赖类型，这推广为：
 
     C ⊢ σ : Type u    C, x : σ ⊢ τ[x] : Type v
     ——————————————————————————————————————————— Arrow-Type
     C ⊢ (x : σ) → τ[x] : Type (max u v)
 
-This behavior of the universes `Type v` is called __predicativity__.
+`Type v`宇宙的这种行为称为__直谓性__。
 
-To force expressions such as `∀a : Prop, a → a` to be of type `Prop` anyway, we
-need a special typing rule for `Prop`:
+为了强制像`∀a : Prop, a → a`这样的表达式类型为`Prop`，我们需要为`Prop`制定特殊类型规则：
 
     C ⊢ σ : Sort u    x : σ ⊢ τ[x] : Prop
     —————————————————————————————————————— Arrow-Prop
     C ⊢ (∀x : σ, τ[x]) : Prop
 
-This behavior of `Prop` is called __impredicativity__.
+`Prop`的这种行为称为__非直谓性__。
 
-The rules `Arrow-Type` and `Arrow-Prop` can be generalized into a single rule:
+规则`Arrow-Type`和`Arrow-Prop`可以推广为单一规则：
 
     C ⊢ σ : Sort u    C, x : σ ⊢ τ[x] : Sort v
     ——————————————————————————————————————————— Arrow
     C ⊢ (x : σ) → τ[x] : Sort (imax u v)
 
-where
+其中
 
     `imax u 0       = 0`
     `imax u (v + 1) = max u (v + 1)` -/
@@ -121,22 +116,20 @@ where
 #check ∀a : Prop, a → a
 
 
-/- ### Proof Irrelevance
+/- ### 证明无关性
 
-A second difference between `Prop` and `Type u` is __proof irrelevance__:
+`Prop`与`Type u`的第二个区别是__证明无关性__：
 
     `∀(a : Prop) (h₁ h₂ : a), h₁ = h₂`
 
-This makes reasoning about dependent types easier.
+这使得推理依赖类型更加容易。
 
-When viewing a proposition as a type and a proof as an element of that type,
-proof irrelevance means that a proposition is either an empty type or has
-exactly one inhabitant.
+当将命题视为类型、证明视为该类型的元素时，
+证明无关性意味着命题要么是空类型，要么恰好有一个居民。
 
-Proof irrelevance can be proved by `rfl`.
+证明无关性可以通过`rfl`证明。
 
-An unfortunate consequence of proof irrelevance is that it prevents us from
-performing rule induction by pattern matching and recursion. -/
+证明无关性的一个不幸后果是它阻止我们通过模式匹配和递归进行规则归纳。 -/
 
 #check proof_irrel
 
@@ -145,154 +138,141 @@ theorem proof_irrel {a : Prop} (h₁ h₂ : a) :
   by rfl
 
 
-/- ### No Large Elimination
+/- ### 无大消除
 
-A further difference between `Prop` and `Type u` is that `Prop` does not allow
-__large elimination__, meaning that it impossible to extract data from a proof
-of a proposition.
+`Prop`与`Type u`的另一个区别是`Prop`不允许__大消除__，
+这意味着无法从命题的证明中提取数据。
 
-This is necessary to allow proof irrelevance. -/
+这是允许证明无关性所必需的。 -/
 
 /-
--- fails
+-- 失败
 def unsquare (i : ℤ) (hsq : ∃j, i = j * j) : ℤ :=
   match hsq with
   | Exists.intro j _ => j
 -/
 
-/- If the above were accepted, we could derive `False` as follows.
+/- 如果上述代码被接受，我们可以如下推导出`False`。
 
-Let
+设
 
     `hsq₁` := `Exists.intro 3 (by linarith)`
     `hsq₂` := `Exists.intro (-3) (by linarith)`
 
-be two proofs of `∃j, (9 : ℤ) = j * j`. Then
+为`∃j, (9 : ℤ) = j * j`的两个证明。那么
 
     `unsquare 9 hsq₁ = 3`
     `unsquare 9 hsq₂ = -3`
 
-However, by proof irrelevance, `hsq₁ = hsq₂`. Hence
+然而，根据证明无关性，`hsq₁ = hsq₂`。因此
 
     `unsquare 9 hsq₂ = 3`
 
-Thus
+于是
 
     `3 = -3`
 
-a contradiction.
+矛盾。
 
-As a compromise, Lean allows __small elimination__. It is called small
-elimination because it eliminates only into `Prop`, whereas large elimination can
-eliminate into an arbitrary large universe `Sort u`. This means we can use
-`match` to analyze the structure of a proof, extract existential witnesses, and
-so on, as long as the `match` expression is itself a proof. We have seen several
-examples of this in lecture 5.
+作为折衷，Lean允许__小消除__。之所以称为小消除，
+是因为它仅消除到`Prop`，而大消除可以消除到任意大的宇宙`Sort u`。
+这意味着我们可以使用`match`分析证明结构、提取存在量词的见证等，
+只要`match`表达式本身是一个证明。我们在第5讲中已经见过几个这样的例子。
 
-As a further compromise, Lean allows large elimination for
-__syntactic subsingletons__: types in `Prop` for which it can be established
-syntactically that they have cardinality 0 or 1. These are propositions such as
-`False` and `a ∧ b` that can be proved in at most one way.
+作为进一步折衷，Lean允许对__语法单例__进行大消除：
+那些在`Prop`中且可以语法上确定其基数为0或1的类型。
+这些是诸如`False`和`a ∧ b`等命题，它们最多以一种方式证明。
 
 
-## The Axiom of Choice
+## 选择公理
 
-Lean's logic includes the axiom of choice, which makes it possible to obtain an
-arbitrary element from any nonempty type.
+Lean的逻辑包含选择公理，这使得可以从任何非空类型中获取任意元素。
 
-Consider Lean's `Nonempty` inductive predicate: -/
+考虑Lean的`Nonempty`归纳谓词： -/
 
 #print Nonempty
 
-/- The predicate states that `α` has at least one element.
+/- 该谓词表示`α`至少有一个元素。
 
-To prove `Nonempty α`, we must provide an `α` value to `Nonempty.intro`: -/
+要证明`Nonempty α`，我们必须向`Nonempty.intro`提供一个`α`值： -/
 
 theorem Nat.Nonempty :
     Nonempty ℕ :=
   Nonempty.intro 0
 
-/- Since `Nonempty` lives in `Prop`, large elimination is not available, and
-thus we cannot extract the element that was used from a proof of `Nonempty α`.
+/- 由于`Nonempty`位于`Prop`中，无法进行大消除，
+因此无法从`Nonempty α`的证明中提取使用的元素。
 
-The axiom of choice allows us to obtain some element of type `α` if we can show
-`Nonempty α`: -/
+选择公理允许我们在能证明`Nonempty α`时获取`α`类型的某个元素： -/
 
 #check Classical.choice
 
-/- It will just give us an arbitrary element of `α`; we have no way of knowing
-whether this is the element that was used to prove `Nonempty α`.
+/- 它只会给我们`α`的任意一个元素；我们无法知道这是否是用于证明`Nonempty α`的元素。
 
-The constant `Classical.choice` is noncomputable, which is why some logicians
-prefer to work without this axiom. -/
+常量`Classical.choice`是不可计算的，这就是为什么一些逻辑学家更喜欢不使用这个公理。 -/
 
 /-
-#eval Classical.choice Nat.Nonempty     -- fails
+#eval Classical.choice Nat.Nonempty     -- 失败
 -/
 #reduce Classical.choice Nat.Nonempty
 
-/- The axiom of choice is only an axiom in Lean's core library, giving users
-the freedom to work with or without it.
+/- 选择公理只是Lean核心库中的一个公理，让用户可以选择使用或不使用它。
 
-Definitions using it must be marked as `noncomputable`: -/
+使用它的定义必须标记为`noncomputable`： -/
 
 noncomputable def arbitraryNat : ℕ :=
   Classical.choice Nat.Nonempty
 
-/- The following tools rely on choice.
+/- 以下工具依赖于选择公理。
 
 
-### Law of Excluded Middle -/
+### 排中律 -/
 
 #check Classical.em
 
 
-/- ### Hilbert Choice -/
+/- ### 希尔伯特选择 -/
 
 #check Classical.choose
 #check Classical.choose_spec
 
 
-/- ### Set-Theoretic Axiom of Choice -/
+/- ### 集合论的选择公理 -/
 
 #print Classical.axiomOfChoice
 
 
-/- ## Subtypes
+/- ## 子类型
 
-Subtyping is a mechanism to create new types from existing ones.
+子类型化是从现有类型创建新类型的机制。
 
-Given a predicate on the elements of the base type, the __subtype__ contains
-only those elements of the base type that fulfill this property. More precisely,
-the subtype contains element–proof pairs that combine an element of the base
-type and a proof that it fulfills the property.
+给定基类型元素上的谓词，__子类型__仅包含满足该属性的基类型元素。
+更准确地说，子类型包含元素-证明对，组合了基类型的元素和证明其满足属性的证明。
 
-Subtyping is useful for those types that cannot be defined as an inductive
-type. For example, any attempt at defining the type of finite sets along the
-following lines is doomed to fail: -/
+子类型化适用于那些无法定义为归纳类型的类型。例如，任何尝试按以下方式定义有限集类型的尝试都会失败： -/
 
--- wrong
+-- 错误
 inductive Finset (α : Type) : Type
   | empty  : Finset α
   | insert : α → Finset α → Finset α
 
-/- Why does this not model finite sets?
+/- 为什么这不能建模有限集？
 
-Given a base type and a property, the subtype has the syntax
+给定基类型和属性，子类型的语法为
 
-    `{` _variable_ `:` _base-type_ `//` _property-applied-to-variable_ `}`
+    `{` _变量_ `:` _基类型_ `//` _应用于变量的属性_ `}`
 
-Alias:
+别名：
 
     `{x : τ // P[x]}` := `@Subtype τ (fun x ↦ P[x])`
 
-Examples:
+示例：
 
     `{i : ℕ // i ≤ n}`            := `@Subtype ℕ (fun i ↦ i ≤ n)`
     `{A : Set α // Set.Finite A}` := `@Subtype (Set α) Set.Finite`
 
 
-### First Example: Full Binary Trees -/
+### 第一个例子：满二叉树 -/
 
 #check Tree
 #check IsFull
@@ -306,8 +286,7 @@ def FullTree (α : Type) : Type :=
 #print Subtype
 #check Subtype.mk
 
-/- To define elements of `FullTree`, we must provide a `Tree` and a proof that
-it is full: -/
+/- 要定义`FullTree`的元素，我们必须提供`Tree`和证明它是满的： -/
 
 def nilFullTree : FullTree ℕ :=
   Subtype.mk Tree.nil IsFull.nil
@@ -323,7 +302,7 @@ def fullTree6 : FullTree ℕ :=
 #reduce Subtype.val fullTree6
 #check Subtype.property fullTree6
 
-/- We can lift existing operations on `Tree` to `FullTree`: -/
+/- 我们可以将`Tree`上的现有操作提升到`FullTree`： -/
 
 def FullTree.mirror {α : Type} (t : FullTree α) :
   FullTree α :=
@@ -334,7 +313,7 @@ def FullTree.mirror {α : Type} (t : FullTree α) :
 
 #reduce Subtype.val (FullTree.mirror fullTree6)
 
-/- And of course we can prove theorems about the lifted operations: -/
+/- 当然，我们可以证明关于提升操作的定理： -/
 
 theorem FullTree.mirror_mirror {α : Type}
       (t : FullTree α) :
@@ -346,7 +325,7 @@ theorem FullTree.mirror_mirror {α : Type}
 #check Subtype.eq
 
 
-/- ### Second Example: Vectors -/
+/- ### 第二个例子：向量 -/
 
 def Vector (α : Type) (n : ℕ) : Type :=
   {xs : List α // List.length xs = n}
@@ -367,20 +346,15 @@ theorem Vector.neg_neg (n : ℕ) (v : Vector ℤ n) :
     simp [Vector.neg]
 
 
-/- ## Quotient Types
+/- ## 商类型
 
-Quotients are a powerful construction in mathematics used to construct `ℤ`, `ℚ`,
-`ℝ`, and many other types.
+商是数学中用于构造`ℤ`、`ℚ`、`ℝ`等类型的强大构造。
 
-Like subtyping, quotienting constructs a new type from an existing type. Unlike
-a subtype, a quotient type contains all of the elements of the base type, but
-some elements that were different in the base type are considered equal in the
-quotient type. In mathematical terms, the quotient type is isomorphic to a
-partition of the base type.
+与子类型化类似，商化从现有类型构造新类型。不同于子类型，
+商类型包含基类型的所有元素，但基类型中不同的元素在商类型中可能被视为相同。
+用数学术语来说，商类型同构于基类型的划分。
 
-To define a quotient type, we need to provide a type that it is derived from and
-an equivalence relation on the type that determines which elements are
-considered equal. -/
+要定义商类型，我们需要提供它派生的类型和确定哪些元素被视为相等的等价关系。 -/
 
 #check Quotient
 #print Setoid
@@ -394,22 +368,19 @@ considered equal. -/
 #check @Quotient.inductionOn
 
 
-/- ## First Example: Integers
+/- ## 第一个例子：整数
 
-Let us build the integers `ℤ` as a quotient over pairs of natural numbers
-`ℕ × ℕ`.
+让我们将整数`ℤ`构造为自然数对`ℕ × ℕ`的商类型。
 
-A pair `(p, n)` of natural numbers represents the integer `p - n`. Nonnegative
-integers `p` can be represented by `(p, 0)`. Negative integers `-n` can be
-represented by `(0, n)`. However, many representations of the same integer are
-possible; e.g., `(7, 0)`, `(8, 1)`, `(9, 2)`, and `(10, 3)` all represent the
-integer `7`.
+自然数对`(p, n)`表示整数`p - n`。非负整数`p`可以表示为`(p, 0)`。
+负整数`-n`可以表示为`(0, n)`。然而，同一个整数有多种表示方式；
+例如，`(7, 0)`、`(8, 1)`、`(9, 2)`和`(10, 3)`都表示整数`7`。
 
-Which equivalence relation can we use?
+我们可以使用什么等价关系？
 
-We want two pairs `(p₁, n₁)` and `(p₂, n₂)` to be equal if `p₁ - n₁ = p₂ - n₂`.
-However, this does not work because subtraction on `ℕ` is ill-behaved (e.g.,
-`0 - 1 = 0`). Instead, we use `p₁ + n₂ = p₂ + n₁`. -/
+我们希望两个对`(p₁, n₁)`和`(p₂, n₂)`相等当`p₁ - n₁ = p₂ - n₂`。
+然而，这不可行，因为`ℕ`上的减法行为不良（例如，`0 - 1 = 0`）。
+相反，我们使用`p₁ + n₂ = p₂ + n₁`。 -/
 
 instance Int.Setoid : Setoid (ℕ × ℕ) :=
   { r :=
@@ -474,39 +445,37 @@ theorem Int.add_zero (i : Int) :
       cases pn with
       | mk p n => simp [Int.zero, Int.add]
 
-/- This definitional syntax would be nice: -/
+/- 这种定义语法会很方便： -/
 
 /-
--- fails
+-- 失败
 def Int.add : Int → Int → Int
   | ⟦(p₁, n₁)⟧, ⟦(p₂, n₂)⟧ => ⟦(p₁ + p₂, n₁ + n₂)⟧
 -/
 
-/- But it would be dangerous: -/
+/- 但这会很危险： -/
 
 /-
--- fails
+-- 失败
 def Int.fst : Int → ℕ
   | ⟦(p, n)⟧ => p
 -/
 
-/- Using `Int.fst`, we could derive `False`. First, we have
+/- 使用`Int.fst`，我们可以推导出`False`。首先，我们有
 
     `Int.fst ⟦(0, 0)⟧ = 0`
     `Int.fst ⟦(1, 1)⟧ = 1`
 
-But since `⟦(0, 0)⟧ = ⟦(1, 1)⟧`, we get
+但由于`⟦(0, 0)⟧ = ⟦(1, 1)⟧`，我们得到
 
     `0 = 1` -/
 
 
-/- ### Second Example: Unordered Pairs
+/- ### 第二个例子：无序对
 
-__Unordered pairs__ are pairs for which no distinction is made between the first
-and second components. They are usually written `{a, b}`.
+__无序对__是不区分第一个和第二个分量的对。通常写作`{a, b}`。
 
-We will introduce the type `UPair` of unordered pairs as the quotient of pairs
-`(a, b)` with respect to the relation "contains the same elements as". -/
+我们将引入无序对类型`UPair`作为对`(a, b)`关于"包含相同元素"关系的商。 -/
 
 instance UPair.Setoid (α : Type) : Setoid (α × α) :=
 { r :=
@@ -529,7 +498,7 @@ def UPair (α : Type) : Type :=
 
 #check UPair.Setoid
 
-/- It is easy to prove that our pairs are really unordered: -/
+/- 很容易证明我们的对确实是无序的： -/
 
 theorem UPair.mk_symm {α : Type} (a b : α) :
     (⟦(a, b)⟧ : UPair α) = ⟦(b, a)⟧ :=
@@ -538,8 +507,8 @@ theorem UPair.mk_symm {α : Type} (a b : α) :
     rw [UPair.Setoid_Iff]
     aesop
 
-/- Another representation of unordered pairs is as sets of cardinality 1 or 2.
-The following operation converts `UPair` to that representation: -/
+/- 无序对的另一种表示是基数为1或2的集合。
+以下操作将`UPair`转换为该表示： -/
 
 def Set_of_UPair {α : Type} : UPair α → Set α :=
   Quotient.lift (fun ab : α × α ↦ {Prod.fst ab, Prod.snd ab})
@@ -549,15 +518,12 @@ def Set_of_UPair {α : Type} : UPair α → Set α :=
        exact h)
 
 
-/- ### Alternative Definitions via Normalization and Subtyping
+/- ### 通过规范化和子类型化的替代定义
 
-Each element of a quotient type corresponds to an `≈`-equivalence class.
-If there exists a systematic way to obtain a **canonical representative** for
-each class, we can use a subtype instead of a quotient, keeping only the
-canonical representatives.
+商类型的每个元素对应一个`≈`等价类。
+如果存在系统方法为每个类获取**规范代表**，我们可以使用子类型代替商类型，仅保留规范代表。
 
-Consider the quotient type `Int` above. We could say that a pair `(p, n)` is
-__canonical__ if `p` or `n` is `0`. -/
+考虑上面的商类型`Int`。我们可以说一个对`(p, n)`是__规范的__，如果`p`或`n`为`0`。 -/
 
 namespace Alternative
 
@@ -568,7 +534,7 @@ inductive Int.IsCanonical : ℕ × ℕ → Prop
 def Int : Type :=
   {pn : ℕ × ℕ // Int.IsCanonical pn}
 
-/- **Normalizing** pairs of natural numbers is easy: -/
+/- **规范化**自然数对很容易： -/
 
 def Int.normalize : ℕ × ℕ → ℕ × ℕ
   | (p, n) => if p ≥ n then (p - n, 0) else (0, n - p)
@@ -587,8 +553,8 @@ theorem Int.IsCanonical_normalize (pn : ℕ × ℕ) :
         simp [*]
         exact Int.IsCanonical.nonpos
 
-/- For unordered pairs, there is no obvious normal form, except to always put
-the smaller element first (or last). This requires a linear order `≤` on `α`. -/
+/- 对于无序对，没有明显的规范形式，除非总是将较小的元素放在前面（或后面）。
+这需要`α`上的线性序`≤`。 -/
 
 def UPair.IsCanonical {α : Type} [LinearOrder α] :
   α × α → Prop

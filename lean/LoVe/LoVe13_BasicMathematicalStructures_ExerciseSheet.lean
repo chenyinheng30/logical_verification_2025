@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 以及 Jannis Limperg。详见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe13_BasicMathematicalStructures_Demo
 
 
-/- # LoVe Exercise 13: Basic Mathematical Structures
+/- # LoVe 练习13：基础数学结构
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,14 +15,13 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Type Classes
+/- ## 问题1：类型类
 
-Recall the inductive type `Tree` we introduced in lecture 5: -/
+回顾我们在第5讲中介绍的归纳类型 `Tree`： -/
 
 #check Tree
 
-/- The following function takes two trees and attaches copies of the second
-tree to each leaf of the first tree. -/
+/- 以下函数接受两棵树，并将第二棵树的副本附加到第一棵树的每个叶节点上。 -/
 
 def Tree.graft {α : Type} : Tree α → Tree α → Tree α
   | Tree.nil,        u => u
@@ -32,7 +31,7 @@ def Tree.graft {α : Type} : Tree α → Tree α → Tree α
 #reduce Tree.graft (Tree.node 1 Tree.nil Tree.nil)
   (Tree.node 2 Tree.nil Tree.nil)
 
-/- 1.1. Prove the following two theorems by structural induction on `t`. -/
+/- 1.1. 通过对 `t` 进行结构归纳，证明以下两个定理。 -/
 
 theorem Tree.graft_assoc {α : Type} (t u v : Tree α) :
     Tree.graft (Tree.graft t u) v = Tree.graft t (Tree.graft u v) :=
@@ -42,8 +41,7 @@ theorem Tree.graft_nil {α : Type} (t : Tree α) :
     Tree.graft t Tree.nil = t :=
   sorry
 
-/- 1.2. Declare `Tree` an instance of `AddMonoid` using `graft` as the
-addition operator. -/
+/- 1.2. 将 `Tree` 声明为 `AddMonoid` 的实例，使用 `graft` 作为加法运算符。 -/
 
 #print AddMonoid
 
@@ -61,39 +59,35 @@ instance Tree.AddMonoid {α : Type} : AddMonoid (Tree α) :=
     nsmul     := @nsmulRec (Tree α) (Zero.mk Tree.nil) (Add.mk Tree.graft)
   }
 
-/- 1.3 (**optional**). Explain why `Tree` with `graft` as addition cannot be
-declared an instance of `AddGroup`. -/
+/- 1.3 (**选做**). 解释为什么不能将 `Tree` 与 `graft` 作为加法声明为 `AddGroup` 的实例。 -/
 
 #print AddGroup
 
--- enter your explanation here
+-- 在此输入你的解释
 
-/- 1.4 (**optional**). Prove the following theorem illustrating why `Tree`
-with `graft` as addition does not constitute an `AddGroup`. -/
+/- 1.4 (**选做**). 证明以下定理，说明为什么 `Tree` 与 `graft` 作为加法不构成 `AddGroup`。 -/
 
 theorem Tree.add_left_neg_counterexample :
     ∃x : Tree ℕ, ∀y : Tree ℕ, Tree.graft y x ≠ Tree.nil :=
   sorry
 
 
-/- ## Question 2: Multisets and Finsets
+/- ## 问题2：多重集与有限集
 
-Recall the following definitions from the lecture: -/
+回顾讲座中的以下定义： -/
 
 #check Finset.elems
 #check List.elems
 
-/- 2.1. Prove that the finite set of nodes does not change when mirroring a
-tree. -/
+/- 2.1. 证明镜像树时节点的有限集不会改变。 -/
 
 theorem Finset.elems_mirror (t : Tree ℕ) :
     Finset.elems (mirror t) = Finset.elems t :=
   sorry
 
-/- 2.2. Show that this does not hold for the list of nodes by providing a
-tree `t` for which `List.elems t ≠ List.elems (mirror t)`.
+/- 2.2. 通过提供一个树 `t` 使得 `List.elems t ≠ List.elems (mirror t)`，证明这不适用于节点的列表。
 
-If you define a suitable counterexample, the proof below will succeed. -/
+如果你定义了一个合适的反例，下面的证明将会成功。 -/
 
 def rottenTree : Tree ℕ :=
   sorry
@@ -108,3 +102,4 @@ theorem List.elems_mirror_counterexample :
     simp [List.elems]
 
 end LoVe
+

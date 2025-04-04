@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe08_Metaprogramming_Demo
 
 
-/- # LoVe Exercise 8: Metaprogramming
+/- # LoVe 练习8：元编程
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如`:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -21,32 +21,30 @@ open Lean.TSyntax
 namespace LoVe
 
 
-/- ## Question 1: `destruct_and` on Steroids
+/- ## 问题1：增强版`destruct_and`
 
-Recall from the lecture that `destruct_and` fails on easy goals such as -/
+回忆讲座中提到的，`destruct_and`在简单目标上会失败，例如：-/
 
 theorem abc_ac (a b c : Prop) (h : a ∧ b ∧ c) :
     a ∧ c :=
   sorry
 
-/- We will now address this by developing a new tactic called `destro_and`,
-which applies both **des**truction and in**tro**duction rules for conjunction.
-It will also go automatically through the hypotheses instead of taking an
-argument. We will develop it in three steps.
+/- 我们现在将通过开发一个名为`destro_and`的新策略来解决这个问题，
+该策略同时应用合取式的**解构**和**引入**规则。它还会自动遍历假设而不是接受参数。
+我们将分三步开发它。
 
-1.1. Develop a tactic `intro_and` that replaces all goals of the form
-`a ∧ b` with two new goals `a` and `b` systematically, until all top-level
-conjunctions are gone. Define your tactic as a macro. -/
+1.1. 开发一个`intro_and`策略，系统地将所有形如`a ∧ b`的目标替换为两个新目标`a`和`b`，
+直到所有顶层合取式都被消除。将你的策略定义为宏。 -/
 
 #check repeat'
 
--- enter your definition here
+-- 在此处输入你的定义
 
 theorem abcd_bd (a b c d : Prop) (h : a ∧ (b ∧ c) ∧ d) :
     b ∧ d :=
   by
     intro_and
-    /- The proof state should be as follows:
+    /- 证明状态应如下：
 
         case left
         a b c d: Prop
@@ -63,7 +61,7 @@ theorem abcd_bacb (a b c d : Prop) (h : a ∧ (b ∧ c) ∧ d) :
     b ∧ (a ∧ (c ∧ b)) :=
   by
     intro_and
-    /- The proof state should be as follows:
+    /- 证明状态应如下：
 
         case left
         a b c d : Prop
@@ -86,35 +84,24 @@ theorem abcd_bacb (a b c d : Prop) (h : a ∧ (b ∧ c) ∧ d) :
         ⊢ b -/
     repeat' sorry
 
-/- 1.2. Develop a tactic `cases_and` that replaces hypotheses of the form
-`h : a ∧ b` by two new hypotheses `h_left : a` and `h_right : b` systematically,
-until all top-level conjunctions are gone.
+/- 1.2. 开发一个`cases_and`策略，系统地将形如`h : a ∧ b`的假设替换为两个新假设`h_left : a`和`h_right : b`，
+直到所有顶层合取式都被消除。
 
-Here is some pseudocode that you can follow:
+以下是你可以遵循的伪代码：
 
-1. Wrap the entire `do` block in a call to `withMainContext` to ensure you work
-   with the right context.
+1. 将整个`do`块包装在`withMainContext`调用中，以确保你在正确的上下文中工作。
 
-2. Retrieve the list of hypotheses from the context. This is provided by
-   `getLCtx`.
+2. 从上下文中检索假设列表。这由`getLCtx`提供。
 
-3. Find the first hypothesis (= term) with a type (= proposition) of the form
-   `_ ∧ _`. To iterate, you can use the `for … in … do` syntax. To obtain the
-   type of a term, you can use `inferType`. To check if a type `ty` has the form
-   `_ ∧ _`, you can use `Expr.isAppOfArity ty ``And 2` (with two backticks before
-   `And`).
+3. 找到第一个类型（即命题）形如`_ ∧ _`的假设（=项）。要迭代，你可以使用`for … in … do`语法。要获取项的类型，可以使用`inferType`。要检查类型`ty`是否具有`_ ∧ _`的形式，可以使用`Expr.isAppOfArity ty ``And 2`（`And`前有两个反引号）。
 
-4. Perform a case split on the first found hypothesis. This can be achieved
-   using the metaprogram `cases` provided in `LoVelib`, which is similar to the
-   `cases` tactic but is a metaprogram. To extract the free variable associated
-   with a hypothesis, use `LocalDecl.fvarId`.
+4. 对找到的第一个假设执行案例分析。这可以通过使用`LoVelib`中提供的元程序`cases`来实现，它类似于`cases`策略但是一个元程序。要提取与假设关联的自由变量，使用`LocalDecl.fvarId`。
 
-5. Repeat (via a recursive call).
+5. 重复（通过递归调用）。
 
-6. Return.
+6. 返回。
 
-Hint: When iterating over the declarations in the local context, make sure to
-skip any declaration that is an implementation detail. -/
+提示：在遍历局部上下文中的声明时，确保跳过任何实现细节的声明。 -/
 
 partial def casesAnd : TacticM Unit :=
   sorry
@@ -127,7 +114,7 @@ theorem abcd_bd_again (a b c d : Prop) :
   by
     intro h
     cases_and
-    /- The proof state should be as follows:
+    /- 证明状态应如下：
 
         case intro.intro.intro
         a b c d : Prop
@@ -138,9 +125,8 @@ theorem abcd_bd_again (a b c d : Prop) :
         ⊢ b ∧ d -/
     sorry
 
-/- 1.3. Implement a `destro_and` tactic that first invokes `cases_and`, then
-`intro_and`, before it tries to prove all the subgoals that can be discharged
-directly by `assumption`. -/
+/- 1.3. 实现一个`destro_and`策略，首先调用`cases_and`，然后调用`intro_and`，
+之后尝试证明所有可以直接通过`assumption`解决的子目标。 -/
 
 macro "destro_and" : tactic =>
   sorry
@@ -157,7 +143,7 @@ theorem abd_bacb_again (a b c d : Prop) (h : a ∧ b ∧ d) :
     b ∧ (a ∧ (c ∧ b)) :=
   by
     destro_and
-    /- The proof state should be roughly as follows:
+    /- 证明状态应大致如下：
 
         case intro.intro.right.right.left
         a b c d : Prop
@@ -165,46 +151,38 @@ theorem abd_bacb_again (a b c d : Prop) (h : a ∧ b ∧ d) :
         left_1 : b
         right : d
         ⊢ c -/
-    sorry   -- unprovable
+    sorry   -- 不可证明
 
-/- 1.4. Provide some more examples for `destro_and` to convince yourself that
-it works as expected also on more complicated examples. -/
+/- 1.4. 提供更多`destro_and`的示例，以说服自己它在更复杂的示例上也能按预期工作。 -/
 
--- enter your examples here
+-- 在此处输入你的示例
 
 
-/- ## Question 2: A Theorem Finder
+/- ## 问题2：定理查找器
 
-We will implement a function that allows us to find theorems by constants
-appearing in their statements. So given a list of constant names, the function
-will list all theorems in which all these constants appear.
+我们将实现一个函数，允许我们通过出现在其陈述中的常量来查找定理。因此，给定一个常量名称列表，该函数将列出所有包含这些常量的定理。
 
-2.1. Write a function that checks whether an expression contains a specific
-constant.
+2.1. 编写一个函数，检查一个表达式是否包含特定的常量。
 
-Hints:
+提示：
 
-* You can pattern-match on `e` and proceed recursively.
+* 你可以对`e`进行模式匹配并递归进行。
 
-* The "not" connective on `Bool` is called `not`, the "or" connective is called
-  `||`, the "and" connective is called `&&`, and equality is called `==`. -/
+* `Bool`上的"非"连接词称为`not`，"或"连接词称为`||`，"与"连接词称为`&&`，相等性称为`==`。 -/
 
 def constInExpr (name : Name) (e : Expr) : Bool :=
   sorry
 
-/- 2.2. Write a function that checks whether an expression contains **all**
-constants in a list.
+/- 2.2. 编写一个函数，检查一个表达式是否包含列表中**所有**常量。
 
-Hint: You can either proceed recursively or use `List.and` and `List.map`. -/
+提示：你可以递归进行，或使用`List.and`和`List.map`。 -/
 
 def constsInExpr (names : List Name) (e : Expr) : Bool :=
   sorry
 
-/- 2.3. Develop a tactic that uses `constsInExpr` to print the name of all
-theorems that contain all constants `names` in their statement.
+/- 2.3. 开发一个策略，使用`constsInExpr`打印所有在其陈述中包含所有常量`names`的定理名称。
 
-This code should be similar to that of `proveDirect` in the demo file. With
-`ConstantInfo.type`, you can extract the proposition associated with a theorem. -/
+这段代码应与演示文件中的`proveDirect`类似。使用`ConstantInfo.type`，你可以提取与定理关联的命题。 -/
 
 def findConsts (names : List Name) : TacticM Unit :=
   sorry
@@ -212,7 +190,7 @@ def findConsts (names : List Name) : TacticM Unit :=
 elab "find_consts" "(" names:ident+ ")" : tactic =>
   findConsts (Array.toList (Array.map getId names))
 
-/- Test the solution. -/
+/- 测试解决方案。 -/
 
 theorem List.a_property_of_reverse {α : Type} (xs : List α) (a : α) :
     List.concat xs a = List.reverse (a :: List.reverse xs) :=
@@ -222,3 +200,4 @@ theorem List.a_property_of_reverse {α : Type} (xs : List α) (a : α) :
     sorry
 
 end LoVe
+

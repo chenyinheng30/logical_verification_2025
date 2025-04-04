@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 以及 Jannis Limperg。参见 `LICENSE.txt` 文件。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Homework 1 (10 points): Types and Terms
+/- # LoVe 作业 1（10 分）：类型与项
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,25 +15,20 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1 (6 points): Terms
+/- ## 问题 1（6 分）：项
 
-We start by declaring four new opaque types. -/
+我们首先声明四个新的不透明类型。 -/
 
 opaque α : Type
 opaque β : Type
 opaque γ : Type
 opaque δ : Type
 
-/- 1.1 (4 points). Complete the following definitions, by providing terms with
-the expected type.
+/- 1.1（4 分）。完成以下定义，提供具有预期类型的项。
 
-Please use reasonable names for the bound variables, e.g., `a : α`, `b : β`,
-`c : γ`.
+请为绑定变量使用合理的名称，例如 `a : α`、`b : β`、`c : γ`。
 
-Hint: A procedure for doing so systematically is described in Section 1.4 of the
-Hitchhiker's Guide. As explained there, you can use `_` as a placeholder while
-constructing a term. By hovering over `_`, you will see the current logical
-context. -/
+提示：系统化完成此操作的方法在《Hitchhiker's Guide》的 1.4 节中有描述。如其中所述，你可以在构造项时使用 `_` 作为占位符。将鼠标悬停在 `_` 上，你将看到当前的逻辑上下文。 -/
 
 def B : (α → β) → (γ → α) → γ → β :=
   sorry
@@ -47,24 +42,21 @@ def moreNonsense : ((α → β) → γ → δ) → γ → β → δ :=
 def evenMoreNonsense : (α → β) → (α → γ) → α → β → γ :=
   sorry
 
-/- 1.2 (2 points). Complete the following definition.
+/- 1.2（2 分）。完成以下定义。
 
-This one looks more difficult, but it should be fairly straightforward if you
-follow the procedure described in the Hitchhiker's Guide.
+这个看起来更难一些，但如果你遵循《Hitchhiker's Guide》中描述的方法，应该会相当直接。
 
-Note: Peirce is pronounced like the English word "purse". -/
+注意：Peirce 的发音类似于英语单词 "purse"。 -/
 
 def weakPeirce : ((((α → β) → α) → α) → β) → β :=
   sorry
 
-/- ## Question 2 (4 points): Typing Derivation
+/- ## 问题 2（4 分）：类型推导
 
-Show the typing derivation for your definition of `B` above, using ASCII or
-Unicode art. You might find the characters `–` (to draw horizontal bars) and `⊢`
-useful.
+为你上面定义的 `B` 展示类型推导过程，使用 ASCII 或 Unicode 艺术。你可能会发现字符 `–`（用于绘制水平线）和 `⊢` 很有用。
 
-Feel free to introduce abbreviations to avoid repeating large contexts `C`. -/
+可以自由引入缩写以避免重复大型上下文 `C`。 -/
 
--- write your solution here
+-- 在此处写下你的解答
 
 end LoVe

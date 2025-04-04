@@ -1,5 +1,5 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt` 文件。 -/
 
 import Aesop
 import Mathlib.Algebra.Field.Defs
@@ -12,7 +12,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
 
-/- # LoVelib: Logical Verification Library -/
+/- # LoVelib: 逻辑验证库 -/
 
 
 set_option autoImplicit false
@@ -28,7 +28,7 @@ open Lean.TSyntax
 namespace LoVe
 
 
-/- ## Structured Proofs -/
+/- ## 结构化证明 -/
 
 @[term_parser] def «fix» :=
   leading_parser withPosition ("fix " >> many1 Term.ident >> " : " >> termParser)
@@ -43,7 +43,7 @@ macro_rules
 | `(assume $h : $ty; $y) => `(fun $h : $ty ↦ $y)
 
 
-/- ## Natural Numbers -/
+/- ## 自然数 -/
 
 theorem Nat.two_mul (n : ℕ) :
     2 * n = n + n :=
@@ -84,7 +84,7 @@ theorem Nat.two_mul (n : ℕ) :
     { apply Nat.succ_le_succ }
 
 
-/- ## Integers -/
+/- ## 整数 -/
 
 @[simp] theorem Int.neg_neg :
     Int.neg ∘ Int.neg = id :=
@@ -99,14 +99,14 @@ theorem Nat.two_mul (n : ℕ) :
       { aesop }
 
 
-/- ## Rationals -/
+/- ## 有理数 -/
 
 @[simp] theorem Rat.div_two_add_div_two (x : ℚ) :
     x / 2 + x / 2 = x :=
   by ring_nf
 
 
-/- ## Lists -/
+/- ## 列表 -/
 
 @[simp] theorem List.count_nil {α : Type} [BEq α] (x : α) :
     List.count x [] = 0 :=
@@ -134,7 +134,7 @@ theorem Nat.two_mul (n : ℕ) :
       ac_rfl
 
 
-/- ## Sets -/
+/- ## 集合 -/
 
 @[aesop norm simp] theorem Set.subseteq_def {α : Type} (A B : Set α) :
     A ⊆ B ↔ ∀a, a ∈ A → a ∈ B :=
@@ -187,7 +187,7 @@ inductive Set.Finite {α : Type} : Set α → Prop where
   | insert (a : α) (A : Set α) : Set.Finite A → Set.Finite (insert a A)
 
 
-/- ## Relations -/
+/- ## 关系 -/
 
 def Id {α : Type} : Set (α × α) :=
   {ab | Prod.snd ab = Prod.fst ab}
@@ -216,7 +216,7 @@ infixl:90 " ⇃ " => restrict
   by rfl
 
 
-/- ## Reflexive Transitive Closure -/
+/- ## 自反传递闭包 -/
 
 inductive RTC {α : Type} (R : α → α → Prop) (a : α) : α → Prop
   | refl : RTC R a a
@@ -303,12 +303,12 @@ theorem RTC_RTC_eq {α : Type} {R : α → α → Prop} :
 end RTC
 
 
-/- ## Setoids -/
+/- ## 集合等价关系 -/
 
 attribute [simp] Setoid.refl
 
 
-/- ## Metaprogramming -/
+/- ## 元编程 -/
 
 def cases (id : FVarId) : TacticM Unit :=
   do
@@ -320,7 +320,7 @@ def cases (id : FVarId) : TacticM Unit :=
           (Array.toList subgoals)))
 
 
-/- ## States -/
+/- ## 状态 -/
 
 def State : Type :=
   String → ℕ
@@ -355,8 +355,8 @@ macro s:term "[" name:term "↦" val:term "]" : term =>
 
 theorem update_swap (name₁ name₂ : String) (val₁ val₂ : ℕ) (s : State)
       (hneq : name₁ ≠ name₂) :
--- `hneq` should have `by decide` as an auto param, but this confuses `simp`.
--- See https://github.com/leanprover/lean4/issues/3257
+-- `hneq` 应该将 `by decide` 作为自动参数，但这会混淆 `simp`。
+-- 参见 https://github.com/leanprover/lean4/issues/3257
     s[name₂ ↦ val₂][name₁ ↦ val₁] = s[name₁ ↦ val₁][name₂ ↦ val₂] :=
   by
     apply funext
@@ -404,3 +404,4 @@ example (s : State) :
   by simp (config := {decide := true})
 
 end LoVe
+

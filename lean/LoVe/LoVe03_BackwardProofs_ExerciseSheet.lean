@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe03_BackwardProofs_Demo
 
 
-/- # LoVe Exercise 3: Backward Proofs
+/- # LoVe 练习3：逆向证明
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如`:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -17,12 +17,11 @@ namespace LoVe
 namespace BackwardProofs
 
 
-/- ## Question 1: Connectives and Quantifiers
+/- ## 问题1：连接词与量词
 
-1.1. Carry out the following proofs using basic tactics.
+1.1. 使用基本策略完成以下证明。
 
-Hint: Some strategies for carrying out such proofs are described at the end of
-Section 3.3 in the Hitchhiker's Guide. -/
+提示：在《指南》第3.3节末尾描述了一些进行此类证明的策略。 -/
 
 theorem I (a : Prop) :
     a → a :=
@@ -40,7 +39,7 @@ theorem proj_fst (a : Prop) :
     a → a → a :=
   sorry
 
-/- Please give a different answer than for `proj_fst`: -/
+/- 请给出与`proj_fst`不同的解答： -/
 
 theorem proj_snd (a : Prop) :
     a → a → a :=
@@ -50,27 +49,24 @@ theorem some_nonsense (a b c : Prop) :
     (a → b → c) → a → (a → c) → b → c :=
   sorry
 
-/- 1.2. Prove the contraposition rule using basic tactics. -/
+/- 1.2. 使用基本策略证明逆否命题规则。 -/
 
 theorem contrapositive (a b : Prop) :
     (a → b) → ¬ b → ¬ a :=
   sorry
 
-/- 1.3. Prove the distributivity of `∀` over `∧` using basic tactics.
+/- 1.3. 使用基本策略证明`∀`对`∧`的分配律。
 
-Hint: This exercise is tricky, especially the right-to-left direction. Some
-forward reasoning, like in the proof of `and_swap_braces` in the lecture, might
-be necessary. -/
+提示：本题较难，尤其是从右到左的方向。可能需要像讲座中`and_swap_braces`证明那样的正向推理。 -/
 
 theorem forall_and {α : Type} (p q : α → Prop) :
     (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) :=
   sorry
 
 
-/- ## Question 2: Natural Numbers
+/- ## 问题2：自然数
 
-2.1. Prove the following recursive equations on the first argument of the
-`mul` operator defined in lecture 1. -/
+2.1. 证明以下关于第一讲中定义的`mul`运算符第一个参数的递归等式。 -/
 
 #check mul
 
@@ -83,8 +79,7 @@ theorem mul_succ (m n : ℕ) :
     mul (Nat.succ m) n = add (mul m n) n :=
   sorry
 
-/- 2.2. Prove commutativity and associativity of multiplication using the
-`induction` tactic. Choose the induction variable carefully. -/
+/- 2.2. 使用`induction`策略证明乘法的交换律和结合律。注意谨慎选择归纳变量。 -/
 
 theorem mul_comm (m n : ℕ) :
     mul m n = mul n m :=
@@ -94,21 +89,16 @@ theorem mul_assoc (l m n : ℕ) :
     mul (mul l m) n = mul l (mul m n) :=
   sorry
 
-/- 2.3. Prove the symmetric variant of `mul_add` using `rw`. To apply
-commutativity at a specific position, instantiate the rule by passing some
-arguments (e.g., `mul_comm _ l`). -/
+/- 2.3. 使用`rw`证明`mul_add`的对称变体。要在特定位置应用交换律，可以通过传递参数（例如`mul_comm _ l`）来实例化规则。 -/
 
 theorem add_mul (l m n : ℕ) :
     mul (add l m) n = add (mul n l) (mul n m) :=
   sorry
 
 
-/- ## Question 3 (**optional**): Intuitionistic Logic
+/- ## 问题3（选做）：直觉主义逻辑
 
-Intuitionistic logic is extended to classical logic by assuming a classical
-axiom. There are several possibilities for the choice of axiom. In this
-question, we are concerned with the logical equivalence of three different
-axioms: -/
+直觉主义逻辑通过假设一个经典公理扩展为经典逻辑。公理的选择有多种可能性。本题中，我们关注三个不同公理的逻辑等价性： -/
 
 def ExcludedMiddle : Prop :=
   ∀a : Prop, a ∨ ¬ a
@@ -119,25 +109,23 @@ def Peirce : Prop :=
 def DoubleNegation : Prop :=
   ∀a : Prop, (¬¬ a) → a
 
-/- For the proofs below, avoid using theorems from Lean's `Classical` namespace.
+/- 在下面的证明中，避免使用Lean的`Classical`命名空间中的定理。
 
-3.1 (**optional**). Prove the following implication using tactics.
+3.1（选做）. 使用策略证明以下蕴含关系。
 
-Hint: You will need `Or.elim` and `False.elim`. You can use
-`rw [ExcludedMiddle]` to unfold the definition of `ExcludedMiddle`,
-and similarly for `Peirce`. -/
+提示：你将需要用到`Or.elim`和`False.elim`。可以使用`rw [ExcludedMiddle]`来展开`ExcludedMiddle`的定义，其他公理同理。 -/
 
 theorem Peirce_of_EM :
     ExcludedMiddle → Peirce :=
   sorry
 
-/- 3.2 (**optional**). Prove the following implication using tactics. -/
+/- 3.2（选做）. 使用策略证明以下蕴含关系。 -/
 
 theorem DN_of_Peirce :
     Peirce → DoubleNegation :=
   sorry
 
-/- We leave the remaining implication for the homework: -/
+/- 剩下的蕴含关系留作课后作业： -/
 
 namespace SorryTheorems
 
@@ -150,3 +138,4 @@ end SorryTheorems
 end BackwardProofs
 
 end LoVe
+

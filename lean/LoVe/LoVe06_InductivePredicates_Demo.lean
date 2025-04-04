@@ -1,20 +1,17 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权声明 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt` 文件。 -/
 
 import LoVe.LoVe04_ForwardProofs_Demo
 import LoVe.LoVe05_FunctionalProgramming_Demo
 
 
-/- # LoVe Demo 6: Inductive Predicates
+/- # LoVe 演示6：归纳谓词
 
-__Inductive predicates__, or inductively defined propositions, are a convenient
-way to specify functions of type `⋯ → Prop`. They are reminiscent of formal
-systems and of the Horn clauses of Prolog, the logic programming language par
-excellence.
+__归纳谓词__，或称归纳定义的命题，是定义类型为`⋯ → Prop`的函数的便捷方式。它们让人联想到形式系统和逻辑编程语言Prolog的Horn子句。
 
-A possible view of Lean:
+对Lean的一种可能看法：
 
-    Lean = functional programming + logic programming + more logic -/
+    Lean = 函数式编程 + 逻辑编程 + 更多逻辑 -/
 
 
 set_option autoImplicit false
@@ -23,33 +20,25 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Introductory Examples
+/- ## 入门示例
 
-### Even Numbers
+### 偶数
 
-Mathematicians often define sets as the smallest that meets some criteria. For
-example:
+数学家常将集合定义为满足某些条件的最小集合。例如：
 
-    The set `E` of even natural numbers is defined as the smallest set closed
-    under the following rules: (1) `0 ∈ E` and (2) for every `k ∈ ℕ`, if
-    `k ∈ E`, then `k + 2 ∈ E`.
+    自然数偶数集`E`定义为满足以下规则的最小集合：(1) `0 ∈ E`；(2) 对于每个`k ∈ ℕ`，如果`k ∈ E`，则`k + 2 ∈ E`。
 
-In Lean, we can define the corresponding "is even" predicate as follows: -/
+在Lean中，我们可以如下定义对应的"是偶数"谓词： -/
 
 inductive Even : ℕ → Prop where
   | zero    : Even 0
   | add_two : ∀k : ℕ, Even k → Even (k + 2)
 
-/- This should look familiar. We have used the same syntax, except with `Type`
-instead of `Prop`, for inductive types.
+/- 这看起来应该很熟悉。我们使用了相同的语法，只是用`Prop`代替了`Type`来定义归纳类型。
 
-The above command introduces a new unary predicate `Even` as well as two
-constructors, `Even.zero` and `Even.add_two`, which can be used to build proof
-terms. Thanks to the "no junk" guarantee of inductive definitions, `Even.zero`
-and `Even.add_two` are the only two ways to construct proofs of `Even`.
+上述命令引入了一个新的一元谓词`Even`以及两个构造子`Even.zero`和`Even.add_two`，可用于构建证明项。得益于归纳定义的"无冗余"保证，`Even.zero`和`Even.add_two`是构造`Even`证明的唯二方式。
 
-By the PAT principle, `Even` can be seen as an inductive type, the values being
-the proof terms. -/
+根据PAT原则，`Even`可被视为归纳类型，其值即为证明项。 -/
 
 theorem Even_4 :
     Even 4 :=
@@ -60,38 +49,30 @@ theorem Even_4 :
   show Even 4 from
     Even.add_two _ Even_2
 
-/- Why cannot we simply define `Even` recursively? Indeed, why not? -/
+/- 为什么我们不能简单地递归定义`Even`呢？确实，为何不可？ -/
 
 def evenRec : ℕ → Bool
   | 0     => true
   | 1     => false
   | k + 2 => evenRec k
 
-/- There are advantages and disadvantages to both styles.
+/- 两种风格各有优缺点。
 
-The recursive version requires us to specify a false case (1), and it requires
-us to worry about termination. On the other hand, because it is computational,
-it works well with `rfl`, `simp`, `#reduce`, and `#eval`.
+递归版本需要我们指定假情况(1)，且需要考虑终止性。但正因其可计算，它能很好地与`rfl`、`simp`、`#reduce`和`#eval`配合使用。
 
-The inductive version is often considered more abstract and elegant. Each rule
-is stated independently of the others.
+归纳版本通常被认为更抽象优雅。每条规则都独立于其他规则陈述。
 
-Yet another way to define `Even` is as a nonrecursive definition: -/
+定义`Even`的另一种方式是非递归定义： -/
 
 def evenNonrec (k : ℕ) : Prop :=
   k % 2 = 0
 
-/- Mathematicians would probably find this the most satisfactory definition.
-But the inductive version is a convenient, intuitive example that is typical of
-many realistic inductive definitions.
+/- 数学家可能认为这是最令人满意的定义。但归纳版本是一个方便直观的典型示例，体现了许多现实中的归纳定义。
 
 
-### Tennis Games
+### 网球比赛
 
-Transition systems consists of transition rules, which together specify a
-binary predicate connecting a "before" and an "after" state. As a simple
-specimen of a transition system, we consider the possible transitions, in a game
-of tennis, starting from 0–0. -/
+转移系统由转移规则组成，共同指定连接"前"状态和"后"状态的二元谓词。作为转移系统的简单示例，我们考虑网球比赛中从0–0开始的可能转移。 -/
 
 inductive Score : Type where
   | vs       : ℕ → ℕ → Score
@@ -120,12 +101,9 @@ inductive Step : Score → Score → Prop where
 
 infixr:45 " ↝ " => Step
 
-/- Note that while `Score.vs` allows arbitrary numbers as arguments, the
-formulation of the constructors for `Step` ensures only valid tennis scores can
-be reached from `0–0`.
+/- 注意虽然`Score.vs`允许任意数字作为参数，但`Step`构造子的表述确保只有有效的网球比分能从`0–0`达到。
 
-We can ask, and formally answer, questions such as: Can the score ever return to
-`0–0`? -/
+我们可以提出并正式回答诸如：比分能否回到`0–0`？ -/
 
 theorem no_Step_to_0_0 (s : Score) :
     ¬ s ↝ 0–0 :=
@@ -134,10 +112,9 @@ theorem no_Step_to_0_0 (s : Score) :
     cases h
 
 
-/- ### Reflexive Transitive Closure
+/- ### 自反传递闭包
 
-Our last introductory example is the reflexive transitive closure of a
-relation `R`, modeled as a binary predicate `Star R`. -/
+我们的最后一个入门示例是关系`R`的自反传递闭包，建模为二元谓词`Star R`。 -/
 
 inductive Star {α : Type} (R : α → α → Prop) : α → α → Prop
 where
@@ -145,35 +122,31 @@ where
   | refl (a : α)      : Star R a a
   | trans (a b c : α) : Star R a b → Star R b c → Star R a c
 
-/- The first rule embeds `R` into `Star R`. The second rule achieves the
-reflexive closure. The third rule achieves the transitive closure.
+/- 第一条规则将`R`嵌入`Star R`。第二条规则实现自反闭包。第三条规则实现传递闭包。
 
-The definition is truly elegant. If you doubt this, try implementing `Star` as a
-recursive function: -/
+这个定义非常优雅。若存疑，可尝试将`Star`实现为递归函数： -/
 
 def starRec {α : Type} (R : α → α → Bool) :
   α → α → Bool :=
   sorry
 
 
-/- ### A Nonexample
+/- ### 非法示例
 
-Not all inductive definitions are legal. -/
+并非所有归纳定义都是合法的。 -/
 
 /-
--- fails
+-- 失败
 inductive Illegal : Prop where
   | intro : ¬ Illegal → Illegal
 -/
 
 
-/- ## Logical Symbols
+/- ## 逻辑符号
 
-The truth values `False` and `True`, the connectives `∧`, `∨` and `↔`, the
-`∃` quantifier, and the equality predicate `=` are all defined as inductive
-propositions or predicates. In contrast, `∀` and `→` are built into the logic.
+真值`False`和`True`，连接词`∧`、`∨`和`↔`，存在量词`∃`，以及相等谓词`=`都定义为归纳命题或谓词。相比之下，`∀`和`→`是逻辑内置的。
 
-Syntactic sugar:
+语法糖：
 
     `∃x : α, P` := `Exists (λx : α, P)`
     `x = y`     := `Eq x y` -/
@@ -212,14 +185,11 @@ end logical_symbols
 #print Eq
 
 
-/- ## Rule Induction
+/- ## 规则归纳
 
-Just as we can perform induction on a term, we can perform induction on a proof
-term.
+正如我们可以对项进行归纳，我们也可以对证明项进行归纳。
 
-This is called __rule induction__, because the induction is on the introduction
-rules (i.e., the constructors of the proof term). Thanks to the PAT principle,
-this works as expected. -/
+这称为__规则归纳__，因为归纳是基于引入规则(即证明项的构造子)。得益于PAT原则，这能如预期工作。 -/
 
 theorem mod_two_Eq_zero_of_Even (n : ℕ) (h : Even n) :
     n % 2 = 0 :=
@@ -243,9 +213,7 @@ theorem Not_Even_two_mul_add_one (m n : ℕ)
         simp [Nat.succ_eq_add_one] at *
         linarith
 
-/- `linarith` proves goals involving linear arithmetic equalities or
-inequalities. "Linear" means it works only with `+` and `-`, not `*` and `/`
-(but multiplication by a constant is supported). -/
+/- `linarith`证明涉及线性算术等式或不等式的目标。"线性"意味着它仅处理`+`和`-`，而非`*`和`/`(但支持乘以常数)。 -/
 
 theorem linarith_example (i : Int) (hi : i > 5) :
     2 * i + 3 > 11 :=
@@ -283,22 +251,17 @@ theorem Star_Star_Iff_Star {α : Type} (R : α → α → Prop)
 #check propext
 
 
-/- ## Elimination
+/- ## 消解
 
-Given an inductive predicate `P`, its introduction rules typically have the form
-`∀…, ⋯ → P …` and can be used to prove goals of the form `⊢ P …`.
+给定归纳谓词`P`，其引入规则通常形如`∀…, ⋯ → P …`，可用于证明形如`⊢ P …`的目标。
 
-Elimination works the other way around: It extracts information from a theorem
-or hypothesis of the form `P …`. Elimination takes various forms: pattern
-matching, the `cases` and `induction` tactics, and custom elimination rules
-(e.g., `And.left`).
+消解则相反：它从形如`P …`的定理或假设中提取信息。消解有多种形式：模式匹配、`cases`和`induction`策略，以及自定义消解规则(如`And.left`)。
 
-* `cases` works like `induction` but without induction hypothesis.
+* `cases`类似于`induction`但没有归纳假设。
 
-* `match` is available as well.
+* 也可使用`match`。
 
-Now we can finally understand how `cases h` where `h : l = r` and how
-`cases Classical.em h` work. -/
+现在我们终于能理解`cases h`(当`h : l = r`)和`cases Classical.em h`的工作原理了。 -/
 
 #print Eq
 
@@ -322,16 +285,13 @@ theorem cases_Classical_em_example {α : Type} (a : α)
     | inl hl => sorry
     | inr hr => sorry
 
-/- Often it is convenient to rewrite concrete terms of the form `P (c …)`,
-where `c` is typically a constructor. We can state and prove an
-__inversion rule__ to support such eliminative reasoning.
+/- 通常重写形如`P (c …)`的具体项很方便，其中`c`通常是构造子。我们可以陈述并证明一个__反演规则__来支持这种消解推理。
 
-Typical inversion rule:
+典型的反演规则：
 
     `∀x y, P (c x y) → (∃…, ⋯ ∧ ⋯) ∨ ⋯ ∨ (∃…, ⋯ ∧ ⋯)`
 
-It can be useful to combine introduction and elimination into a single theorem,
-which can be used for rewriting both the hypotheses and conclusions of goals:
+将引入和消结合并为一个定理很有用，可用于重写目标的假设和结论：
 
     `∀x y, P (c x y) ↔ (∃…, ⋯ ∧ ⋯) ∨ ⋯ ∨ (∃…, ⋯ ∧ ⋯)` -/
 
@@ -381,9 +341,9 @@ theorem Even_Iff_struct (n : ℕ) :
              by simp [heq, Even.add_two _ hm])
 
 
-/- ## Further Examples
+/- ## 更多示例
 
-### Sorted Lists -/
+### 有序列表 -/
 
 inductive Sorted : List ℕ → Prop where
   | nil : Sorted []
@@ -426,7 +386,7 @@ theorem Not_Sorted_17_13 :
     | two_or_more _ _ hlet hsorted => simp at hlet
 
 
-/- ### Palindromes -/
+/- ### 回文 -/
 
 inductive Palindrome {α : Type} : List α → Prop where
   | nil : Palindrome []
@@ -435,7 +395,7 @@ inductive Palindrome {α : Type} : List α → Prop where
     Palindrome ([x] ++ xs ++ [x])
 
 /-
--- fails
+-- 失败
 def palindromeRec {α : Type} : List α → Bool
   | []                 => true
   | [_]                => true
@@ -463,7 +423,7 @@ theorem Palindrome_reverse {α : Type} (xs : List α)
         exact Palindrome.sandwich _ _ ih }
 
 
-/- ### Full Binary Trees -/
+/- ### 满二叉树 -/
 
 #check Tree
 
@@ -513,7 +473,7 @@ theorem IsFull_mirror_struct_induct {α : Type} (t : Tree α) :
             { simp [mirror_Eq_nil_Iff, *] } } }
 
 
-/- ### First-Order Terms -/
+/- ### 一阶项 -/
 
 inductive Term (α β : Type) : Type where
   | var : β → Term α β
@@ -533,3 +493,4 @@ inductive VariableFree {α β : Type} : Term α β → Prop where
     VariableFree (Term.fn f ts)
 
 end LoVe
+

@@ -1,13 +1,13 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe09_OperationalSemantics_ExerciseSheet
 import LoVe.LoVe10_HoareLogic_Demo
 
 
-/- # LoVe Homework 10 (10 points + 1 bonus point): Hoare Logic
+/- # LoVe 第10次作业（10分 + 1附加分）：霍尔逻辑
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -16,10 +16,9 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1 (5 points): Factorial
+/- ## 问题1（5分）：阶乘
 
-The following WHILE program is intended to compute the factorial of `n₀`, leaving
-the result in `r`. -/
+以下WHILE程序旨在计算 `n₀` 的阶乘，结果存储在 `r` 中。 -/
 
 def FACT : Stmt :=
   Stmt.assign "i" (fun s ↦ 0);
@@ -28,36 +27,36 @@ def FACT : Stmt :=
     (Stmt.assign "i" (fun s ↦ s "i" + 1);
      Stmt.assign "r" (fun s ↦ s "r" * s "i"))
 
-/- Recall the definition of the `fact` function: -/
+/- 回忆 `fact` 函数的定义： -/
 
 #print fact
 
-/- Let us register its recursive equations as simplification rules to
-strengthen the simplifier and `aesop`, using some new Lean syntax: -/
+/- 让我们使用一些新的Lean语法将其递归方程注册为简化规则，
+以增强简化器和 `aesop` 的能力： -/
 
 attribute [simp] fact
 
-/- Prove the correctness of `FACT` using `vcg`.
+/- 使用 `vcg` 证明 `FACT` 的正确性。
 
-Hint: Remember to strengthen the loop invariant with `s "n" = n₀` to
-capture the fact that the variable `n` does not change. -/
+提示：记得用 `s "n" = n₀` 强化循环不变量，
+以捕获变量 `n` 不变的事实。 -/
 
 theorem FACT_correct (n₀ : ℕ) :
     {* fun s ↦ s "n" = n₀ *} (FACT) {* fun s ↦ s "r" = fact n₀ *} :=
   sorry
 
 
-/- ## Question 2 (5 points + 1 bonus point):
-## Hoare Logic for the Guarded Command Language
+/- ## 问题2（5分 + 1附加分）：
+## 卫式命令语言的霍尔逻辑
 
-Recall the definition of GCL from exercise 9: -/
+回忆练习9中GCL的定义： -/
 
 namespace GCL
 
 #check Stmt
 #check BigStep
 
-/- The definition of Hoare triples for partial correctness is unsurprising: -/
+/- 部分正确性的霍尔逻辑三元组定义并不意外： -/
 
 def PartialHoare (P : State → Prop) (S : Stmt) (Q : State → Prop) : Prop :=
   ∀s t, P s → (S, s) ⟹ t → Q t
@@ -68,7 +67,7 @@ macro (priority := high) "{*" P:term " *} " "(" S:term ")" " {* " Q:term " *}" :
 
 namespace PartialHoare
 
-/- 2.1 (5 points). Prove the following Hoare rules: -/
+/- 2.1（5分）。证明以下霍尔规则： -/
 
 theorem consequence {P P' Q Q' S} (h : {* P *} (S) {* Q *})
       (hp : ∀s, P' s → P s) (hq : ∀s, Q s → Q' s) :
@@ -93,8 +92,7 @@ theorem choice_intro {P Q Ss}
     {* P *} (Stmt.choice Ss) {* Q *} :=
   sorry
 
-/- 2.2 (1 bonus point). Prove the rule for `loop`. Notice the similarity with
-the rule for `while` in the WHILE language. -/
+/- 2.2（1附加分）。证明 `loop` 的规则。注意与WHILE语言中 `while` 规则的相似性。 -/
 
 theorem loop_intro {P S} (h : {* P *} (S) {* P *}) :
     {* P *} (Stmt.loop S) {* P *} :=
@@ -105,3 +103,4 @@ end PartialHoare
 end GCL
 
 end LoVe
+

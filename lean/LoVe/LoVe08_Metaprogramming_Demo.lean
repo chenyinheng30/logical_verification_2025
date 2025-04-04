@@ -1,47 +1,39 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权声明 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 和 Jannis Limperg。详见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe06_InductivePredicates_Demo
 
 
-/- # LoVe Demo 8: Metaprogramming
+/- # LoVe 演示8：元编程
 
-Users can extend Lean with custom tactics and tools. This kind of
-programming—programming the prover—is called metaprogramming.
+用户可以通过自定义策略和工具扩展Lean。这种编程方式——对证明器进行编程——被称为元编程。
 
-Lean's metaprogramming framework uses mostly the same notions and syntax as
-Lean's input language itself. Abstract syntax trees __reflect__ internal data
-structures, e.g., for expressions (terms). The prover's internals are exposed
-through Lean interfaces, which we can use for
+Lean的元编程框架主要使用与Lean输入语言相同的概念和语法。抽象语法树（AST）会__反映__内部数据结构，例如表达式（项）。证明器的内部功能通过Lean接口暴露，我们可以用于：
 
-* accessing the current context and goal;
-* unifying expressions;
-* querying and modifying the environment;
-* setting attributes.
+* 访问当前上下文和目标；
+* 统一表达式；
+* 查询和修改环境；
+* 设置属性。
 
-Most of Lean itself is implemented in Lean.
+Lean的大部分功能都是用Lean自身实现的。
 
-Example applications:
+应用示例：
 
-* proof goal transformations;
-* heuristic proof search;
-* decision procedures;
-* definition generators;
-* advisor tools;
-* exporters;
-* ad hoc automation.
+* 证明目标转换；
+* 启发式证明搜索；
+* 决策过程；
+* 定义生成器；
+* 建议工具；
+* 导出器；
+* 临时自动化。
 
-Advantages of Lean's metaprogramming framework:
+Lean元编程框架的优势：
 
-* Users do not need to learn another programming language to write
-  metaprograms; they can work with the same constructs and notation used to
-  define ordinary objects in the prover's library.
+* 用户无需学习另一种编程语言来编写元程序；可以使用与定义证明器库中普通对象相同的结构和符号。
 
-* Everything in that library is available for metaprogramming purposes.
+* 库中的所有内容都可用于元编程目的。
 
-* Metaprograms can be written and debugged in the same interactive environment,
-  encouraging a style where formal libraries and supporting automation are
-  developed at the same time. -/
+* 元程序可以在相同的交互式环境中编写和调试，鼓励同时开发形式化库和支持自动化的风格。 -/
 
 
 set_option autoImplicit false
@@ -55,14 +47,11 @@ open Lean.TSyntax
 namespace LoVe
 
 
-/- ## Tactic Combinators
+/- ## 策略组合子
 
-When programming our own tactics, we often need to repeat some actions on
-several goals, or to recover if a tactic fails. Tactic combinators help in such
-cases.
+在编写自定义策略时，我们经常需要在多个目标上重复某些操作，或在策略失败时恢复。策略组合子在此类情况下很有帮助。
 
-`repeat'` applies its argument repeatedly on all (sub…sub)goals until it cannot
-be applied any further. -/
+`repeat'`会重复应用其参数到所有（子…子）目标，直到无法继续应用为止。 -/
 
 theorem repeat'_example :
     Even 4 ∧ Even 7 ∧ Even 3 ∧ Even 0 :=
@@ -71,9 +60,7 @@ theorem repeat'_example :
     repeat' apply Even.add_two
     repeat' sorry
 
-/- The "first" combinator `first | ⋯ | ⋯ | ⋯` tries its first argument. If that
-fails, it applies its second argument. If that fails, it applies its third
-argument. And so on. -/
+/- "first"组合子 `first | ⋯ | ⋯ | ⋯`会尝试第一个参数。如果失败，则应用第二个参数。如果再次失败，则应用第三个参数。依此类推。 -/
 
 theorem repeat'_first_example :
     Even 4 ∧ Even 7 ∧ Even 3 ∧ Even 0 :=
@@ -85,19 +72,18 @@ theorem repeat'_first_example :
       | apply Even.zero
     repeat' sorry
 
-/- `all_goals` applies its argument exactly once to each goal. It succeeds only
-if the argument succeeds on **all** goals. -/
+/- `all_goals`将其参数精确地应用到每个目标一次。仅当参数在**所有**目标上都成功时才成功。 -/
 
 /-
 theorem all_goals_example :
     Even 4 ∧ Even 7 ∧ Even 3 ∧ Even 0 :=
   by
     repeat' apply And.intro
-    all_goals apply Even.add_two   -- fails
+    all_goals apply Even.add_two   -- 失败
     repeat' sorry
 -/
 
-/- `try` transforms its argument into a tactic that never fails. -/
+/- `try`将其参数转换为一个永远不会失败的策略。 -/
 
 theorem all_goals_try_example :
     Even 4 ∧ Even 7 ∧ Even 3 ∧ Even 0 :=
@@ -106,8 +92,7 @@ theorem all_goals_try_example :
     all_goals try apply Even.add_two
     repeat sorry
 
-/- `any_goals` applies its argument exactly once to each goal. It succeeds
-if the argument succeeds on **any** goal. -/
+/- `any_goals`将其参数精确地应用到每个目标一次。如果参数在**任意**目标上成功，则成功。 -/
 
 theorem any_goals_example :
     Even 4 ∧ Even 7 ∧ Even 3 ∧ Even 0 :=
@@ -116,8 +101,7 @@ theorem any_goals_example :
     any_goals apply Even.add_two
     repeat' sorry
 
-/- `solve | ⋯ | ⋯ | ⋯` is like `first` except that it succeeds only if one of
-the arguments fully proves the current goal. -/
+/- `solve | ⋯ | ⋯ | ⋯`类似于`first`，但仅当其中一个参数完全证明当前目标时才成功。 -/
 
 theorem any_goals_solve_repeat_first_example :
     Even 4 ∧ Even 7 ∧ Even 3 ∧ Even 0 :=
@@ -131,21 +115,19 @@ theorem any_goals_solve_repeat_first_example :
           | apply Even.zero
     repeat' sorry
 
-/- The combinator `repeat'` can easily lead to infinite looping: -/
+/- 组合子`repeat'`容易导致无限循环： -/
 
 /-
--- loops
+-- 循环
 theorem repeat'_Not_example :
     ¬ Even 1 :=
   by repeat' apply Not.intro
 -/
 
 
-/- ## Macros -/
+/- ## 宏 -/
 
-/- We start with the actual metaprogramming, by coding a custom tactic as a
-macro. The tactic embodies the behavior we hardcoded in the `solve` example
-above: -/
+/- 我们通过编写一个自定义策略作为宏来开始实际的元编程。该策略体现了我们在上面的`solve`示例中硬编码的行为： -/
 
 macro "intro_and_even" : tactic =>
   `(tactic|
@@ -157,7 +139,7 @@ macro "intro_and_even" : tactic =>
              | apply Even.add_two
              | apply Even.zero))
 
-/- Let us apply our custom tactic: -/
+/- 让我们应用我们的自定义策略： -/
 
 theorem intro_and_even_example :
     Even 4 ∧ Even 7 ∧ Even 3 ∧ Even 0 :=
@@ -166,35 +148,28 @@ theorem intro_and_even_example :
     repeat' sorry
 
 
-/- ## The Metaprogramming Monads
+/- ## 元编程单子
 
-`MetaM` is the low-level metaprogramming monad. `TacticM` extends `MetaM` with
-goal management.
+`MetaM`是低级的元编程单子。`TacticM`扩展了`MetaM`，增加了目标管理功能。
 
-* `MetaM` is a state monad providing access to the global context (including all
-  definitions and inductive types), notations, and attributes (e.g., the list of
-  `@[simp]` theorems), among others. `TacticM` additionally provides access to
-  the list of goals.
+* `MetaM`是一个状态单子，提供对全局上下文（包括所有定义和归纳类型）、符号和属性（例如`@[simp]`定理列表）等的访问。`TacticM`额外提供对目标列表的访问。
 
-* `MetaM` and `TacticM` behave like an option monad. The metaprogram `failure`
-  leaves the monad in an error state.
+* `MetaM`和`TacticM`的行为类似于选项单子。元程序`failure`会使单子进入错误状态。
 
-* `MetaM` and `TacticM` support tracing, so we can use `logInfo` to display
-  messages.
+* `MetaM`和`TacticM`支持追踪，因此我们可以使用`logInfo`显示消息。
 
-* Like other monads, `MetaM` and `TacticM` support imperative constructs such as
-  `for`–`in`, `continue`, and `return`. -/
+* 与其他单子类似，`MetaM`和`TacticM`支持`for`–`in`、`continue`和`return`等命令式构造。 -/
 
 def traceGoals : TacticM Unit :=
   do
-    logInfo m!"Lean version {Lean.versionString}"
-    logInfo "All goals:"
+    logInfo m!"Lean版本 {Lean.versionString}"
+    logInfo "所有目标："
     let goals ← getUnsolvedGoals
     logInfo m!"{goals}"
     match goals with
     | []     => return
     | _ :: _ =>
-      logInfo "First goal's target:"
+      logInfo "第一个目标的目标类型："
       let target ← getMainTarget
       logInfo m!"{target}"
 
@@ -209,10 +184,9 @@ theorem Even_18_and_Even_20 (α : Type) (a : α) :
     intro_and_even
 
 
-/- ## First Example: An Assumption Tactic
+/- ## 第一个示例：假设策略
 
-We define a `hypothesis` tactic that behaves essentially the same as the
-predefined `assumption` tactic. -/
+我们定义一个`hypothesis`策略，其行为与预定义的`assumption`策略基本相同。 -/
 
 def hypothesis : TacticM Unit :=
   withMainContext
@@ -237,33 +211,32 @@ theorem hypothesis_example {α : Type} {p : α → Prop} {a : α}
   by hypothesis
 
 
-/- ## Expressions
+/- ## 表达式
 
-The metaprogramming framework revolves around the type `Expr` of expressions or
-terms. -/
+元编程框架围绕表达式或项的`Expr`类型展开。 -/
 
 #print Expr
 
 
-/- ### Names
+/- ### 名称
 
-We can create literal names with backticks:
+我们可以使用反引号创建字面名称：
 
-* Names with a single backtick, `n, are not checked for existence.
+* 单个反引号的名称`n不会被检查是否存在。
 
-* Names with two backticks, ``n, are resolved and checked. -/
+* 双反引号的名称``n会被解析和检查。 -/
 
 #check `x
 #eval `x
-#eval `Even          -- wrong
-#eval `LoVe.Even     -- suboptimal
+#eval `Even          -- 错误
+#eval `LoVe.Even     -- 次优
 #eval ``Even
 /-
-#eval ``EvenThough   -- fails
+#eval ``EvenThough   -- 失败
 -/
 
 
-/- ### Constants -/
+/- ### 常量 -/
 
 #check Expr.const
 
@@ -271,7 +244,7 @@ We can create literal names with backticks:
 #eval ppExpr (Expr.const ``Nat [])
 
 
-/- ### Sorts (lecture 12) -/
+/- ### 排序（第12讲） -/
 
 #check Expr.sort
 
@@ -279,7 +252,7 @@ We can create literal names with backticks:
 #eval ppExpr (Expr.sort (Level.succ Level.zero))
 
 
-/- ### Free Variables -/
+/- ### 自由变量 -/
 
 #check Expr.fvar
 
@@ -287,12 +260,12 @@ We can create literal names with backticks:
 #eval ppExpr (Expr.fvar (FVarId.mk `n))
 
 
-/- ### Metavariables -/
+/- ### 元变量 -/
 
 #check Expr.mvar
 
 
-/- ### Applications -/
+/- ### 应用 -/
 
 #check Expr.app
 
@@ -300,7 +273,7 @@ We can create literal names with backticks:
   (Expr.const ``Nat.zero []))
 
 
-/- ### Anonymous Functions and Bound Variables -/
+/- ### 匿名函数和绑定变量 -/
 
 #check Expr.bvar
 #check Expr.lam
@@ -316,7 +289,7 @@ We can create literal names with backticks:
   BinderInfo.default)
 
 
-/- ### Dependent Function Types -/
+/- ### 依赖函数类型 -/
 
 #check Expr.forallE
 
@@ -328,7 +301,7 @@ We can create literal names with backticks:
   (Expr.const `Bool []) BinderInfo.default)
 
 
-/- ### Other Constructors -/
+/- ### 其他构造器 -/
 
 #check Expr.letE
 #check Expr.lit
@@ -336,10 +309,9 @@ We can create literal names with backticks:
 #check Expr.proj
 
 
-/- ## Second Example: A Conjunction-Destructing Tactic
+/- ## 第二个示例：合取析构策略
 
-We define a `destruct_and` tactic that automates the elimination of `∧` in
-premises, automating proofs such as these: -/
+我们定义一个`destruct_and`策略，用于自动化析构前提中的`∧`，自动化如下证明： -/
 
 theorem abc_a (a b c : Prop) (h : a ∧ b ∧ c) :
     a :=
@@ -357,8 +329,7 @@ theorem abc_c (a b c : Prop) (h : a ∧ b ∧ c) :
     c :=
   And.right (And.right h)
 
-/- Our tactic relies on a helper function, which takes as argument the
-hypothesis `h` to use as an expression: -/
+/- 我们的策略依赖于一个辅助函数，该函数以假设`h`作为表达式参数： -/
 
 partial def destructAndExpr (hP : Expr) : TacticM Bool :=
   withMainContext
@@ -395,7 +366,7 @@ def destructAnd (name : Name) : TacticM Unit :=
 elab "destruct_and" h:ident : tactic =>
   destructAnd (getId h)
 
-/- Let us check that our tactic works: -/
+/- 让我们验证我们的策略是否有效： -/
 
 theorem abc_a_again (a b c : Prop) (h : a ∧ b ∧ c) :
     a :=
@@ -416,15 +387,13 @@ theorem abc_c_again (a b c : Prop) (h : a ∧ b ∧ c) :
 /-
 theorem abc_ac (a b c : Prop) (h : a ∧ b ∧ c) :
     a ∧ c :=
-  by destruct_and h   -- fails
+  by destruct_and h   -- 失败
 -/
 
 
-/- ## Third Example: A Direct Proof Finder
+/- ## 第三个示例：直接证明查找器
 
-Finally, we implement a `prove_direct` tool that traverses all theorems in the
-database and checks whether one of them can be used to prove the current
-goal. -/
+最后，我们实现一个`prove_direct`工具，遍历数据库中的所有定理，检查是否可以使用其中之一证明当前目标。 -/
 
 def isTheorem : ConstantInfo → Bool
   | ConstantInfo.axiomInfo _ => true
@@ -468,7 +437,7 @@ def proveDirect : TacticM Unit :=
       if isTheorem info && ! ConstantInfo.isUnsafe info then
         try
           proveUsingTheorem name
-          logInfo m!"Proved directly by {name}"
+          logInfo m!"由 {name} 直接证明"
           setGoals (List.tail origGoals)
           return
         catch _ =>
@@ -478,7 +447,7 @@ def proveDirect : TacticM Unit :=
 elab "prove_direct" : tactic =>
   proveDirect
 
-/- Let us check that our tactic works: -/
+/- 让我们验证我们的策略是否有效： -/
 
 theorem Nat.symm (x y : ℕ) (h : x = y) :
     y = x :=
@@ -498,10 +467,11 @@ theorem List.reverse_twice (xs : List ℕ) :
     List.reverse (List.reverse xs) = xs :=
   by prove_direct
 
-/- Lean has `apply?`: -/
+/- Lean有`apply?`： -/
 
 theorem List.reverse_twice_apply? (xs : List ℕ) :
     List.reverse (List.reverse xs) = xs :=
   by apply?
 
 end LoVe
+

@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 以及 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe06_InductivePredicates_Demo
 
 
-/- # LoVe Exercise 6: Inductive Predicates
+/- # LoVe 练习6：归纳谓词
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如`:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,31 +15,30 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Even and Odd
+/- ## 问题1：偶数与奇数
 
-The `Even` predicate is `True` for even numbers and `False` for odd numbers. -/
+`Even`谓词对于偶数为`True`，对于奇数为`False`。 -/
 
 #check Even
 
-/- We define `Odd` as the negation of `Even`: -/
+/- 我们将`Odd`定义为`Even`的否定： -/
 
 def Odd (n : ℕ) : Prop :=
   ¬ Even n
 
-/- 1.1. Prove that 1 is odd and register this fact as a simp rule.
+/- 1.1. 证明1是奇数，并将此事实注册为simp规则。
 
-Hint: `cases` or `induction` is useful to reason about hypotheses of the form
-`Even …`. -/
+提示：使用`cases`或`induction`来推理形如`Even …`的假设。 -/
 
 @[simp] theorem Odd_1 :
     Odd 1 :=
   sorry
 
-/- 1.2. Prove that 3 and 5 are odd. -/
+/- 1.2. 证明3和5是奇数。 -/
 
--- enter your answer here
+-- 在此处输入你的答案
 
-/- 1.3. Complete the following proof by structural induction. -/
+/- 1.3. 通过结构归纳完成以下证明。 -/
 
 theorem Even_two_times :
     ∀m : ℕ, Even (2 * m)
@@ -48,19 +47,18 @@ theorem Even_two_times :
     sorry
 
 
-/- ## Question 2: Tennis Games
+/- ## 问题2：网球比赛
 
-Recall the inductive type of tennis scores from the demo: -/
+回顾演示中的网球比分归纳类型： -/
 
 #check Score
 
-/- 2.1. Define an inductive predicate that returns `True` if the server is
-ahead of the receiver and that returns `False` otherwise. -/
+/- 2.1. 定义一个归纳谓词，当发球方领先时返回`True`，否则返回`False`。 -/
 
 inductive ServAhead : Score → Prop
-  -- enter the missing cases here
+  -- 在此处补充缺失的案例
 
-/- 2.2. Validate your predicate definition by proving the following theorems. -/
+/- 2.2. 通过证明以下定理来验证你的谓词定义。 -/
 
 theorem ServAhead_vs {m n : ℕ} (hgt : m > n) :
     ServAhead (Score.vs m n) :=
@@ -82,16 +80,14 @@ theorem not_ServAhead_gameRecv :
     ¬ ServAhead Score.gameRecv :=
   sorry
 
-/- 2.3. Compare the above theorem statements with your definition. What do you
-observe? -/
+/- 2.3. 将上述定理陈述与你的定义进行比较。你观察到了什么？ -/
 
--- enter your answer here
+-- 在此处输入你的答案
 
 
-/- ## Question 3: Binary Trees
+/- ## 问题3：二叉树
 
-3.1. Prove the converse of `IsFull_mirror`. You may exploit already proved
-theorems (e.g., `IsFull_mirror`, `mirror_mirror`). -/
+3.1. 证明`IsFull_mirror`的逆命题。你可以利用已证明的定理（例如`IsFull_mirror`、`mirror_mirror`）。 -/
 
 #check IsFull_mirror
 #check mirror_mirror
@@ -100,21 +96,22 @@ theorem mirror_IsFull {α : Type} :
     ∀t : Tree α, IsFull (mirror t) → IsFull t :=
   sorry
 
-/- 3.2. Define a `map` function on binary trees, similar to `List.map`. -/
+/- 3.2. 为二叉树定义一个`map`函数，类似于`List.map`。 -/
 
 def Tree.map {α β : Type} (f : α → β) : Tree α → Tree β :=
   sorry
 
-/- 3.3. Prove the following theorem by case distinction. -/
+/- 3.3. 通过案例分析证明以下定理。 -/
 
 theorem Tree.map_eq_empty_iff {α β : Type} (f : α → β) :
     ∀t : Tree α, Tree.map f t = Tree.nil ↔ t = Tree.nil :=
   sorry
 
-/- 3.4 (**optional**). Prove the following theorem by rule induction. -/
+/- 3.4 (**选做**). 通过规则归纳证明以下定理。 -/
 
 theorem map_mirror {α β : Type} (f : α → β) :
     ∀t : Tree α, IsFull t → IsFull (Tree.map f t) :=
   sorry
 
 end LoVe
+

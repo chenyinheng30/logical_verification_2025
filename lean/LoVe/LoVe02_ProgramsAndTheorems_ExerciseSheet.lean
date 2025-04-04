@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe02_ProgramsAndTheorems_Demo
 
 
-/- # LoVe Exercise 2: Programs and Theorems
+/- # LoVe 练习2：程序与定理
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如`:= sorry`）替换为你的解答。 -/
 
 set_option autoImplicit false
 set_option tactic.hygienic false
@@ -14,10 +14,9 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1: Predecessor Function
+/- ## 问题1：前驱函数
 
-1.1. Define the function `pred` of type `ℕ → ℕ` that returns the predecessor of
-its argument, or 0 if the argument is 0. For example:
+1.1. 定义类型为`ℕ → ℕ`的函数`pred`，该函数返回其参数的前驱数，若参数为0则返回0。例如：
 
     `pred 7 = 6`
     `pred 0 = 0` -/
@@ -25,54 +24,46 @@ its argument, or 0 if the argument is 0. For example:
 def pred : ℕ → ℕ :=
   sorry
 
-/- 1.2. Check that your function works as expected. -/
+/- 1.2. 检查你的函数是否符合预期。 -/
 
-#eval pred 0    -- expected: 0
-#eval pred 1    -- expected: 0
-#eval pred 2    -- expected: 1
-#eval pred 3    -- expected: 2
-#eval pred 10   -- expected: 9
-#eval pred 99   -- expected: 98
+#eval pred 0    -- 预期: 0
+#eval pred 1    -- 预期: 0
+#eval pred 2    -- 预期: 1
+#eval pred 3    -- 预期: 2
+#eval pred 10   -- 预期: 9
+#eval pred 99   -- 预期: 98
 
 
-/- ## Question 2: Arithmetic Expressions
+/- ## 问题2：算术表达式
 
-Consider the type `AExp` from the lecture and the function `eval` that
-computes the value of an expression. You will find the definitions in the file
-`LoVe02_ProgramsAndTheorems_Demo.lean`. One way to find them quickly is to
+考虑讲座中提到的类型`AExp`和计算表达式值的函数`eval`。你可以在文件`LoVe02_ProgramsAndTheorems_Demo.lean`中找到这些定义。快速查找的方法是：
 
-1. hold the Control (on Linux and Windows) or Command (on macOS) key pressed;
-2. move the cursor to the identifier `AExp` or `eval`;
-3. click the identifier. -/
+1. 按住Control（Linux和Windows）或Command（macOS）键；
+2. 将光标移动到标识符`AExp`或`eval`上；
+3. 点击该标识符。 -/
 
 #check AExp
 #check eval
 
-/- 2.1. Test that `eval` behaves as expected. Make sure to exercise each
-constructor at least once. You can use the following environment in your tests.
-What happens if you divide by zero?
+/- 2.1. 测试`eval`函数的行为是否符合预期。确保每个构造器至少被测试一次。你可以在测试中使用以下环境。如果除以零会发生什么？
 
-Note that `#eval` (Lean's evaluation command) and `eval` (our evaluation
-function on `AExp`) are unrelated. -/
+注意`#eval`（Lean的求值命令）和`eval`（我们对`AExp`的求值函数）是无关的。 -/
 
 def someEnv : String → ℤ
   | "x" => 3
   | "y" => 17
   | _   => 201
 
-#eval eval someEnv (AExp.var "x")   -- expected: 3
--- invoke `#eval` here
+#eval eval someEnv (AExp.var "x")   -- 预期: 3
+-- 在此处调用`#eval`
 
-/- 2.2. The following function simplifies arithmetic expressions involving
-addition. It simplifies `0 + e` and `e + 0` to `e`. Complete the definition so
-that it also simplifies expressions involving the other three binary
-operators. -/
+/- 2.2. 以下函数简化涉及加法的算术表达式。它将`0 + e`和`e + 0`简化为`e`。完善这个定义，使其也能简化涉及其他三个二元运算符的表达式。 -/
 
 def simplify : AExp → AExp
   | AExp.add (AExp.num 0) e₂ => simplify e₂
   | AExp.add e₁ (AExp.num 0) => simplify e₁
-  -- insert the missing cases here
-  -- catch-all cases below
+  -- 在此处添加缺失的匹配模式
+  -- 以下是兜底匹配模式
   | AExp.num i               => AExp.num i
   | AExp.var x               => AExp.var x
   | AExp.add e₁ e₂           => AExp.add (simplify e₁) (simplify e₂)
@@ -80,39 +71,32 @@ def simplify : AExp → AExp
   | AExp.mul e₁ e₂           => AExp.mul (simplify e₁) (simplify e₂)
   | AExp.div e₁ e₂           => AExp.div (simplify e₁) (simplify e₂)
 
-/- 2.3. Is the `simplify` function correct? In fact, what would it mean for it
-to be correct or not? Intuitively, for `simplify` to be correct, it must
-return an arithmetic expression that yields the same numeric value when
-evaluated as the original expression.
+/- 2.3. `simplify`函数是否正确？实际上，如何定义它的正确性？直观上，`simplify`要正确，必须返回一个在求值时与原表达式产生相同数值的算术表达式。
 
-Given an environment `env` and an expression `e`, state (without proving it)
-the property that the value of `e` after simplification is the same as the
-value of `e` before. -/
+给定环境`env`和表达式`e`，陈述（无需证明）简化后的`e`值与简化前的`e`值相同的性质。 -/
 
 theorem simplify_correct (env : String → ℤ) (e : AExp) :
-  True :=   -- replace `True` by your theorem statement
-  sorry   -- leave `sorry` alone
+  True :=   -- 将`True`替换为你的定理陈述
+  sorry   -- 保留`sorry`
 
 
-/- ## Question 3 (**optional**): Map
+/- ## 问题3（选做）：映射
 
-3.1 (**optional**). Define a generic `map` function that applies a function to
-every element in a list. -/
+3.1（选做）. 定义一个通用的`map`函数，该函数将给定函数应用于列表中的每个元素。 -/
 
 def map {α : Type} {β : Type} (f : α → β) : List α → List β :=
   sorry
 
-#eval map (fun n ↦ n + 10) [1, 2, 3]   -- expected: [11, 12, 13]
+#eval map (fun n ↦ n + 10) [1, 2, 3]   -- 预期: [11, 12, 13]
 
-/- 3.2 (**optional**). State (without proving them) the so-called functorial
-properties of `map` as theorems. Schematically:
+/- 3.2（选做）. 陈述（无需证明）`map`的函子性质作为定理。模式如下：
 
      map (fun x ↦ x) xs = xs
      map (fun x ↦ g (f x)) xs = map g (map f xs)
 
-Try to give meaningful names to your theorems. Also, make sure to state the
-second property as generally as possible, for arbitrary types. -/
+尝试为你的定理赋予有意义的名称。同时，确保尽可能通用地陈述第二个性质，适用于任意类型。 -/
 
--- enter your theorem statements here
+-- 在此处输入你的定理陈述
 
 end LoVe
+

@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe03_BackwardProofs_ExerciseSheet
 
 
-/- # LoVe Homework 4 (10 points): Forward Proofs
+/- # LoVe 家庭作业4（10分）：正向证明
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -15,9 +15,9 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1 (4 points): Logic Puzzles
+/- ## 问题1（4分）：逻辑谜题
 
-Consider the following tactical proof: -/
+考虑以下策略证明： -/
 
 theorem about_Impl :
     ∀a b : Prop, ¬ a ∨ b → a → b :=
@@ -31,37 +31,30 @@ theorem about_Impl :
     { intro hb
       exact hb }
 
-/- 1.1 (2 points). Prove the same theorem again, this time by providing a proof
-term.
+/- 1.1（2分）。再次证明相同的定理，这次提供一个证明项。
 
-Hint: There is an easy way. -/
+提示：有一个简单的方法。 -/
 
 theorem about_Impl_term :
     ∀a b : Prop, ¬ a ∨ b → a → b :=
   sorry
 
-/- 1.2 (2 points). Prove the same theorem again, this time by providing a
-structured proof, with `fix`, `assume`, and `show`. -/
+/- 1.2（2分）。再次证明相同的定理，这次提供一个结构化证明，使用 `fix`、`assume` 和 `show`。 -/
 
 theorem about_Impl_struct :
     ∀a b : Prop, ¬ a ∨ b → a → b :=
   sorry
 
 
-/- ## Question 2 (6 points): Connectives and Quantifiers
+/- ## 问题2（6分）：连接词和量词
 
-2.1 (3 points). Supply a structured proof of the commutativity of `∨` under a
-`∀` quantifier, using no other theorems than the introduction and elimination
-rules for `∀`, `∨`, and `↔`. -/
+2.1（3分）。提供一个结构化证明，证明在 `∀` 量词下 `∨` 的交换律，仅使用 `∀`、`∨` 和 `↔` 的引入和消去规则，不使用其他定理。 -/
 
 theorem Or_comm_under_All {α : Type} (p q : α → Prop) :
     (∀x, p x ∨ q x) ↔ (∀x, q x ∨ p x) :=
   sorry
 
-/- 2.2 (3 points). We have proved or stated three of the six possible
-implications between `ExcludedMiddle`, `Peirce`, and `DoubleNegation` in the
-exercise of lecture 3. Prove the three missing implications using structured
-proofs, exploiting the three theorems we already have. -/
+/- 2.2（3分）。我们在第3讲的练习中已经证明或陈述了 `ExcludedMiddle`、`Peirce` 和 `DoubleNegation` 之间六种可能蕴含关系中的三种。利用我们已经有的三个定理，用结构化证明证明剩下的三个缺失的蕴含关系。 -/
 
 namespace BackwardProofs
 
@@ -84,3 +77,4 @@ theorem dn_of_em :
 end BackwardProofs
 
 end LoVe
+

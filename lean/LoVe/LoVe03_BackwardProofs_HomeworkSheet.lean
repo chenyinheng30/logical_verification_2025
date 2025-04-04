@@ -1,12 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl, 以及 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVe03_BackwardProofs_ExerciseSheet
 
 
-/- # LoVe Homework 3 (10 points): Backward Proofs
+/- # LoVe 课后作业3（10分）：逆向证明
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+请将占位符（例如 `:= sorry`）替换为你的解答。 -/
 
 
 set_option autoImplicit false
@@ -17,13 +17,11 @@ namespace LoVe
 namespace BackwardProofs
 
 
-/- ## Question 1 (5 points): Connectives and Quantifiers
+/- ## 问题1（5分）：逻辑连接词与量词
 
-1.1 (4 points). Complete the following proofs using basic tactics such as
-`intro`, `apply`, and `exact`.
+1.1（4分）。使用基本策略如 `intro`、`apply` 和 `exact` 完成以下证明。
 
-Hint: Some strategies for carrying out such proofs are described at the end of
-Section 3.3 in the Hitchhiker's Guide. -/
+提示：在《指南》第3.3节末尾描述了一些进行此类证明的策略。 -/
 
 theorem B (a b c : Prop) :
     (a → b) → (c → a) → c → b :=
@@ -41,47 +39,40 @@ theorem even_more_nonsense (a b c : Prop) :
     (a → b) → (a → c) → a → b → c :=
   sorry
 
-/- 1.2 (1 point). Prove the following theorem using basic tactics. -/
+/- 1.2（1分）。使用基本策略证明以下定理。 -/
 
 theorem weak_peirce (a b : Prop) :
     ((((a → b) → a) → a) → b) → b :=
   sorry
 
 
-/- ## Question 2 (5 points): Logical Connectives
+/- ## 问题2（5分）：逻辑连接词
 
-2.1 (1 point). Prove the following property about double negation using basic
-tactics.
+2.1（1分）。使用基本策略证明以下关于双重否定的性质。
 
-Hints:
+提示：
 
-* Keep in mind that `¬ a` is defined as `a → False`. You can start by invoking
-  `simp [Not]` if this helps you.
+* 请记住 `¬ a` 定义为 `a → False`。如果需要，可以通过调用 `simp [Not]` 开始。
 
-* You will need to apply the elimination rule for `False` at a key point in the
-  proof. -/
+* 在证明的关键点，你需要应用 `False` 的消去规则。 -/
 
 theorem herman (a : Prop) :
     ¬¬ (¬¬ a → a) :=
   sorry
 
-/- 2.2 (2 points). Prove the missing link in our chain of classical axiom
-implications.
+/- 2.2（2分）。证明我们经典公理链中缺失的一环。
 
-Hints:
+提示：
 
-* One way to find the definitions of `DoubleNegation` and `ExcludedMiddle`
-  quickly is to
+* 快速查找 `DoubleNegation` 和 `ExcludedMiddle` 定义的方法：
 
-  1. hold the Control (on Linux and Windows) or Command (on macOS) key pressed;
-  2. move the cursor to the identifier `DoubleNegation` or `ExcludedMiddle`;
-  3. click the identifier.
+  1. 按住 Control（Linux 和 Windows）或 Command（macOS）键；
+  2. 将光标移动到标识符 `DoubleNegation` 或 `ExcludedMiddle` 上；
+  3. 点击该标识符。
 
-* You can use `rw DoubleNegation` to unfold the definition of
-  `DoubleNegation`, and similarly for the other definitions.
+* 你可以使用 `rw DoubleNegation` 来展开 `DoubleNegation` 的定义，其他定义同理。
 
-* You will need to apply the double negation hypothesis for `a ∨ ¬ a`. You will
-  also need the left and right introduction rules for `∨` at some point. -/
+* 你需要对 `a ∨ ¬ a` 应用双重否定假设。在某些时候，你还需要用到 `∨` 的左右引入规则。 -/
 
 #check DoubleNegation
 #check ExcludedMiddle
@@ -90,16 +81,15 @@ theorem EM_of_DN :
     DoubleNegation → ExcludedMiddle :=
   sorry
 
-/- 2.3 (2 points). We have proved three of the six possible implications
-between `ExcludedMiddle`, `Peirce`, and `DoubleNegation`. State and prove the
-three missing implications, exploiting the three theorems we already have. -/
+/- 2.3（2分）。我们已经证明了 `ExcludedMiddle`、`Peirce` 和 `DoubleNegation` 之间六种可能蕴含关系中的三种。陈述并证明缺失的三种蕴含关系，利用我们已经有的三个定理。 -/
 
 #check Peirce_of_EM
 #check DN_of_Peirce
 #check EM_of_DN
 
--- enter your solution here
+-- 在此处输入你的解答
 
 end BackwardProofs
 
 end LoVe
+

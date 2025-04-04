@@ -1,14 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt`。 -/
 
 import LoVe.LoVelib
 
 
-/- # LoVe Demo 5: Functional Programming
+/- # LoVe 演示5：函数式编程
 
-We take a closer look at the basics of typed functional programming: inductive
-types, proofs by induction, recursive functions, pattern matching, structures
-(records), and type classes. -/
+我们将更深入地探讨类型化函数式编程的基础：归纳类型、归纳证明、递归函数、模式匹配、结构体（记录）和类型类。 -/
 
 
 set_option autoImplicit false
@@ -17,53 +15,46 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Inductive Types
+/- ## 归纳类型
 
-Recall the definition of type `Nat`: -/
+回顾 `Nat` 类型的定义： -/
 
 #print Nat
 
-/- Mottos:
+/- 核心原则：
 
-* **No junk**: The type contains no values beyond those expressible using the
-  constructors.
+* **无冗余**：该类型不包含无法通过构造函数组合表达的值。
 
-* **No confusion**: Values built in a different ways are different.
+* **无混淆**：通过不同方式构建的值是不同的。
 
-For `Nat`:
+对于 `Nat`：
 
-* "No junk" means that there are no special values, say, `–1` or `ε`, that
-  cannot be expressed using a finite combination of `Nat.zero` and `Nat.succ`.
+* "无冗余"意味着不存在特殊值（例如 `–1` 或 `ε`）无法通过有限次组合 `Nat.zero` 和 `Nat.succ` 来表达。
 
-* "No confusion" is what ensures that `Nat.zero` ≠ `Nat.succ n`.
+* "无混淆"确保了 `Nat.zero` ≠ `Nat.succ n`。
 
-In addition, values of inductive types are always finite.
-`Nat.succ (Nat.succ …)` is not a value.
+此外，归纳类型的值总是有限的。`Nat.succ (Nat.succ …)` 不是一个值。
 
 
-## Structural Induction
+## 结构归纳
 
-__Structural induction__ is a generalization of mathematical induction to
-inductive types. To prove a property `P[n]` for all natural numbers `n`, it
-suffices to prove the base case
+__结构归纳__ 是数学归纳法在归纳类型上的推广。要证明所有自然数 `n` 满足性质 `P[n]`，只需证明基本情况
 
     `P[0]`
 
-and the induction step
+和归纳步骤
 
     `∀k, P[k] → P[k + 1]`
 
-For lists, the base case is
+对于列表，基本情况是
 
     `P[[]]`
 
-and the induction step is
+归纳步骤是
 
     `∀y ys, P[ys] → P[y :: ys]`
 
-In general, there is one subgoal per constructor, and induction hypotheses are
-available for all constructor arguments of the type we are doing the induction
-on. -/
+一般来说，每个构造函数对应一个子目标，并且对于进行归纳的类型的所有构造函数参数，都可以使用归纳假设。 -/
 
 theorem Nat.succ_neq_self (n : ℕ) :
     Nat.succ n ≠ n :=
@@ -73,12 +64,9 @@ theorem Nat.succ_neq_self (n : ℕ) :
     | succ n' ih => simp [ih]
 
 
-/- ## Structural Recursion
+/- ## 结构递归
 
-__Structural recursion__ is a form of recursion that allows us to peel off
-one constructor from the value on which we recurse. Such functions are
-guaranteed to call themselves only finitely many times before the recursion
-stops. This is a prerequisite for establishing that the function terminates. -/
+__结构递归__ 是一种递归形式，允许我们从递归值上剥离一个构造函数。这样的函数保证在递归停止前只会有限次调用自身。这是确保函数终止的前提条件。 -/
 
 def fact : ℕ → ℕ
   | 0     => 1
@@ -89,12 +77,10 @@ def factThreeCases : ℕ → ℕ
   | 1     => 1
   | n + 1 => (n + 1) * factThreeCases n
 
-/- For structurally recursive functions, Lean can automatically prove
-termination. For more general recursive schemes, the termination check may fail.
-Sometimes it does so for a good reason, as in the following example: -/
+/- 对于结构递归函数，Lean 可以自动证明终止性。对于更一般的递归方案，终止检查可能会失败。有时这是有充分理由的，如下例所示： -/
 
 /-
--- fails
+-- 失败
 def illegal : ℕ → ℕ
   | n => illegal n + 1
 -/
@@ -117,14 +103,14 @@ theorem proof_of_False :
     by simp at h0eq1
 
 
-/- ## Pattern Matching Expressions
+/- ## 模式匹配表达式
 
     `match` _term₁_, …, _termM_ `with`
     | _pattern₁₁_, …, _pattern₁M_ => _result₁_
         ⋮
     | _patternN₁_, …, _patternNM_ => _resultN_
 
-`match` allows nonrecursive pattern matching within terms. -/
+`match` 允许在项内进行非递归模式匹配。 -/
 
 def bcount {α : Type} (p : α → Bool) : List α → ℕ
   | []      => 0
@@ -137,10 +123,9 @@ def min (a b : ℕ) : ℕ :=
   if a ≤ b then a else b
 
 
-/- ## Structures
+/- ## 结构体
 
-Lean provides a convenient syntax for defining records, or structures. These are
-essentially nonrecursive, single-constructor inductive types. -/
+Lean 提供了一种便捷的语法来定义记录或结构体。这些本质上是非递归的、单构造函数的归纳类型。 -/
 
 structure RGB where
   red   : ℕ
@@ -154,8 +139,7 @@ structure RGB where
 
 namespace RGB_as_inductive
 
-/- The RGB structure definition is equivalent to the following set of
-definitions: -/
+/- RGB 结构体定义等价于以下一组定义： -/
 
 inductive RGB : Type where
   | mk : ℕ → ℕ → ℕ → RGB
@@ -171,12 +155,12 @@ def RGB.blue : RGB → ℕ
 
 end RGB_as_inductive
 
-/- A new structure can be created by extending an existing structure: -/
+/- 可以通过扩展现有结构体来创建新结构体： -/
 
 structure RGBA extends RGB where
   alpha : ℕ
 
-/- An `RGBA` is a `RGB` with the extra field `alpha : ℕ`. -/
+/- 一个 `RGBA` 是一个带有额外字段 `alpha : ℕ` 的 `RGB`。 -/
 
 #print RGBA
 
@@ -201,7 +185,7 @@ def shuffle (c : RGB) : RGB :=
     green := RGB.blue c
     blue  := RGB.red c }
 
-/- Alternative definition using pattern matching: -/
+/- 使用模式匹配的替代定义： -/
 
 def shufflePattern : RGB → RGB
   | RGB.mk r g b => RGB.mk g b r
@@ -211,12 +195,9 @@ theorem shuffle_shuffle_shuffle (c : RGB) :
   by rfl
 
 
-/- ## Type Classes
+/- ## 类型类
 
-A __type class__ is a structure type combining abstract constants and their
-properties. A type can be declared an instance of a type class by providing
-concrete definitions for the constants and proving that the properties hold.
-Based on the type, Lean retrieves the relevant instance. -/
+__类型类__ 是一种结合了抽象常量及其属性的结构类型。通过为常量提供具体定义并证明属性成立，可以将类型声明为类型类的实例。Lean 根据类型检索相关实例。 -/
 
 #print Inhabited
 
@@ -250,23 +231,19 @@ instance Prod.Inhabited {α β : Type}
   Inhabited (α × β) :=
   { default := (Inhabited.default, Inhabited.default) }
 
-/- We encountered these type classes in lecture 3: -/
+/- 我们在第3讲中遇到过这些类型类： -/
 
 #print Std.Associative
 #print Std.Commutative
 
 
-/- ## Lists
+/- ## 列表
 
-`List` is an inductive polymorphic type constructed from `List.nil` and
-`List.cons`: -/
+`List` 是一个由 `List.nil` 和 `List.cons` 构造的多态归纳类型： -/
 
 #print List
 
-/- `cases` performs a case distinction on the specified term. This gives rise
-to as many subgoals as there are constructors in the definition of the term's
-type. The tactic behaves the same as `induction` except that it does not
-produce induction hypotheses. Here is a contrived example: -/
+/- `cases` 对指定项进行情况分析。这会根据项类型的构造函数数量产生相应数量的子目标。该策略的行为与 `induction` 相同，只是不产生归纳假设。以下是一个人为示例： -/
 
 theorem head_head_cases {α : Type} [Inhabited α]
       (xs : List α) :
@@ -276,7 +253,7 @@ theorem head_head_cases {α : Type} [Inhabited α]
     | nil        => rfl
     | cons x xs' => rfl
 
-/- `match` is the structured equivalent: -/
+/- `match` 是结构化等价物： -/
 
 theorem head_head_match {α : Type} [Inhabited α]
       (xs : List α) :
@@ -285,9 +262,7 @@ theorem head_head_match {α : Type} [Inhabited α]
   | List.nil        => by rfl
   | List.cons x xs' => by rfl
 
-/- `cases` can also be used on a hypothesis of the form `l = r`. It matches `r`
-against `l` and replaces all occurrences of the variables occurring in `r` with
-the corresponding terms in `l` everywhere in the goal. -/
+/- `cases` 也可以用于形式为 `l = r` 的假设。它将 `r` 与 `l` 匹配，并在目标中用 `r` 中出现的变量替换为 `l` 中对应的项。 -/
 
 theorem injection_example {α : Type} (x y : α) (xs ys : List α)
       (h : x :: xs = y :: ys) :
@@ -296,7 +271,7 @@ theorem injection_example {α : Type} (x y : α) (xs ys : List α)
     cases h
     simp
 
-/- If `r` fails to match `l`, no subgoals emerge; the proof is complete. -/
+/- 如果 `r` 无法匹配 `l`，则不会产生子目标；证明完成。 -/
 
 theorem distinctness_example {α : Type} (y : α) (ys : List α)
       (h : [] = y :: ys) :
@@ -364,9 +339,7 @@ def length {α : Type} : List α → ℕ
 
 #check List.length
 
-/- `cases` can also be used to perform a case distinction on a proposition, in
-conjunction with `Classical.em`. Two cases emerge: one in which the proposition
-is true and one in which it is false. -/
+/- `cases` 也可以与 `Classical.em` 结合使用，对命题进行情况分析。会产生两种情况：一种是命题为真，另一种是命题为假。 -/
 
 #check Classical.em
 
@@ -412,26 +385,19 @@ theorem map_zip {α α' β β' : Type} (f : α → α')
   | _ :: _,  []      => by rfl
 
 
-/- ## Binary Trees
+/- ## 二叉树
 
-Inductive types with constructors taking several recursive arguments define
-tree-like objects. __Binary trees__ have nodes with at most two children. -/
+具有多个递归参数的构造函数的归纳类型定义了树状对象。__二叉树__ 的节点最多有两个子节点。 -/
 
 #print Tree
 
-/- The type `AExp` of arithmetic expressions was also an example of a tree data
-structure.
+/- 算术表达式类型 `AExp` 也是树数据结构的一个例子。
 
-The nodes of a tree, whether inner nodes or leaf nodes, often carry labels or
-other annotations.
+树的节点，无论是内部节点还是叶节点，通常带有标签或其他注释。
 
-Inductive trees contain no infinite branches, not even cycles. This is less
-expressive than pointer- or reference-based data structures (in imperative
-languages) but easier to reason about.
+归纳树不包含无限分支，甚至不包含循环。这比命令式语言中基于指针或引用的数据结构表达能力较弱，但更易于推理。
 
-Recursive definitions (and proofs by induction) work roughly as for lists, but
-we may need to recurse (or invoke the induction hypothesis) on several child
-nodes. -/
+递归定义（和归纳证明）的工作方式大致与列表相同，但我们可能需要在多个子节点上递归（或调用归纳假设）。 -/
 
 def mirror {α : Type} : Tree α → Tree α
   | Tree.nil        => Tree.nil
@@ -466,7 +432,7 @@ theorem mirror_Eq_nil_Iff {α : Type} :
   | Tree.node _ _ _ => by simp [mirror]
 
 
-/- ## Dependent Inductive Types (**optional**) -/
+/- ## 依赖归纳类型（**可选**） -/
 
 inductive Vec (α : Type) : ℕ → Type where
   | nil                                : Vec α 0
@@ -491,3 +457,4 @@ theorem length_listOfVec {α : Type} :
     by simp [listOfVec, length_listOfVec _ v]
 
 end LoVe
+

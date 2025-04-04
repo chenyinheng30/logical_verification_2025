@@ -1,15 +1,12 @@
-/- Copyright © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
-Xavier Généreux, Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+/- 版权所有 © 2018–2025 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
+Xavier Généreux, Johannes Hölzl 和 Jannis Limperg。参见 `LICENSE.txt` 文件。 -/
 
 import LoVe.LoVe02_ProgramsAndTheorems_Demo
 
 
-/- # LoVe Demo 4: Forward Proofs
+/- # LoVe 演示4：正向证明
 
-When developing a proof, often it makes sense to work __forward__: to start with
-what we already know and proceed step by step towards our goal. Lean's
-structured proofs and raw proof terms are two styles that support forward
-reasoning. -/
+在构建证明时，通常采用__正向__推理更为合理：从已知事实出发，逐步推导至目标。Lean的结构化证明和原始证明项是支持正向推理的两种风格。 -/
 
 set_option autoImplicit false
 set_option tactic.hygienic false
@@ -19,13 +16,11 @@ namespace LoVe
 namespace ForwardProofs
 
 
-/- ## Structured Constructs
+/- ## 结构化构造
 
-Structured proofs are syntactic sugar sprinkled on top of Lean's
-__proof terms__.
+结构化证明是建立在Lean的__证明项__之上的语法糖。
 
-The simplest kind of structured proof is the name of a theorem, possibly with
-arguments. -/
+最简单的结构化证明形式是定理名称（可能带有参数）。 -/
 
 theorem add_comm (m n : ℕ) :
     add m n = add n m :=
@@ -35,18 +30,15 @@ theorem add_comm_zero_left (n : ℕ) :
     add 0 n = add n 0 :=
   add_comm 0 n
 
-/- The equivalent backward proof: -/
+/- 等效的反向证明： -/
 
 theorem add_comm_zero_left_by_exact (n : ℕ) :
     add 0 n = add n 0 :=
   by exact add_comm 0 n
 
-/- `fix` and `assume` move `∀`-quantified variables and assumptions from the
-goal into the local context. They can be seen as structured versions of the
-`intro` tactic.
+/- `fix` 和 `assume` 将 `∀` 量化的变量和假设从目标移至局部上下文中。它们可视为 `intro` 策略的结构化版本。
 
-`show` repeats the goal to prove. It is useful as documentation or to rephrase
-the goal (up to computation). -/
+`show` 用于重申待证目标。它可作为文档说明，或用于重新表述目标（通过计算等价）。 -/
 
 theorem fst_of_two_props :
     ∀a b : Prop, a → b → a :=
@@ -65,8 +57,7 @@ theorem fst_of_two_props_no_show (a b : Prop) (ha : a) (hb : b) :
     a :=
   ha
 
-/- `have` proves an intermediate theorem, which can refer to the local
-context. -/
+/- `have` 用于证明中间定理，可引用局部上下文。 -/
 
 theorem prop_comp (a b c : Prop) (hab : a → b) (hbc : b → c) :
     a → c :=
@@ -86,7 +77,7 @@ theorem prop_comp_inline (a b c : Prop) (hab : a → b)
     hbc (hab ha)
 
 
-/- ## Forward Reasoning about Connectives and Quantifiers -/
+/- ## 关于连接词和量词的正向推理 -/
 
 theorem And_swap (a b : Prop) :
     a ∧ b → b ∧ a :=
@@ -137,8 +128,7 @@ theorem not_not_intro (a : Prop) :
   show False from
     hna ha
 
-/- Just as you can apply forward reasoning inside a backward proof, you can
-apply backward reasoning inside a forward proof (indicated with `by`): -/
+/- 正如可以在反向证明中应用正向推理，也可以在正向证明中应用反向推理（通过`by`指示）： -/
 
 theorem Forall.one_point {α : Type} (t : α) (P : α → Prop) :
     (∀x, x = t → P x) ↔ P t :=
@@ -187,22 +177,20 @@ theorem Exists.one_point {α : Type} (t : α) (P : α → Prop) :
             And.intro tt hp))
 
 
-/- ## Calculational Proofs
+/- ## 计算式证明
 
-In informal mathematics, we often use transitive chains of equalities,
-inequalities, or equivalences (e.g., `a ≥ b ≥ c`). In Lean, such calculational
-proofs are supported by `calc`.
+在非正式数学中，我们常使用等式、不等式或等价关系的传递链（如`a ≥ b ≥ c`）。在Lean中，这类计算式证明由`calc`支持。
 
-Syntax:
+语法：
 
     calc
-      _term₀_ _op₁_ _term₁_ :=
-        _proof₁_
-      _ _op₂_ _term₂_ :=
-        _proof₂_
+      _项₀_ _运算符₁_ _项₁_ :=
+        _证明₁_
+      _ _运算符₂_ _项₂_ :=
+        _证明₂_
      ⋮
-      _ _opN_ _termN_ :=
-        _proofN_ -/
+      _ _运算符N_ _项N_ :=
+        _证明N_ -/
 
 theorem two_mul_example (m n : ℕ) :
     2 * m + n = m + n + m :=
@@ -212,8 +200,7 @@ theorem two_mul_example (m n : ℕ) :
     _ = m + n + m :=
       by ac_rfl
 
-/- `calc` saves some repetition, some `have` labels, and some transitive
-reasoning: -/
+/- `calc`能减少重复、省略部分`have`标签及传递性推理： -/
 
 theorem two_mul_example_have (m n : ℕ) :
     2 * m + n = m + n + m :=
@@ -225,11 +212,9 @@ theorem two_mul_example_have (m n : ℕ) :
     Eq.trans hmul hcomm
 
 
-/- ## Forward Reasoning with Tactics
+/- ## 使用策略的正向推理
 
-The `have`, `let`, and `calc` structured proof commands are also available as a
-tactic. Even in tactic mode, it can be useful to state intermediate results and
-definitions in a forward fashion. -/
+结构化证明命令`have`、`let`和`calc`也可作为策略使用。即使在策略模式下，以正向方式陈述中间结果和定义也很有用。 -/
 
 theorem prop_comp_tactical (a b c : Prop) (hab : a → b)
     (hbc : b → c) :
@@ -244,44 +229,36 @@ theorem prop_comp_tactical (a b c : Prop) (hab : a → b)
     exact hc
 
 
-/- ## Dependent Types
+/- ## 依赖类型
 
-Dependent types are the defining feature of the dependent type theory family of
-logics.
+依赖类型是依赖类型理论家族逻辑的标志性特征。
 
-Consider a function `pick` that take a number `n : ℕ` and that returns a number
-between 0 and `n`. Conceptually, `pick` has a dependent type, namely
+考虑函数`pick`，它接受数字`n : ℕ`并返回一个介于0和`n`之间的数。概念上，`pick`具有依赖类型：
 
     `(n : ℕ) → {i : ℕ // i ≤ n}`
 
-We can think of this type as a `ℕ`-indexed family, where each member's type may
-depend on the index:
+我们可以将其视为`ℕ`索引的族，其中每个成员的类型可能依赖于索引：
 
     `pick n : {i : ℕ // i ≤ n}`
 
-But a type may also depend on another type, e.g., `List` (or `fun α ↦ List α`)
-and `fun α ↦ α → α`.
+但类型也可能依赖于另一个类型，例如`List`（或`fun α ↦ List α`）和`fun α ↦ α → α`。
 
-A term may depend on a type, e.g., `fun α ↦ fun (x : α) ↦ x` (a polymorphic
-identity function).
+项可以依赖于类型，例如`fun α ↦ fun (x : α) ↦ x`（多态恒等函数）。
 
-Of course, a term may also depend on a term.
+当然，项也可以依赖于项。
 
-Unless otherwise specified, a __dependent type__ means a type depending on a
-term. This is what we mean when we say that simple type theory does not support
-dependent types.
+除非另有说明，__依赖类型__特指依赖于项的类型。这就是我们所说的简单类型理论不支持依赖类型的含义。
 
-In summary, there are four cases for `fun x ↦ t` in the calculus of inductive
-constructions (cf. Barendregt's `λ`-cube):
+总结来说，在归纳构造演算中有四种`fun x ↦ t`的情况（参见Barendregt的`λ`立方体）：
 
-Body (`t`) |              | Argument (`x`) | Description
----------- | ------------ | -------------- | ----------------------------------
-A term     | depending on | a term         | Simply typed anonymous function
-A type     | depending on | a term         | Dependent type (strictly speaking)
-A term     | depending on | a type         | Polymorphic term
-A type     | depending on | a type         | Type constructor
+主体(`t`) |              | 参数(`x`) | 描述
+---------- | ------------ | ---------- | ----------------------------------
+项         | 依赖于       | 项         | 简单类型的匿名函数
+类型       | 依赖于       | 项         | 依赖类型（严格意义）
+项         | 依赖于       | 类型       | 多态项
+类型       | 依赖于       | 类型       | 类型构造器
 
-Revised typing rules:
+修订后的类型规则：
 
     C ⊢ t : (x : σ) → τ[x]    C ⊢ u : σ
     ———————————————————————————————————— App'
@@ -291,69 +268,60 @@ Revised typing rules:
     ———————————————————————————————————— Fun'
     C ⊢ (fun x : σ ↦ t) : (x : σ) → τ[x]
 
-These two rules degenerate to `App` and `Fun` if `x` does not occur in `τ[x]`
+如果`x`不在`τ[x]`中出现，这两条规则退化为`App`和`Fun`
 
-Example of `App'`:
+`App'`示例：
 
     ⊢ pick : (n : ℕ) → {i : ℕ // i ≤ n}    ⊢ 5 : ℕ
     ——————————————————————————————————————————————— App'
     ⊢ pick 5 : {i : ℕ // i ≤ 5}
 
-Example of `Fun'`:
+`Fun'`示例：
 
     α : Type, x : α ⊢ x : α
-    —————————————————————————————————— Fun or Fun'
+    —————————————————————————————————— Fun 或 Fun'
     α : Type ⊢ (fun x : α ↦ x) : α → α
     ————————————————————————————————————————————————————— Fun'
     ⊢ (fun α : Type ↦ fun x : α ↦ x) : (α : Type) → α → α
 
-Remarkably, universal quantification is simply an alias for a dependent type:
+值得注意的是，全称量化只是依赖类型的别名：
 
     `∀x : σ, τ` := `(x : σ) → τ`
 
-This will become clearer below.
+下文将更清晰地展示这一点。
 
 
-## The PAT Principle
+## PAT原则
 
-`→` is used both as the implication symbol and as the type constructor of
-functions. The two pairs of concepts not only look the same, they are the same,
-by the PAT principle:
+`→`既用作蕴涵符号，也用作函数类型构造器。这两组概念不仅外观相同，根据PAT原则它们本质相同：
 
-* PAT = propositions as types;
-* PAT = proofs as terms.
+* PAT = 命题即类型；
+* PAT = 证明即项。
 
-Types:
+类型：
 
-* `σ → τ` is the type of total functions from `σ` to `τ`.
-* `(x : σ) → τ[x]` is the dependent function type from `x : σ` to `τ[x]`.
+* `σ → τ`是从`σ`到`τ`的全函数类型。
+* `(x : σ) → τ[x]`是从`x : σ`到`τ[x]`的依赖函数类型。
 
-Propositions:
+命题：
 
-* `P → Q` can be read as "`P` implies `Q`", or as the type of functions mapping
-  proofs of `P` to proofs of `Q`.
-* `∀x : σ, Q[x]` can be read as "for all `x`, `Q[x]`", or as the type of
-  functions of type `(x : σ) → Q[x]`, mapping values `x` of type `σ` to proofs
-  of `Q[x]`.
+* `P → Q`可读作"`P`蕴涵`Q`"，或作为将`P`的证明映射到`Q`证明的函数类型。
+* `∀x : σ, Q[x]`可读作"对所有`x`，`Q[x]`"，或作为类型为`(x : σ) → Q[x]`的函数类型，将类型为`σ`的值`x`映射到`Q[x]`的证明。
 
-Terms:
+项：
 
-* A constant is a term.
-* A variable is a term.
-* `t u` is the application of function `t` to value `u`.
-* `fun x ↦ t[x]` is a function mapping `x` to `t[x]`.
+* 常量是项。
+* 变量是项。
+* `t u`是函数`t`应用于值`u`。
+* `fun x ↦ t[x]`是将`x`映射到`t[x]`的函数。
 
-Proofs:
+证明：
 
-* A theorem or hypothesis name is a proof.
-* `H t`, which instantiates the leading parameter or quantifier of proof `H`'
-  statement with term `t`, is a proof.
-* `H G`, which discharges the leading assumption of `H`'s statement with
-  proof `G`, is a proof.
-* `fun h : P ↦ H[h]` is a proof of `P → Q`, assuming `H[h]` is a proof of `Q`
-  for `h : P`.
-* `fun x : σ ↦ H[x]` is a proof of `∀x : σ, Q[x]`, assuming `H[x]` is a proof
-  of `Q[x]` for `x : σ`. -/
+* 定理或假设名称是证明。
+* `H t`将证明`H`语句中的前导参数或量词实例化为项`t`，是证明。
+* `H G`用证明`G`解除`H`语句中的前导假设，是证明。
+* `fun h : P ↦ H[h]`是`P → Q`的证明，假设`H[h]`是对`h : P`的`Q`证明。
+* `fun x : σ ↦ H[x]`是`∀x : σ, Q[x]`的证明，假设`H[x]`是对`x : σ`的`Q[x]`证明。 -/
 
 theorem And_swap_raw (a b : Prop) :
     a ∧ b → b ∧ a :=
@@ -369,7 +337,7 @@ theorem And_swap_tactical (a b : Prop) :
     apply And.left
     exact hab
 
-/- Tactical proofs are reduced to proof terms. -/
+/- 策略证明会被简化为证明项。 -/
 
 #print And_swap
 #print And_swap_raw
@@ -378,16 +346,12 @@ theorem And_swap_tactical (a b : Prop) :
 end ForwardProofs
 
 
-/- ## Induction by Pattern Matching and Recursion
+/- ## 通过模式匹配和递归进行归纳
 
-By the PAT principle, a proof by induction is the same as a recursively
-specified proof term. Thus, as alternative to the `induction` tactic, induction
-can also be done by pattern matching and recursion:
+根据PAT原则，归纳证明等同于递归指定的证明项。因此，作为`induction`策略的替代方案，归纳也可以通过模式匹配和递归完成：
 
-* the induction hypothesis is then available under the name of the theorem we
-  are proving;
-
-* well-foundedness of the argument is often proved automatically. -/
+* 归纳假设可通过所证定理的名称获得；
+* 参数的良基性通常自动证明。 -/
 
 #check reverse
 
@@ -411,3 +375,4 @@ theorem reverse_reverse {α : Type} :
     by simp [reverse, reverse_append, reverse_reverse xs]
 
 end LoVe
+
