@@ -375,4 +375,3 @@ theorem reverse_reverse {α : Type} :
     by simp [reverse, reverse_append, reverse_reverse xs]
 
 end LoVe
-
