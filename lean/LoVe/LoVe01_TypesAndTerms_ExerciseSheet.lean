@@ -28,18 +28,18 @@ def K : α → β → α :=
   fun a b ↦ a
 
 def C : (α → β → γ) → β → α → γ :=
-  sorry
+  fun f b a ↦ f a b
 
 def projFst : α → α → α :=
-  sorry
+  fun a b ↦ b
 
 /- 提供一个与 `projFst` 不同的答案。 -/
 
 def projSnd : α → α → α :=
-  sorry
+  fun a b ↦ a
 
 def someNonsense : (α → β → γ) → α → (α → γ) → β → γ :=
-  sorry
+  fun f a g b ↦ g a
 
 
 /- ## 问题2：类型推导

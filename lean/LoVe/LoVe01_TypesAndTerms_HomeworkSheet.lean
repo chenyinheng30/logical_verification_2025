@@ -31,16 +31,16 @@ opaque δ : Type
 提示：系统化完成此操作的方法在《Hitchhiker's Guide》的 1.4 节中有描述。如其中所述，你可以在构造项时使用 `_` 作为占位符。将鼠标悬停在 `_` 上，你将看到当前的逻辑上下文。 -/
 
 def B : (α → β) → (γ → α) → γ → β :=
-  sorry
+  fun (f: α → β) (g: γ → α) (y: γ) ↦ f (g y)
 
 def S : (α → β → γ) → (α → β) → α → γ :=
-  sorry
+  fun (f: α → β → γ) (g: α → β) (a: α) ↦ f a (g a)
 
 def moreNonsense : ((α → β) → γ → δ) → γ → β → δ :=
-  sorry
+  fun (f: (α → β) → γ → δ) (y: γ) (b: β) ↦ f (fun (a: α) ↦ b) y
 
 def evenMoreNonsense : (α → β) → (α → γ) → α → β → γ :=
-  sorry
+  fun (f: α → β) (g: α → γ) (a: α) (β: β) ↦ g a
 
 /- 1.2（2 分）。完成以下定义。
 
@@ -49,7 +49,7 @@ def evenMoreNonsense : (α → β) → (α → γ) → α → β → γ :=
 注意：Peirce 的发音类似于英语单词 "purse"。 -/
 
 def weakPeirce : ((((α → β) → α) → α) → β) → β :=
-  sorry
+  fun f => f (fun g ↦ g (fun a ↦ f (fun h ↦ a)))
 
 /- ## 问题 2（4 分）：类型推导
 
