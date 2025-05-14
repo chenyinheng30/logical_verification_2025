@@ -21,8 +21,9 @@ namespace LoVe
     `pred 7 = 6`
     `pred 0 = 0` -/
 
-def pred : ℕ → ℕ :=
-  sorry
+def pred : ℕ → ℕ
+  | Nat.zero => Nat.zero
+  | Nat.succ x => x
 
 /- 1.2. 检查你的函数是否符合预期。 -/
 
@@ -76,7 +77,7 @@ def simplify : AExp → AExp
 给定环境`env`和表达式`e`，陈述（无需证明）简化后的`e`值与简化前的`e`值相同的性质。 -/
 
 theorem simplify_correct (env : String → ℤ) (e : AExp) :
-  True :=   -- 将`True`替换为你的定理陈述
+  eval env (simplify e) = eval env e :=   -- 将`True`替换为你的定理陈述
   sorry   -- 保留`sorry`
 
 
@@ -84,8 +85,9 @@ theorem simplify_correct (env : String → ℤ) (e : AExp) :
 
 3.1（选做）. 定义一个通用的`map`函数，该函数将给定函数应用于列表中的每个元素。 -/
 
-def map {α : Type} {β : Type} (f : α → β) : List α → List β :=
-  sorry
+def map {α : Type} {β : Type} (f : α → β) : List α → List β
+  | List.nil => List.nil
+  | List.cons x xs => List.cons (f x) (map f xs)
 
 #eval map (fun n ↦ n + 10) [1, 2, 3]   -- 预期: [11, 12, 13]
 
@@ -98,5 +100,10 @@ def map {α : Type} {β : Type} (f : α → β) : List α → List β :=
 
 -- 在此处输入你的定理陈述
 
-end LoVe
+theorem map_identity {α : Type} (xs: List α) :
+  map (fun x ↦ x) xs = xs := sorry
 
+theorem map_compose {α β γ: Type} (f: α → β) (g: β → γ) (xs: List α):
+  map (fun x ↦ g (f x)) xs = map g (map f xs) := sorry
+
+end LoVe

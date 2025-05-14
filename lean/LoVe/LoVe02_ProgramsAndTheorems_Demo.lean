@@ -85,6 +85,19 @@ def fib : ℕ → ℕ
   | 1     => 1
   | n + 2 => fib (n + 1) + fib n
 
+/- 定义了尾递归的 fib 函数 -/
+
+def fib_tail : ℕ → ℕ → ℕ → ℕ
+  | Nat.zero, x, y => x + y
+  | Nat.succ n, x, y => fib_tail n y (x+y)
+
+def fib_on : ℕ → ℕ
+  | 0 => 0
+  | 1 => 1
+  | n + 2 => fib_tail n 0 1
+
+#eval fib_on 100
+
 /- 当有多个参数时，用 `,` 分隔模式： -/
 
 def add : ℕ → ℕ → ℕ
@@ -190,28 +203,22 @@ namespace SorryTheorems
 
 theorem add_comm (m n : ℕ) :
     add m n = add n m :=
-  sorry
-
+  sorry /- TODO -/
 theorem add_assoc (l m n : ℕ) :
     add (add l m) n = add l (add m n) :=
-  sorry
-
+  sorry /- TODO -/
 theorem mul_comm (m n : ℕ) :
     mul m n = mul n m :=
-  sorry
-
+  sorry /- TODO -/
 theorem mul_assoc (l m n : ℕ) :
     mul (mul l m) n = mul l (mul m n) :=
-  sorry
-
+  sorry /- TODO -/
 theorem mul_add (l m n : ℕ) :
     mul l (add m n) = add (mul l m) (mul l n) :=
-  sorry
-
+  sorry /- TODO -/
 theorem reverse_reverse {α : Type} (xs : List α) :
     reverse (reverse xs) = xs :=
-  sorry
-
+  sorry /- TODO -/
 /- 公理类似于定理但没有证明。不透明声明类似于定义但没有主体。 -/
 
 opaque a : ℤ
@@ -223,4 +230,3 @@ axiom a_less_b :
 end SorryTheorems
 
 end LoVe
-
