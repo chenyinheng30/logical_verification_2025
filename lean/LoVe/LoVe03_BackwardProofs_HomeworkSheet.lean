@@ -25,25 +25,51 @@ namespace BackwardProofs
 
 theorem B (a b c : Prop) :
     (a → b) → (c → a) → c → b :=
-  sorry
+  by
+    intro hab hca hc
+    apply hab
+    apply hca
+    exact hc
 
 theorem S (a b c : Prop) :
     (a → b → c) → (a → b) → a → c :=
-  sorry
+  by
+    intro habc hab ha
+    apply habc
+    exact ha
+    apply hab
+    exact ha
 
 theorem more_nonsense (a b c d : Prop) :
     ((a → b) → c → d) → c → b → d :=
-  sorry
+  by
+    intro habcd hc hb
+    apply habcd
+    intro ha
+    exact hb
+    exact hc
 
 theorem even_more_nonsense (a b c : Prop) :
     (a → b) → (a → c) → a → b → c :=
-  sorry
+  by
+    intro hab hac ha hb
+    apply hac
+    exact ha
 
 /- 1.2（1分）。使用基本策略证明以下定理。 -/
 
 theorem weak_peirce (a b : Prop) :
     ((((a → b) → a) → a) → b) → b :=
-  sorry
+  by
+    intro habaab
+    apply habaab
+    intro haba
+    apply haba
+    intro ha
+    apply habaab
+    intro haba'
+    exact ha
+
 
 
 /- ## 问题2（5分）：逻辑连接词
@@ -58,7 +84,17 @@ theorem weak_peirce (a b : Prop) :
 
 theorem herman (a : Prop) :
     ¬¬ (¬¬ a → a) :=
-  sorry
+  by
+    intro h
+    apply h
+    intro hnn
+    apply False.elim
+    apply hnn
+    intro ha
+    apply h
+    intro hnn'
+    exact ha
+
 
 /- 2.2（2分）。证明我们经典公理链中缺失的一环。
 
@@ -79,7 +115,21 @@ theorem herman (a : Prop) :
 
 theorem EM_of_DN :
     DoubleNegation → ExcludedMiddle :=
-  sorry
+  by
+    rw [DoubleNegation, ExcludedMiddle]
+    intro hnd ha
+    apply hnd
+    intro hor
+    apply hor
+    apply Or.inl
+    apply hnd
+    intro hna
+    apply hor
+    apply Or.inr
+    apply hnd
+    intro hnna
+    exact False.elim (hnna hna)
+
 
 /- 2.3（2分）。我们已经证明了 `ExcludedMiddle`、`Peirce` 和 `DoubleNegation` 之间六种可能蕴含关系中的三种。陈述并证明缺失的三种蕴含关系，利用我们已经有的三个定理。 -/
 
@@ -92,4 +142,3 @@ theorem EM_of_DN :
 end BackwardProofs
 
 end LoVe
-

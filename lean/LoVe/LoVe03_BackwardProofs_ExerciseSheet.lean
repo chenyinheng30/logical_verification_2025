@@ -25,35 +25,51 @@ namespace BackwardProofs
 
 theorem I (a : Prop) :
     a → a :=
-  sorry
+  by
+    intro ha
+    exact ha
 
 theorem K (a b : Prop) :
     a → b → b :=
-  sorry
+  by
+    intro ha hb
+    exact hb
 
 theorem C (a b c : Prop) :
     (a → b → c) → b → a → c :=
-  sorry
+  by
+    intro habc hb ha
+    exact habc ha hb
 
 theorem proj_fst (a : Prop) :
     a → a → a :=
-  sorry
+  by
+    intro ha _
+    exact ha
 
 /- 请给出与`proj_fst`不同的解答： -/
 
 theorem proj_snd (a : Prop) :
     a → a → a :=
-  sorry
+  by
+    intro _ ha
+    exact ha
 
 theorem some_nonsense (a b c : Prop) :
     (a → b → c) → a → (a → c) → b → c :=
-  sorry
+  by
+    intro _ ha hac _
+    exact hac ha
 
 /- 1.2. 使用基本策略证明逆否命题规则。 -/
 
 theorem contrapositive (a b : Prop) :
     (a → b) → ¬ b → ¬ a :=
-  sorry
+  by
+    intro hab hnb ha
+    apply hnb
+    apply hab
+    exact ha
 
 /- 1.3. 使用基本策略证明`∀`对`∧`的分配律。
 
@@ -61,7 +77,18 @@ theorem contrapositive (a b : Prop) :
 
 theorem forall_and {α : Type} (p q : α → Prop) :
     (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) :=
-  sorry
+  by
+    apply Iff.intro
+    intro hl
+    apply And.intro
+    { intro x
+      exact And.left (hl x) }
+    { intro x
+      exact And.right (hl x) }
+    intro hr _
+    apply And.intro
+    { apply And.left hr }
+    { apply And.right hr }
 
 
 /- ## 问题2：自然数
@@ -72,29 +99,53 @@ theorem forall_and {α : Type} (p q : α → Prop) :
 
 theorem mul_zero (n : ℕ) :
     mul 0 n = 0 :=
-  sorry
+  by
+    induction n with
+    | zero  => rfl
+    | succ n' ih => simp [add, mul, ih]
 
 #check add_succ
 theorem mul_succ (m n : ℕ) :
     mul (Nat.succ m) n = add (mul m n) n :=
-  sorry
+  by
+    induction n with
+    | zero  => rfl
+    | succ n' ih =>
+      simp [add, add_comm,  mul, ih]
+      ac_rfl
 
 /- 2.2. 使用`induction`策略证明乘法的交换律和结合律。注意谨慎选择归纳变量。 -/
 
 theorem mul_comm (m n : ℕ) :
     mul m n = mul n m :=
-  sorry
+  by
+    induction n with
+    | zero  =>
+      simp [mul, mul_zero]
+    | succ n' ih =>
+      simp [mul, mul_succ, add_comm, ih]
 
 theorem mul_assoc (l m n : ℕ) :
     mul (mul l m) n = mul l (mul m n) :=
-  sorry
+  by
+    induction n with
+    | zero =>
+      simp [mul]
+    | succ n' ih =>
+      simp [mul, mul_add, ih]
 
 /- 2.3. 使用`rw`证明`mul_add`的对称变体。要在特定位置应用交换律，可以通过传递参数（例如`mul_comm _ l`）来实例化规则。 -/
 
 theorem add_mul (l m n : ℕ) :
     mul (add l m) n = add (mul n l) (mul n m) :=
-  sorry
-
+  by
+    induction n with
+    | zero =>
+      rw [mul, mul_zero, mul_zero, add_zero]
+    | succ n' ih =>
+      simp [mul, mul_succ, ih]
+      rw [add_comm _ l, add_assoc, add_assoc]
+      rw [add_comm m _, add_assoc]
 
 /- ## 问题3（选做）：直觉主义逻辑
 
@@ -117,13 +168,27 @@ def DoubleNegation : Prop :=
 
 theorem Peirce_of_EM :
     ExcludedMiddle → Peirce :=
-  sorry
+  by
+    rw [ExcludedMiddle, Peirce]
+    intro hem ha hb haba
+    apply Or.elim (hem ha)
+    { intro hha
+      exact hha }
+    { intro hna
+      apply haba
+      intro hha
+      exact False.elim (hna hha) }
 
 /- 3.2（选做）. 使用策略证明以下蕴含关系。 -/
 
 theorem DN_of_Peirce :
     Peirce → DoubleNegation :=
-  sorry
+  by
+    rw [Peirce, DoubleNegation]
+    intro hp ha hna
+    apply hp ha
+    intro hha
+    exact False.elim (hna hha)
 
 /- 剩下的蕴含关系留作课后作业： -/
 
@@ -131,11 +196,24 @@ namespace SorryTheorems
 
 theorem EM_of_DN :
     DoubleNegation → ExcludedMiddle :=
-  sorry
+  by
+    rw [DoubleNegation, ExcludedMiddle]
+    intro hnd ha
+    apply hnd
+    intro hor
+    apply hor
+    apply Or.inl
+    apply hnd
+    intro hna
+    apply hor
+    apply Or.inr
+    apply hnd
+    intro hnna
+    exact False.elim (hnna hna)
+
 
 end SorryTheorems
 
 end BackwardProofs
 
 end LoVe
-

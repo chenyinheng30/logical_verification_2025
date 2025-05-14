@@ -58,6 +58,13 @@ theorem prop_comp (a b c : Prop) (hab : a → b) (hbc : b → c) :
     apply hab
     apply ha
 
+theorem prop_comp_params (a b c : Prop) (hab : a → b) (hbc : b → c) (ha: a) :
+    c :=
+  by
+    apply hbc
+    apply hab
+    apply ha
+
 /- 上述证明的逐步解释：
 
 * 假设我们有一个`a`的证明。
@@ -332,4 +339,3 @@ theorem cleanup_example (a b c : Prop) (ha : a) (hb : b)
 end BackwardProofs
 
 end LoVe
-
