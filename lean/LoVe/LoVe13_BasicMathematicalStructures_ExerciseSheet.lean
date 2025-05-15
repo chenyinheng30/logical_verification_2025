@@ -46,12 +46,10 @@ theorem Tree.graft_nil {α : Type} (t : Tree α) :
 #print AddMonoid
 
 instance Tree.AddMonoid {α : Type} : AddMonoid (Tree α) :=
-  { add       :=
-      sorry
+  { add       := Tree.graft
     add_assoc :=
       sorry
-    zero      :=
-      sorry
+    zero      := Tree.nil
     add_zero  :=
       sorry
     zero_add  :=

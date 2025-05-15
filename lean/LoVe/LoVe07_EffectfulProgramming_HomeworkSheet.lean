@@ -24,7 +24,7 @@ namespace LoVe
 提示：关键在于找到创建 `m β` 类型值的方法。遵循类型指引。列出所有可用的参数和操作（例如 `pure`、`>>=`）及其类型，看看能否像拼乐高积木一样将它们组合起来。-/
 
 def map {m : Type → Type} [LawfulMonad m] {α β : Type} (f : α → β) (ma : m α) :
-    m β := :=
+    m β :=
   sorry
 
 /- 1.2（1 分）。证明 `map` 的恒等律。

@@ -97,4 +97,3 @@ theorem sumUpToOfFun_mul (f g : ℕ → ℕ) :
 -- 在此处输入你的纸面证明
 
 end LoVe
-
