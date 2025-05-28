@@ -24,7 +24,6 @@ namespace LoVe
 /- 核心原则：
 
 * **无冗余**：该类型不包含无法通过构造函数组合表达的值。
-
 * **无混淆**：通过不同方式构建的值是不同的。
 
 对于 `Nat`：
@@ -457,4 +456,3 @@ theorem length_listOfVec {α : Type} :
     by simp [listOfVec, length_listOfVec _ v]
 
 end LoVe
-

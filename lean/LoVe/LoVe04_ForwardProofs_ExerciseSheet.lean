@@ -98,7 +98,14 @@ theorem forall_and {α : Type} (p q : α → Prop) :
 
 theorem forall_exists_of_exists_forall {α : Type} (p : α → α → Prop) :
     (∃x, ∀y, p x y) → (∀y, ∃x, p x y) :=
-  sorry /- TODO -/
+  assume hexists : (∃x, ∀y, p x y)
+  (Exists.elim hexists
+     (assume ha : α
+      assume hall : (∀ (y : α), p ha y)
+      assume ha' : α
+      Exists.intro
+        (ha)
+        (hall ha')))
 
 
 /- ## 问题2：等式链

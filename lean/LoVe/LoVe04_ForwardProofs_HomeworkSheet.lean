@@ -37,7 +37,10 @@ theorem about_Impl :
 
 theorem about_Impl_term :
     ∀a b : Prop, ¬ a ∨ b → a → b :=
-  sorry /- TODO -/
+  fun (a b : Prop) (hor : ¬ a ∨ b) (ha : a) ↦
+    Or.elim hor
+      (λ hna ↦ False.elim (hna ha))
+      (λ hb ↦ hb)
 
 /- 1.2（2分）。再次证明相同的定理，这次提供一个结构化证明，使用 `fix`、`assume` 和 `show`。 -/
 
@@ -103,7 +106,19 @@ theorem Peirce_of_DN :
 
 theorem EM_of_Peirce :
     Peirce → ExcludedMiddle :=
-  sorry /- TODO -/
+  assume hp : (∀a b : Prop, ((a → b) → a) → a)
+  fix ha : Prop
+  hp (ha ∨ ¬ha) False
+  assume hor : ¬(ha ∨ ¬ha)
+  have hna : ¬ha :=
+    by
+      intro ha'
+      apply hor
+      apply Or.inl
+      exact ha'
+  Or.inr
+  assume ha' : ha
+  False.elim (hna ha')
 
 theorem dn_of_em :
     ExcludedMiddle → DoubleNegation :=

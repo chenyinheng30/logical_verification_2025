@@ -198,16 +198,16 @@ theorem EM_of_DN :
     DoubleNegation → ExcludedMiddle :=
   by
     rw [DoubleNegation, ExcludedMiddle]
-    intro hnd ha
-    apply hnd
+    intro hdn ha
+    apply hdn
     intro hor
     apply hor
     apply Or.inl
-    apply hnd
+    apply hdn
     intro hna
     apply hor
     apply Or.inr
-    apply hnd
+    apply hdn
     intro hnna
     exact False.elim (hnna hna)
 
