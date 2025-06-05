@@ -50,16 +50,13 @@ def insort {α : Type} (u : HTree α) : List (HTree α) → List (HTree α)
 /- 证明将树插入列表不会产生空列表： -/
 
 theorem insort_Neq_nil {α : Type} (t : HTree α) :
-    ∀ts : List (HTree α), insort t ts ≠ [] :=
-    by
-      intro ts
-      cases ts with
-        | nil => simp [insort]
-        | cons x xs =>
-          simp [insort]
-          split
-          · simp
-          · simp
+    ∀ts : List (HTree α), insort t ts ≠ []
+    | [] => by simp [insort]
+    | x :: ts =>
+      if h: (weight t ≤ weight x) then
+        by simp [insort, if_pos h]
+      else
+        by simp [insort, if_neg h]
 
 /- 1.4（2分）。再次证明上述性质，这次以"纸面"证明的形式。遵循练习中问题1.4的指南。 -/
 
