@@ -29,15 +29,16 @@ inductive HTree (α : Type)
 1.1（1分）。定义一个名为`weight`的多态Lean函数，该函数接受一个类型变量为`α`的树，
 并返回树根节点的权重分量： -/
 
-def weight {α : Type} : HTree α → ℕ :=
-  sorry
+def weight {α : Type} : HTree α → ℕ
+  | HTree.leaf w _ => w
+  | HTree.inner w _ _ => w
 
 /- 1.2（1分）。定义一个名为`unite`的多态Lean函数，该函数接受两棵树`l, r : HTree α`，
 并返回一棵新树，满足：(1) 其左子节点为`l`；(2) 其右子节点为`r`；
 (3) 其权重为`l`和`r`的权重之和。 -/
 
 def unite {α : Type} : HTree α → HTree α → HTree α :=
-  sorry
+  fun (l r : HTree α) => HTree.inner ((weight l) + (weight r)) l r
 
 /- 1.3（2分）。考虑以下`insort`函数，该函数将一棵树`u`插入到按权重递增排序的树列表中，
 并保持排序。（如果输入列表未排序，结果不一定有序。） -/
@@ -50,7 +51,15 @@ def insort {α : Type} (u : HTree α) : List (HTree α) → List (HTree α)
 
 theorem insort_Neq_nil {α : Type} (t : HTree α) :
     ∀ts : List (HTree α), insort t ts ≠ [] :=
-  sorry
+    by
+      intro ts
+      cases ts with
+        | nil => simp [insort]
+        | cons x xs =>
+          simp [insort]
+          split
+          · simp
+          · simp
 
 /- 1.4（2分）。再次证明上述性质，这次以"纸面"证明的形式。遵循练习中问题1.4的指南。 -/
 
@@ -81,15 +90,20 @@ def sumUpToOfFun (f : ℕ → ℕ) : ℕ → ℕ
 #check add_mul
 
 theorem sumUpToOfFun_eq :
-    ∀m : ℕ, 2 * sumUpToOfFun (fun i ↦ i) m = m * (m + 1) :=
-  sorry
+    ∀m : ℕ, 2 * sumUpToOfFun (fun i ↦ i) m = m * (m + 1)
+    | 0 => by simp [sumUpToOfFun]
+    | k + 1 => by
+      simp [sumUpToOfFun, mul_add, add_mul, add_assoc, mul_comm, sumUpToOfFun_eq]
 
 /- 2.2（2分）。证明`sumUpToOfFun`的以下性质。 -/
 
 theorem sumUpToOfFun_mul (f g : ℕ → ℕ) :
     ∀n : ℕ, sumUpToOfFun (fun i ↦ f i + g i) n =
-      sumUpToOfFun f n + sumUpToOfFun g n :=
-  sorry
+      sumUpToOfFun f n + sumUpToOfFun g n
+  | 0 => by simp [sumUpToOfFun]
+  | k + 1 => by
+    simp [sumUpToOfFun, sumUpToOfFun_mul]
+    ac_rfl
 
 /- 2.3（2附加分）。再次以"纸面"证明的形式证明`sumUpToOfFun_mul`。
 遵循练习中问题1.4的指南。 -/

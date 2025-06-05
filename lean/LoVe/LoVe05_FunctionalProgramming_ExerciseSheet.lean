@@ -27,13 +27,22 @@ def reverseAccu {α : Type} : List α → List α → List α
 
 theorem reverseAccu_Eq_reverse_append {α : Type} :
     ∀as xs : List α, reverseAccu as xs = reverse xs ++ as :=
-  sorry
+  -- 我们同时对 xs 做归纳，并把累加器 as 泛化进去
+  by
+    intro as xs
+    induction xs generalizing as with
+    | nil => rfl
+    | cons x xs ih =>
+      simp [reverseAccu, ih (x :: as), reverse]
+
+
 
 /- 1.2. 推导出所需的等式。 -/
 
 theorem reverseAccu_eq_reverse {α : Type} (xs : List α) :
     reverseAccu [] xs = reverse xs :=
-  sorry
+    by
+      simp [reverseAccu_Eq_reverse_append]
 
 /- 1.3. 证明以下性质。
 
@@ -41,7 +50,8 @@ theorem reverseAccu_eq_reverse {α : Type} (xs : List α) :
 
 theorem reverseAccu_reverseAccu {α : Type} (xs : List α) :
     reverseAccu [] (reverseAccu [] xs) = xs :=
-  sorry
+  by
+    simp [reverseAccu_eq_reverse, reverse_reverse]
 
 /- 1.4. 通过结构归纳法证明以下定理，作为"纸面"证明。这是深入理解结构归纳法如何工作的好练习（也是期末考试的好练习）。
 
@@ -70,8 +80,10 @@ def drop {α : Type} : ℕ → List α → List α
 
 为了避免证明中的意外情况，建议遵循与上述`drop`相同的递归模式。 -/
 
-def take {α : Type} : ℕ → List α → List α :=
-  sorry
+def take {α : Type} : ℕ → List α → List α
+  | 0,     _      => []
+  | _ + 1, []      => []
+  | m + 1, x :: xs => x :: take m xs
 
 #eval take 0 [3, 7, 11]   -- 期望: []
 #eval take 1 [3, 7, 11]   -- 期望: [3]
@@ -85,11 +97,17 @@ def take {α : Type} : ℕ → List α → List α :=
 
 @[simp] theorem drop_nil {α : Type} :
     ∀n : ℕ, drop n ([] : List α) = [] :=
-  sorry
+  assume n : ℕ
+  match n with
+    | Nat.zero => by rfl
+    | Nat.succ x => by rfl
 
 @[simp] theorem take_nil {α : Type} :
     ∀n : ℕ, take n ([] : List α) = [] :=
-  sorry
+  assume n : ℕ
+  match n with
+    | Nat.zero => by rfl
+    | Nat.succ x => by rfl
 
 /- 2.3. 遵循`drop`和`take`的递归模式证明以下定理。换句话说，每个定理应有三种情况，第三种情况需要调用归纳假设。
 
@@ -98,15 +116,29 @@ def take {α : Type} : ℕ → List α → List α :=
 theorem drop_drop {α : Type} :
     ∀(m n : ℕ) (xs : List α), drop n (drop m xs) = drop (n + m) xs
   | 0,     n, xs      => by rfl
-  -- 在此补充缺失的两种情况
+  | _ + 1, n, []      => by simp [drop]
+  | m + 1, n, x :: xs =>
+    by
+      simp [drop]
+      apply drop_drop
 
 theorem take_take {α : Type} :
-    ∀(m : ℕ) (xs : List α), take m (take m xs) = take m xs :=
-  sorry
+    ∀(m : ℕ) (xs : List α), take m (take m xs) = take m xs
+  |     0, xs      => by rfl
+  | _ + 1, []      => by simp [take]
+  | m + 1, x :: xs =>
+    by
+      simp [take]
+      apply take_take
 
 theorem take_drop {α : Type} :
-    ∀(n : ℕ) (xs : List α), take n xs ++ drop n xs = xs :=
-  sorry
+    ∀(n : ℕ) (xs : List α), take n xs ++ drop n xs = xs
+  |     0, xs      => by rfl
+  | _ + 1, []      => by simp [take, drop]
+  | n + 1, x :: xs =>
+    by
+      simp [take, drop]
+      apply take_drop
 
 
 /- ## 问题3：项的类型的类型
@@ -119,13 +151,20 @@ theorem take_drop {α : Type} :
 
 -- 在此输入你的定义
 
+inductive Term : Type where
+  | var : String → Term
+  | lam : String → Term → Term
+  | app : Term → Term → Term
+
 /- 3.2 (**可选**). 将类型`Term`的文本表示注册为`Repr`类型类的实例。确保提供足够的括号以保证输出无歧义。 -/
 
 def Term.repr : Term → String
--- 在此输入你的答案
+| var x => x
+| lam x t => "(λ" ++ x ++ ". " ++ (Term.repr t)++ ")"
+| app t u => "(" ++ (Term.repr t) ++ " " ++ (Term.repr u) ++ ")"
 
 instance Term.Repr : Repr Term :=
-  { reprPrec := fun t prec ↦ Term.repr t }
+  { reprPrec := fun t _ ↦ Term.repr t }
 
 /- 3.3 (**可选**). 测试你的文本表示。以下命令应打印类似`(λx. ((y x) x))`的内容。 -/
 
@@ -133,4 +172,3 @@ instance Term.Repr : Repr Term :=
     (Term.var "x")))
 
 end LoVe
-
