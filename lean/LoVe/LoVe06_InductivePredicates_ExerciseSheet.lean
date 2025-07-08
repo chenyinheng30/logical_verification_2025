@@ -32,7 +32,9 @@ def Odd (n : ℕ) : Prop :=
 
 @[simp] theorem Odd_1 :
     Odd 1 :=
-  sorry
+  by
+    intro h
+    cases h
 
 /- 1.2. 证明3和5是奇数。 -/
 
@@ -44,7 +46,10 @@ theorem Even_two_times :
     ∀m : ℕ, Even (2 * m)
   | 0     => Even.zero
   | m + 1 =>
-    sorry
+    by
+      simp [mul_add, mul]
+      apply Even.add_two
+      apply Even_two_times
 
 
 /- ## 问题2：网球比赛
@@ -56,29 +61,35 @@ theorem Even_two_times :
 /- 2.1. 定义一个归纳谓词，当发球方领先时返回`True`，否则返回`False`。 -/
 
 inductive ServAhead : Score → Prop
-  -- 在此处补充缺失的案例
+  | score_vs : ∀ m n : ℕ, m > n → ServAhead (Score.vs m n)
+  | score_advServ : ServAhead Score.advServ
+  | score_gameServ : ServAhead Score.gameServ
 
 /- 2.2. 通过证明以下定理来验证你的谓词定义。 -/
 
 theorem ServAhead_vs {m n : ℕ} (hgt : m > n) :
     ServAhead (Score.vs m n) :=
-  sorry
+  ServAhead.score_vs m n hgt
 
 theorem ServAhead_advServ :
     ServAhead Score.advServ :=
-  sorry
+  ServAhead.score_advServ
 
 theorem not_ServAhead_advRecv :
     ¬ ServAhead Score.advRecv :=
-  sorry
+  by
+    intro h
+    cases h
 
 theorem ServAhead_gameServ :
     ServAhead Score.gameServ :=
-  sorry
+  ServAhead.score_gameServ
 
 theorem not_ServAhead_gameRecv :
     ¬ ServAhead Score.gameRecv :=
-  sorry
+  by
+    intro h
+    cases h
 
 /- 2.3. 将上述定理陈述与你的定义进行比较。你观察到了什么？ -/
 
@@ -94,6 +105,8 @@ theorem not_ServAhead_gameRecv :
 
 theorem mirror_IsFull {α : Type} :
     ∀t : Tree α, IsFull (mirror t) → IsFull t :=
+  assume t : Tree α
+  assume hfull : IsFull (mirror t)
   sorry
 
 /- 3.2. 为二叉树定义一个`map`函数，类似于`List.map`。 -/
@@ -114,4 +127,3 @@ theorem map_mirror {α β : Type} (f : α → β) :
   sorry
 
 end LoVe
-

@@ -493,4 +493,3 @@ inductive VariableFree {α β : Type} : Term α β → Prop where
     VariableFree (Term.fn f ts)
 
 end LoVe
-
